@@ -1,0 +1,62 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:LLEAV.ViewModels.Controls.PopulationDepictions"
+			 xmlns:data="using:LLEAV.Models.Logic"
+			 xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LLEAV.Views.Controls.PopulationDepictions.PopulationBarsView"
+			 x:Name="Control"
+			  x:DataType="vm:PopulationBarsViewModel">
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:PopulationBarsViewModel/>
+	</Design.DataContext>
+
+	<ScrollViewer HorizontalScrollBarVisibility="Auto">
+		<ItemsControl ItemsSource="{Binding Containers}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<DockPanel HorizontalAlignment="Center"/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+
+			<ItemsControl.Styles>
+				<Style Selector="ItemsControl> ContentPresenter">
+					<Setter Property="DockPanel.Dock" Value="Bottom"/>
+				</Style>
+			</ItemsControl.Styles>
+
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="vm:PopulationBar">
+					<!--
+					<Rectangle Width="{Binding Solutions.Count,
+							   Converter={StaticResource populationSizeToBlockWidthConverter}}" 
+							   Height="{Binding Solutions.Count,
+							   Converter={StaticResource populationSizeToBlockHeightConverter}}" 
+							   Fill="Red"></Rectangle>-->
+					<Button x:Name="Item"
+						    Classes="transparentButton"							
+							HorizontalAlignment="Center"
+							Padding="5"
+							Command="{CompiledBinding #Control.((vm:PopulationDepictionViewModelBase)DataContext).SelectPopulation}"
+							CommandParameter="{Binding #Item.DataContext}">
+						<Border CornerRadius="10"
+								Width="600"
+								Height="200"
+								Classes="blockContainer"
+								Classes.clicked="{Binding Selected}">
+							<lvc:CartesianChart Series="{Binding Series}"
+								VerticalAlignment="Stretch"
+								HorizontalAlignment="Stretch"
+												XAxes="{Binding XAxis}"/>
+						</Border>
+					</Button>
+
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+	</ScrollViewer>
+</UserControl>

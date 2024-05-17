@@ -1,0 +1,18 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:LLEAV.ViewModels.Windows"
+		xmlns:con="using:LLEAV.ViewModels.Controls.IterationDepictions"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:controls="clr-namespace:LLEAV.Views.Controls.IterationDepictions;assembly=LLEAV"
+        xmlns:converter="using:LLEAV.Converter"
+		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="LLEAV.Views.Windows.IterationDetailWindow"
+		x:DataType="vm:IterationDetailWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="IterationDetailWindow"
+		Classes="bigWindow"
+		MinWidth="1200"
+		Width="1200"
+		Content="{CompiledBinding ContentViewModel}">	
+</Window>

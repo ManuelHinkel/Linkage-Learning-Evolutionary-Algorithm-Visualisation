@@ -1,0 +1,324 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converter="using:LLEAV.Converter"
+			 x:Class="LLEAV.App"
+             xmlns:local="using:LLEAV">
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+
+
+	<Application.Resources>
+		<converter:AnimationModusConverter x:Key="animationModusConverter" />
+	</Application.Resources>
+	
+	<Application.Resources>
+		<x:Double x:Key="ScrollBarSize">7.5</x:Double>
+		<SolidColorBrush x:Key="TextColor">#25020a</SolidColorBrush>
+		<SolidColorBrush x:Key="BackgroundColor">#feedf2</SolidColorBrush>
+		<SolidColorBrush x:Key="PrimaryColor">#f50f54</SolidColorBrush>
+		<SolidColorBrush x:Key="SecondaryColor">#f9b178</SolidColorBrush>
+		<SolidColorBrush x:Key="TertiaryColor">#f7bd45</SolidColorBrush>
+	</Application.Resources>
+
+	<!--Overwrite static colors in predefined components-->
+	<Application.Resources>
+		<SolidColorBrush x:Key="MenuFlyoutPresenterBackground">#feedf2</SolidColorBrush>
+
+		<!--Combobox-->
+		<SolidColorBrush x:Key="ComboBoxDropDownBackground">#feedf2</SolidColorBrush>
+		<SolidColorBrush x:Key="ComboBoxDropDownBorderBrush">#f9b178</SolidColorBrush>
+		
+		<SolidColorBrush x:Key="ComboBoxBackgroundPointerOver">#f7bd45</SolidColorBrush>
+		<SolidColorBrush x:Key="ComboBoxDropDownGlyphForeground">#25020a</SolidColorBrush>
+
+		<!--NumericUpDown-->
+		<SolidColorBrush x:Key="TextControlForeground">#25020a</SolidColorBrush>
+		<SolidColorBrush x:Key="TextControlBackgroundPointerOver">#f7bd45</SolidColorBrush>
+		<SolidColorBrush x:Key="TextControlBorderBrushFocused">#f9b178</SolidColorBrush>
+		<SolidColorBrush x:Key="TextControlBackgroundFocused">#f50f54</SolidColorBrush>
+
+		<!--Slider-->
+		<SolidColorBrush x:Key="SliderTrackFillPointerOver">#f7bd45</SolidColorBrush>
+		<SolidColorBrush x:Key="SliderTrackFillPressed">#f7bd45</SolidColorBrush>
+
+		<SolidColorBrush x:Key="SliderTrackValueFillPointerOver">#f50f54</SolidColorBrush>
+		<SolidColorBrush x:Key="SliderTrackValueFillPressed">#f50f54</SolidColorBrush>
+
+		<SolidColorBrush x:Key="SliderThumbBackgroundPointerOver">#f7bd45</SolidColorBrush>
+		<SolidColorBrush x:Key="SliderThumbBackgroundPressed">#f7bd45</SolidColorBrush>
+
+		<SolidColorBrush x:Key="SliderThumbBackground">#f9b178</SolidColorBrush>
+
+		<!--Checkbox-->
+		<SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundChecked">#25020a</SolidColorBrush>
+		<SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOver">#25020a</SolidColorBrush>
+		<SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedPressed">#25020a</SolidColorBrush>
+	</Application.Resources>
+
+
+	<Application.Styles>
+		<FluentTheme/>
+
+		<Style Selector="Window">
+			<Setter Property="Background" Value="{DynamicResource BackgroundColor}"/>
+			<Setter Property="MinWidth" Value="750"/>
+			<Setter Property="MinHeight" Value="500"/>
+			<Setter Property="Width" Value="750"/>
+			<Setter Property="Height" Value="500"/>
+		</Style>
+		
+		<Style Selector="StackPanel">
+			<Setter Property="Spacing" Value="5"/>
+		</Style>
+
+		<Style Selector="TextBlock">
+			<Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+		</Style>
+		
+		<Style Selector="Button">
+			<Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+			<Setter Property="Background" Value="{DynamicResource SecondaryColor}"/>
+
+			<Style Selector="^:pointerover /template/ ContentPresenter">
+				<Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+				<Setter Property="Background" Value="{DynamicResource TertiaryColor}"/>
+			</Style>
+		</Style>
+
+		<Style Selector="CheckBox:unchecked /template/ Border#NormalRectangle">
+			<Setter Property="Background" Value="{DynamicResource SecondaryColor}"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource TextColor}"/>
+		</Style>
+
+		<Style Selector="CheckBox:checked /template/ Border#NormalRectangle">
+			<Setter Property="Background" Value="{DynamicResource PrimaryColor}"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource TextColor}"/>
+		</Style>
+
+		<Style Selector="CheckBox:checked:pointerover /template/ Border#NormalRectangle">
+			<Setter Property="Background" Value="{DynamicResource TertiaryColor}"/>
+		</Style>
+		
+		
+		<Style Selector="ComboBox">
+			<Setter Property="Background" Value="{DynamicResource BackgroundColor}"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource SecondaryColor}"/>
+		</Style>
+
+		<Style Selector="ComboBoxItem">
+			<Style Selector="^:pointerover /template/ ContentPresenter">
+				<Setter Property="Background" Value="{DynamicResource TertiaryColor}" />
+			</Style>
+
+
+			<Style Selector="^:selected /template/ ContentPresenter">
+				<Setter Property="Background" Value="{DynamicResource PrimaryColor}" />
+			</Style>
+
+			<Style Selector="^:selected:pointerover /template/ ContentPresenter">
+				<Setter Property="Background" Value="{DynamicResource SecondaryColor}" />
+			</Style>
+		</Style>
+
+		<Style Selector="NumericUpDown">
+			<Setter Property="Background" Value="{DynamicResource BackgroundColor}"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource SecondaryColor}"/>
+		</Style>
+
+		<Style Selector="TextBox">
+			<Setter Property="Background" Value="{DynamicResource BackgroundColor}"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource SecondaryColor}"/>
+
+		</Style>
+
+		<Style Selector="ButtonSpinner">
+			<Style Selector="^:pointerover /template/ ContentPresenter">
+				<Setter Property="Background" Value="{DynamicResource TertiaryColor}" />
+			</Style>
+		</Style>
+
+
+		<!--Menu specific-->
+		<Style Selector="MenuItem">
+			<Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+			<Setter Property="Background" Value="{DynamicResource BackgroundColor}"/>
+
+			<Style Selector="^:pointerover /template/ ContentPresenter">
+				<Setter Property="Foreground" Value="{DynamicResource TertiaryColor}"/>
+			</Style>
+
+			<Style Selector="^:open /template/ ContentPresenter">
+				<Setter Property="Foreground" Value="{DynamicResource TertiaryColor}"/>
+			</Style>
+		</Style>
+
+		<Style Selector="Separator">
+			<Setter Property="Background" Value="{DynamicResource TextColor}"/>
+		</Style>
+
+		<Style Selector="Slider">
+			<Setter Property="Foreground" Value="{DynamicResource PrimaryColor}"/>
+			<Setter Property="Background" Value="{DynamicResource SecondaryColor}"/>
+		</Style>
+
+
+		<Style Selector="TickBar">
+			<Setter Property="Fill" Value="{DynamicResource PrimaryColor}"/>
+			<Setter Property="Margin" Value="10,10,10,0"/>
+			<Setter Property="Placement" Value="Bottom"/>
+			<Setter Property="Height" Value="8"/>
+		</Style>
+
+		<Style Selector="Border.blockContainer">
+			<Setter Property="Background" Value="{DynamicResource PrimaryColor}"/>
+
+			<Style Selector="^:pointerover">
+				<Setter Property="Background" Value="{DynamicResource SecondaryColor}"/>
+			</Style>
+		</Style>
+
+		<Style Selector="Border.stackContainer">
+			<Setter Property="Background" Value="{DynamicResource PrimaryColor}"/>
+		</Style>
+
+		<Style Selector="Border.clicked">
+			<Setter Property="Background" Value="{DynamicResource TertiaryColor}"/>
+		</Style>
+
+		<Style Selector="Border.panel">
+			<Setter Property="Background" Value="{DynamicResource SecondaryColor}"/>
+			<Setter Property="CornerRadius" Value="10"/>
+		</Style>
+
+		<Style Selector="Border.background">
+			<Setter Property="Background" Value="{DynamicResource TextColor}"/>
+		</Style>
+
+		
+		<Style Selector="Panel.seperator">
+			<Setter Property="Background" Value="{DynamicResource TertiaryColor}"/>
+		</Style>
+
+		
+		<!--Tree specific-->
+		<Style Selector="Line">
+			<Setter Property="Stroke" Value="{DynamicResource TextColor}"/>			
+		</Style>
+
+		<Style Selector="Line.disappearing">
+			<Style.Animations>
+				<Animation Duration="0:0:0.5" FillMode="Forward">
+					<KeyFrame Cue="0%">
+						<Setter Property="Opacity" Value="1.0"/>
+					</KeyFrame>
+					<KeyFrame Cue="100%">
+						<Setter Property="Opacity" Value="0.0"/>
+					</KeyFrame>
+				</Animation>
+			</Style.Animations>
+		</Style>
+
+		<Style Selector="Line.appearing">
+			<Style.Animations>
+				<Animation Duration="0:0:0.5"  FillMode="Forward">
+					<KeyFrame Cue="0%">
+						<Setter Property="Opacity" Value="0.0"/>
+					</KeyFrame>
+					<KeyFrame Cue="100%">
+						<Setter Property="Opacity" Value="1.0"/>
+					</KeyFrame>
+				</Animation>
+			</Style.Animations>
+		</Style>
+
+		<Style Selector="Ellipse">
+			<Setter Property="Stroke" Value="{DynamicResource TextColor}"/>
+			<Setter Property="StrokeThickness" Value="2"/>
+			<Setter Property="Fill" Value="{DynamicResource SecondaryColor}"/>
+
+			<Style Selector="^:pointerover">
+				<Setter Property="Fill" Value="{DynamicResource TertiaryColor}"/>
+			</Style>
+		</Style>
+
+		<Style Selector="Ellipse.new">
+			<Setter Property="Fill" Value="Green"/>
+
+		</Style>
+
+
+		<Style Selector="Button.transparentButton">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="Padding" Value="0"/>
+
+			<Style Selector="^:pointerover /template/ ContentPresenter">
+				<Setter Property="Background" Value="Transparent"/>
+			</Style>
+		</Style>
+
+
+
+		<!--Iteration Detail Window specific-->
+		<Style Selector="Panel.vertical">
+			<Style.Animations>
+				<Animation Duration="0:0:0.5" FillMode="Forward">
+					<KeyFrame Cue="0%">
+						<Setter Property="Height" Value="0"/>
+					</KeyFrame>
+					<KeyFrame Cue="100%">
+						<Setter Property="Height" Value="200"/>
+					</KeyFrame>
+				</Animation>
+			</Style.Animations>
+		</Style>
+
+		<Style Selector="Panel.verticalRevert">
+			<Style.Animations>
+				<Animation Duration="0:0:0.5" FillMode="Forward">
+					<KeyFrame Cue="0%">
+						<Setter Property="Height" Value="200"/>
+					</KeyFrame>
+					<KeyFrame Cue="100%">
+						<Setter Property="Height" Value="0"/>
+					</KeyFrame>
+				</Animation>
+			</Style.Animations>
+		</Style>
+		
+		<Style Selector="Panel.horizontal">
+			<Style.Animations>
+				<Animation Duration="0:0:0.5" FillMode="Forward">
+					<KeyFrame Cue="0%">
+						<Setter Property="Width" Value="0"/>
+					</KeyFrame>
+					<KeyFrame Cue="100%">
+						<Setter Property="Width" Value="200"/>
+					</KeyFrame>
+				</Animation>
+			</Style.Animations>
+		</Style>
+
+		<Style Selector="Panel.horizontalRevert">
+			<Style.Animations>
+				<Animation Duration="0:0:0.5" FillMode="Forward">
+					<KeyFrame Cue="0%">
+						<Setter Property="Width" Value="200"/>
+					</KeyFrame>
+					<KeyFrame Cue="100%">
+						<Setter Property="Width" Value="0"/>
+					</KeyFrame>
+				</Animation>
+			</Style.Animations>
+		</Style>
+
+		<Style Selector="Border.message">
+			<Setter Property="Padding" Value="5"/>
+			<Setter Property="HorizontalAlignment" Value="Stretch"/>
+			<Setter Property="Background" Value="{DynamicResource SecondaryColor}"/>
+			<Setter Property="CornerRadius" Value="5"/>
+		</Style>
+
+	</Application.Styles>
+</Application>

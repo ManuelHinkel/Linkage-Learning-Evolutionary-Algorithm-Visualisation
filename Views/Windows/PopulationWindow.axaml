@@ -1,0 +1,166 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:LLEAV.ViewModels.Windows"
+		xmlns:cm="using:LLEAV.ViewModels.Controls"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:data="using:LLEAV.Models.Tree"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="LLEAV.Views.Windows.PopulationWindow"
+		x:DataType="vm:PopulationWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="PopulationWindow"
+		Classes="bigWindow">
+
+
+	<Grid HorizontalAlignment="Stretch"
+		  VerticalAlignment="Stretch"
+		  ColumnDefinitions="*,Auto"
+		  IsVisible="{CompiledBinding AnimationModus, 
+						Converter={StaticResource animationModusConverter},
+						ConverterParameter=FOS}">
+		<!--List of Solutions-->
+		<ScrollViewer Margin="0,10,0,10">
+			<ItemsControl Margin="10,0,10,0"
+						  ItemsSource="{Binding Solutions}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="cm:SolutionWrapper">
+						<Border CornerRadius="5"
+								Padding="5"
+								Classes="stackContainer">
+							<Grid ColumnDefinitions="*,Auto,Auto"
+							  Margin="5">
+								<Border CornerRadius="5"
+										Padding="5"
+										Grid.Column="0"
+										Classes ="background">
+									<ScrollViewer HorizontalContentAlignment="Center"
+											      HorizontalScrollBarVisibility="Auto"
+												  AllowAutoHide="False">
+										<ItemsControl ItemsSource="{Binding Bits}">
+											<ItemsControl.ItemsPanel>
+												<ItemsPanelTemplate>
+													<StackPanel Orientation="Horizontal"/>
+												</ItemsPanelTemplate>
+											</ItemsControl.ItemsPanel>
+											<ItemsControl.ItemTemplate>
+												<DataTemplate x:DataType="cm:ColoredChar">
+													<TextBlock Text="{Binding Character}"
+															   Foreground="{Binding Color}"
+															   Width="10"/>
+												</DataTemplate>
+											</ItemsControl.ItemTemplate>
+										</ItemsControl>
+									</ScrollViewer>
+								</Border>
+
+								<Panel Grid.Column="1"
+									   Classes="seperator"
+									   Width="2"
+									   VerticalAlignment="Stretch"
+									   Margin="10,0,10,0"/>
+
+								<TextBlock Grid.Column="2"
+										   HorizontalAlignment="Center"
+										   VerticalAlignment="Center"
+										   Margin="10,0,10,0"
+										   Text="{Binding Fitness, StringFormat={}{0:0.00}}"/>
+							</Grid>
+						</Border>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+
+		</ScrollViewer>
+		<!--Tree View-->
+		<Border Grid.Column="1"
+				Margin="10"
+				Padding="10"
+				CornerRadius="10"
+				MinWidth="400"
+				MaxWidth="800"
+				Classes="stackContainer"> 
+			<ScrollViewer HorizontalScrollBarVisibility="Visible"
+						  VerticalScrollBarVisibility="Visible"
+						  DataContext="{Binding Tree}">
+				<Panel>
+					<ItemsControl ItemsSource="{Binding Nodes}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<Canvas HorizontalAlignment="Left"
+										VerticalAlignment="Top"
+										Width="{Binding $parent[ScrollViewer].DataContext.Width}"
+										Height="{Binding $parent[ScrollViewer].DataContext.Height}"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+
+						<!--Properties regarding the container have to be specified here-->
+						<ItemsControl.Styles>
+							<Style Selector="ItemsControl > ContentPresenter">
+								<Setter Property="Canvas.Left" Value="{Binding X}"/>
+								<Setter Property="Canvas.Top" Value="{Binding Y}"/>
+								<Setter Property="Transitions">
+									<Transitions>
+										<DoubleTransition Property="Canvas.Left" Duration="0:0:0.5"/>
+										<DoubleTransition Property="Canvas.Top" Duration="0:0:0.5"/>
+									</Transitions>
+								</Setter>
+							</Style>
+						</ItemsControl.Styles>
+
+
+						<ItemsControl.DataTemplates>
+							<DataTemplate x:DataType="data:Node">
+								<Button HorizontalAlignment="Center"
+										VerticalAlignment="Center"
+										Classes="transparentButton"
+										Command="{CompiledBinding $parent[Window].((vm:PopulationWindowViewModel)DataContext).ToggleCluster }"
+										CommandParameter="{Binding .}">
+									<Panel>
+										<Ellipse Width="{Binding Width}"
+												 Height="{Binding Height}"
+												 Classes.new="{Binding IsNewNode}"
+												 Classes.colored="{Binding Color, 
+										 Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+											<Ellipse.Styles>
+												<Style Selector="Ellipse.colored">
+													<Setter Property="Fill" Value="{Binding Color}"/>
+												</Style>
+											</Ellipse.Styles>
+										</Ellipse>
+										<TextBlock  HorizontalAlignment="Center"
+													VerticalAlignment="Center"
+													Text="{Binding Text}"
+													IsHitTestVisible="False"/>
+									</Panel>
+								</Button>
+							</DataTemplate>
+						</ItemsControl.DataTemplates>
+					</ItemsControl>
+
+					<ItemsControl ItemsSource="{Binding Edges}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<Canvas HorizontalAlignment="Left"
+										VerticalAlignment="Top"
+										Width="{Binding $parent[ScrollViewer].DataContext.Width}"
+										Height="{Binding $parent[ScrollViewer].DataContext.Height}"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+
+						<ItemsControl.DataTemplates>
+							<DataTemplate x:DataType="data:Edge">
+								<Line StartPoint="{Binding Start}"
+									  EndPoint="{Binding End}"
+									  Classes.appearing="{Binding Appearing}"
+									  Classes.disappearing="{Binding Disappering}"/>
+							</DataTemplate>
+						</ItemsControl.DataTemplates>
+					</ItemsControl>
+				</Panel>
+				
+				
+			</ScrollViewer>
+		</Border>
+	</Grid>
+</Window>

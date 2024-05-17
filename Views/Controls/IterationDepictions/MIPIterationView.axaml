@@ -1,0 +1,168 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="using:LLEAV.ViewModels.Controls.IterationDepictions"
+			 xmlns:controls="clr-namespace:LLEAV.Views.Controls;assembly=LLEAV"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LLEAV.Views.Controls.IterationDepictions.MIPIterationView"
+			 x:DataType="vm:MIPIterationViewModel"
+			 IsEnabled="{Binding AnimationModus, 
+						Converter={StaticResource animationModusConverter},
+						ConverterParameter=FULL}">
+	
+	<Grid ColumnDefinitions="2*,700,*"
+		  RowDefinitions="Auto, *, Auto"
+		  Margin="10">
+		<!--Header-->
+		<TextBlock Grid.Column="0"
+				   Grid.Row="0"
+				   Margin="5"
+				   Text="Solutions:"
+				   HorizontalAlignment="Center"
+				   Background="AliceBlue"/>
+
+		<TextBlock Grid.Column="2"
+				   Grid.Row="0"
+				   Margin="5"
+				   Text="Donors:"
+				   HorizontalAlignment="Center"/>
+		
+		<!--First column-->
+		<Grid Grid.Column ="0"
+			  Grid.Row="1"
+			  Grid.RowSpan="2"
+			  RowDefinitions="*,2*"
+			  Margin="0,0,10,5"
+			  HorizontalAlignment="Stretch">
+			
+			<!--Parents-->
+			<ScrollViewer Grid.Row="0"
+						  Margin="0,0,0,5">
+				<ItemsControl ItemsSource="{Binding Solutions}"
+							  HorizontalAlignment="Center">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<StackPanel Orientation="Horizontal"
+										Spacing="10">
+								<controls:SolutionView DataContext="{Binding Item1}"/>
+
+								<controls:SolutionView DataContext="{Binding Item2}"/>
+							</StackPanel>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</ScrollViewer>
+
+			<!--MessageBox-->
+			<controls:MessageBoxView DataContext="{Binding MessageBox}"
+									 Grid.Row="1"/>
+		</Grid>
+		
+		<!--Donors-->
+		<ScrollViewer Grid.Column="2"
+					  Grid.Row="1"
+					  Grid.RowSpan="2"
+					  Margin="0,5,0,5">
+			<ItemsControl ItemsSource="{Binding Donors}"
+					  Margin="5,0,5,0">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<controls:SolutionView/>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</ScrollViewer>
+
+		<Border HorizontalAlignment="Center"
+				VerticalAlignment="Top"
+				Grid.Column="1"
+				Grid.Row="1"
+				Classes="panel">
+			<Grid ColumnDefinitions="200,130,200"
+				  RowDefinitions="200,40"
+				  Margin="20">
+				<Panel Grid.Column="0"
+				       HorizontalAlignment="Left"
+					   VerticalAlignment="Top"
+					   ZIndex="1"
+					   IsVisible="{CompiledBinding CurrentSolution, Converter={x:Static ObjectConverters.IsNotNull}}">
+					<controls:SolutionView  DataContext="{Binding CurrentSolution}"/>
+				</Panel>
+				<Panel Grid.Column="2"
+					   HorizontalAlignment="Right"
+					   VerticalAlignment="Top"
+					   ZIndex="1"
+					   IsVisible="{CompiledBinding CurrentDonor, Converter={x:Static ObjectConverters.IsNotNull}}">
+					<controls:SolutionView DataContext="{Binding CurrentDonor}"/>
+				</Panel>
+				<Panel Grid.Column="1"
+					   Grid.Row="1"
+					   VerticalAlignment="Top"
+					   ZIndex="1"
+					   IsVisible="{CompiledBinding Merged, Converter={x:Static ObjectConverters.IsNotNull}}">
+					<controls:SolutionView DataContext="{Binding Merged}"
+										   HorizontalAlignment="Stretch"/>
+				</Panel>
+
+
+				<!--Animation Panel Left-->
+				<StackPanel Grid.Column="0"
+							Grid.Row="0"
+							Orientation="Horizontal"
+							IsVisible="{Binding IsMerging}">
+					<Panel Classes.horizontal="{Binding IsMerging}"/>
+
+					<StackPanel>
+						<Panel Classes.vertical="{Binding IsMerging}"/>
+						<controls:SolutionView DataContext="{Binding CurrentSolution}"/>
+					</StackPanel>
+
+
+				</StackPanel>
+
+
+				<!--Animation Panel Right-->
+				<StackPanel Grid.Column="2"
+							Grid.Row="0"
+							Orientation="Horizontal"
+							IsVisible="{Binding IsMerging}">
+					<StackPanel.RenderTransform>
+						<ScaleTransform ScaleX="-1"/>
+					</StackPanel.RenderTransform>
+					<Panel Classes.horizontal="{Binding IsMerging}"/>
+
+					<StackPanel>
+						<Panel Classes.vertical="{Binding IsMerging}"/>
+						<controls:SolutionView DataContext="{Binding CurrentDonor}">
+							<controls:SolutionView.RenderTransform>
+								<ScaleTransform ScaleX="-1"/>
+							</controls:SolutionView.RenderTransform>
+						</controls:SolutionView>
+					</StackPanel>
+				</StackPanel>
+
+
+				<!--Animation Panel Left Apply Merge-->
+				<StackPanel Grid.Column="0"
+							Grid.Row="0"
+							Orientation="Horizontal"
+							IsVisible="{Binding IsApplyingCrossover}">
+					<Panel Classes.horizontalRevert="{Binding IsApplyingCrossover}"/>
+
+					<StackPanel>
+						<Panel Classes.verticalRevert="{Binding IsApplyingCrossover}"/>
+						<controls:SolutionView DataContext="{Binding CurrentSolution}"/>
+					</StackPanel>
+
+
+				</StackPanel>
+
+			</Grid>
+		</Border>
+
+		<controls:TimelineView Grid.Column="1"
+							   Grid.Row="2"
+							   DataContext="{Binding $parent[UserControl].DataContext}"/>
+	</Grid>
+</UserControl>

@@ -1,0 +1,77 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:LLEAV.ViewModels.Controls.IterationDepictions"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LLEAV.Views.Controls.TimelineView"
+			 x:DataType="vm:IterationDepictionViewModelBase">
+	<StackPanel Margin="20,0,20,5">
+		<TextBlock Text="{Binding CurrentStateChange}"
+				   HorizontalAlignment="Center"/>
+		<TickBar HorizontalAlignment="Stretch"
+				 TickFrequency="{Binding TickSpacing}"
+				 Minimum="0"
+				 Maximum="{Binding MaxStateChange}">
+
+		</TickBar>
+		<Slider Value="{Binding CurrentStateChange}"
+				Maximum="{Binding MaxStateChange}"
+				TickPlacement="None"
+				TickFrequency="1"
+				IsSnapToTickEnabled="True"/>
+
+		<Grid ColumnDefinitions="*,*,*,*,*"
+			  VerticalAlignment="Stretch">
+			<Button Grid.Column="2"
+					Command="{Binding Play}"
+					HorizontalAlignment="Center"
+					IsVisible="{Binding Running}">
+				<Image Source="/Assets/pause.png"
+					   Height="25"/>
+			</Button>
+			<Button Grid.Column="2"
+					Command="{Binding Play}"
+					HorizontalAlignment="Center"
+					IsVisible="{Binding !Running}"
+					IsEnabled="{Binding RightButtonEnabled}">
+				<Image Source="/Assets/play.png"
+					   Height="25"/>
+			</Button>
+			<Button Grid.Column="1"
+					Command="{Binding StepBackward}"
+					HorizontalAlignment="Center"
+					IsEnabled="{Binding LeftButtonEnabled}">
+				<Image Source="/Assets/playpause.png"
+					   Height="25">
+					<Image.RenderTransform>
+						<TransformGroup>
+							<ScaleTransform ScaleX="-1"/>
+						</TransformGroup>
+					</Image.RenderTransform>
+				</Image>
+			</Button>
+			<Button Grid.Column="3"
+					Command="{Binding StepForward}"
+					HorizontalAlignment="Center"
+					IsEnabled="{Binding RightButtonEnabled}">
+				<Image Source="/Assets/playpause.png"
+					   Height="25">
+				</Image>
+			</Button>
+
+			<Button HorizontalAlignment="Center"
+					Grid.Column="0"
+					Command="{Binding GlobalStepBackward}"
+					IsEnabled="{Binding BackwardButtonEnabled}">
+				<TextBlock Text="Step Back"/>
+			</Button>
+			<Button HorizontalAlignment="Center"
+					Grid.Column="4"
+					Command="{Binding GlobalStepForward}"
+					IsEnabled="{Binding ForwardButtonEnabled}">
+				<TextBlock Text="Step Forward"/>
+			</Button>
+		</Grid>
+	</StackPanel>
+</UserControl>

@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:cm="using:LLEAV.ViewModels.Controls"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LLEAV.Views.Controls.SolutionView"
+			 x:DataType="cm:SolutionWrapper"
+			 HorizontalAlignment="Center"
+			 VerticalAlignment="Center">
+	
+	<Border CornerRadius="5"
+			Padding="5"
+			Classes="stackContainer"
+			Classes.clicked="{Binding Selected}"
+			HorizontalAlignment="Stretch">
+		<ScrollViewer HorizontalScrollBarVisibility="Auto"
+					  VerticalScrollBarVisibility="Disabled"
+					  HorizontalContentAlignment="Center"
+					  Width="100"
+					  AllowAutoHide="False">
+			<ItemsControl ItemsSource="{Binding Bits}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Orientation="Horizontal"
+									HorizontalAlignment="Center"/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="cm:ColoredChar">
+						<TextBlock Text="{Binding Character}"
+								   Foreground="{Binding Color}"
+								   Width="10"/>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</ScrollViewer>
+	</Border>
+</UserControl>

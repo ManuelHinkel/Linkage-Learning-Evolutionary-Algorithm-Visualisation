@@ -1,0 +1,91 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:LLEAV.ViewModels.Controls.PopulationDepictions"
+			 xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LLEAV.Views.Controls.PopulationDepictions.PopulationGraphsView"
+			 x:Name="Control"
+			 x:DataType="vm:PopulationGraphsViewModel">
+
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:PopulationGraphsViewModel/>
+	</Design.DataContext>
+
+	<Grid ColumnDefinitions="5*, *">
+
+		<Border Padding="5"
+				CornerRadius="5"
+				Classes="panel"
+				Grid.Column="1"
+				VerticalAlignment="Center"
+				HorizontalAlignment="Center">
+			<StackPanel>
+				<CheckBox IsChecked="{Binding AverageScoreVisible}">
+					<TextBlock Text="Average Fitness"/>
+				</CheckBox>
+				<CheckBox IsChecked="{Binding MedianScoreVisible}">
+					<TextBlock Text="Median Fitness"/>
+				</CheckBox>
+				<CheckBox IsChecked="{Binding MaximumScoreVisible}">
+					<TextBlock Text="Maximum Fitness"/>
+				</CheckBox>
+				<CheckBox IsChecked="{Binding MinimumScoreVisible}">
+					<TextBlock Text="Minimum Fitness"/>
+				</CheckBox>
+			</StackPanel>
+		</Border>
+		
+		<ScrollViewer HorizontalScrollBarVisibility="Auto"
+					  Grid.Column="0">
+			<ItemsControl ItemsSource="{Binding Containers}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<DockPanel HorizontalAlignment="Center"
+								   LastChildFill="False"/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+
+				<ItemsControl.Styles>
+					<Style Selector="ItemsControl> ContentPresenter">
+						<Setter Property="DockPanel.Dock" Value="Bottom"/>
+					</Style>
+				</ItemsControl.Styles>
+				
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="vm:PopulationGraph">
+						<!--
+					<Rectangle Width="{Binding Solutions.Count,
+							   Converter={StaticResource populationSizeToBlockWidthConverter}}" 
+							   Height="{Binding Solutions.Count,
+							   Converter={StaticResource populationSizeToBlockHeightConverter}}" 
+							   Fill="Red"></Rectangle>-->
+						<Button x:Name="Item"
+								Classes="transparentButton"
+								HorizontalAlignment="Center"
+								Padding="5"
+								Command="{CompiledBinding #Control.((vm:PopulationDepictionViewModelBase)DataContext).SelectPopulation}"
+								CommandParameter="{Binding #Item.DataContext}">
+							<Border CornerRadius="10"
+									Width="600"
+									Height="200"
+									Classes="blockContainer"
+									Classes.clicked="{Binding Selected}">
+								<lvc:CartesianChart Series="{Binding Series}"
+													LegendPosition="Right"
+													VerticalAlignment="Stretch"
+													HorizontalAlignment="Stretch"
+												    EasingFunction="{x:Null}"
+													XAxes="{Binding XAxis}"/>
+							</Border>
+						</Button>
+
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</ScrollViewer>
+	</Grid>
+</UserControl>

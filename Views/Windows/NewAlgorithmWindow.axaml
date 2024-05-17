@@ -1,0 +1,199 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:LLEAV.ViewModels.Windows"
+		mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
+        x:Class="LLEAV.Views.Windows.NewAlgorithmWindow"
+        x:DataType="vm:NewAlgorithmWindowViewModel"
+		Title="Create new Run"
+		Width="400"
+		Height="600"
+		MinWidth="400"
+		MinHeight="600">
+
+	<Grid HorizontalAlignment="Stretch"
+		  VerticalAlignment="Stretch"
+		  ColumnDefinitions="*,*"
+		  RowDefinitions="*,*,*,*,*,*,*,*,Auto,*"
+		  Margin="20">
+
+		<TextBlock Text="Solution Length:"
+				   HorizontalAlignment="Left"
+				   VerticalAlignment="Center"
+				   Grid.Column="0"
+				   Grid.Row="0"/>
+		<NumericUpDown Grid.Column="1"
+					   Grid.Row="0"
+					   VerticalAlignment="Center"
+					   HorizontalAlignment="Stretch"
+					   Minimum="1"
+					   Value="{Binding NumberOfBits}"
+					   FormatString="N0"
+					   ParsingNumberStyle="Integer" />
+
+		<TextBlock Text="Algorithm:"
+				   HorizontalAlignment="Left"
+				   VerticalAlignment="Center"
+				   Grid.Column="0"
+				   Grid.Row="1"/>
+		<ComboBox  HorizontalAlignment="Stretch"
+				   VerticalAlignment="Center"
+				   Grid.Column="1"
+				   Grid.Row="1"
+				   ItemsSource="{Binding Algorithms}"
+				   SelectedIndex="{Binding SelectedAlgorithm}">
+			<ComboBox.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding Name}"/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+		
+		
+		
+		<TextBlock Text="Fitness Function:"
+				   HorizontalAlignment="Left"
+				   VerticalAlignment="Center"
+				   Grid.Column="0"
+				   Grid.Row="2"/>
+		<ComboBox  HorizontalAlignment="Stretch"
+				   VerticalAlignment="Center"
+				   Grid.Column="1"
+				   Grid.Row="2"
+				   ItemsSource="{Binding FitnessFunctions}"
+				   SelectedIndex="{Binding SelectedFitnessFuntion}">
+			<ComboBox.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding Name}"/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+
+		<TextBlock Text="FOS:"
+				   HorizontalAlignment="Left"
+				   VerticalAlignment="Center"
+				   Grid.Column="0"
+				   Grid.Row="3"/>
+		<ComboBox  HorizontalAlignment="Stretch"
+				   VerticalAlignment="Center"
+				   Grid.Column="1"
+				   Grid.Row="3"
+				   ItemsSource="{Binding FOSFunctions}"
+				   SelectedIndex="{Binding SelectedFOSFunction}">
+			<ComboBox.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding Name}"/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+
+		<TextBlock Text="Termination Criteria:"
+				   HorizontalAlignment="Left"
+				   VerticalAlignment="Center"
+				   Grid.Column="0"
+				   Grid.Row="4"/>
+		<ComboBox  HorizontalAlignment="Stretch"
+				   VerticalAlignment="Center"
+				   Grid.Column="1"
+				   Grid.Row="4"
+				   ItemsSource="{Binding TerminationCriterias}"
+				   SelectedIndex="{Binding SelectedTerminationCriteria}">
+			<ComboBox.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding Name}"/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+
+		<TextBlock Text="Termination Argument:"
+				   HorizontalAlignment="Left"
+				   VerticalAlignment="Center"
+				   Grid.Column="0"
+				   Grid.Row="5"/>
+		<TextBox  HorizontalAlignment="Stretch"
+				  VerticalAlignment="Center"
+				  Grid.Column="1"
+				  Grid.Row="5"
+				  Text="{Binding TerminationArgument}">
+		</TextBox>
+		
+		
+		<TextBlock Text="Local Search Function:"
+				   HorizontalAlignment="Left"
+				   VerticalAlignment="Center"
+				   Grid.Column="0"
+				   Grid.Row="6"
+				   IsVisible="{Binding ShowLocalSearchFunction}"/>
+		<ComboBox  HorizontalAlignment="Stretch"
+				   VerticalAlignment="Center"
+				   Grid.Column="1"
+				   Grid.Row="6"
+				   ItemsSource="{Binding LocalSearchFunctions}"
+				   SelectedIndex="{Binding SelectedLocalSearchFunction}"
+				   IsVisible="{Binding ShowLocalSearchFunction}">
+			<ComboBox.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding Name}"/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+		
+
+		<TextBlock Text="Growth Function:"
+				   HorizontalAlignment="Left"
+				   VerticalAlignment="Center"
+				   Grid.Column="0"
+				   Grid.Row="7"
+				   IsVisible="{Binding ShowGrowthFunction}"/>
+		<ComboBox  HorizontalAlignment="Stretch"
+				   VerticalAlignment="Center"
+				   Grid.Column="1"
+				   Grid.Row="7"
+				   ItemsSource="{Binding GrowthFunctions}"
+				   SelectedIndex="{Binding SelectedGrowthFunction}"
+				   IsVisible="{Binding ShowGrowthFunction}">
+			<ComboBox.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding Name}"/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+
+
+		<Border  Grid.Row="8"
+				 Grid.ColumnSpan="2"
+				 HorizontalAlignment="Stretch"
+				 Margin="20"
+				 Classes="panel"
+				 CornerRadius="5"
+				 Padding="5"
+				 IsVisible="{Binding ErrorMessage,
+					 Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+			<StackPanel>
+				<TextBlock HorizontalAlignment="Left"
+						   Text="Error: "/>
+				<TextBlock HorizontalAlignment="Center"
+						   TextWrapping="Wrap"
+						   Text="{Binding ErrorMessage}"/>
+			</StackPanel>
+		</Border>
+		
+		<Button Grid.Column="0"
+				Grid.Row="9"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Command="{Binding Ok}">
+			Ok
+		</Button>
+
+		<Button Grid.Column="1"
+				Grid.Row="9"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Command="{Binding CloseWindow}">
+			Close
+		</Button>
+		
+	</Grid>
+</Window>

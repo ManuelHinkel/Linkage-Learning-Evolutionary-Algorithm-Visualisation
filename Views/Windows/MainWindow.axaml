@@ -1,0 +1,133 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:LLEAV.ViewModels.Windows"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:controls="clr-namespace:LLEAV.Views.Controls.PopulationDepictions;assembly=LLEAV"
+		xmlns:converter="using:LLEAV.Converter"
+		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="LLEAV.Views.Windows.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="LLEAV"
+		Classes="bigWindow">
+
+	<Window.Resources>
+		<converter:IntEqualsConverter x:Key="intEqualsConverter" />
+	</Window.Resources>
+
+	<DockPanel VerticalAlignment="Stretch">
+
+		<StackPanel Margin="5" 
+					Orientation="Horizontal" 
+					DockPanel.Dock="Top"
+					Spacing="5">
+			<Menu VerticalAlignment="Top">
+				<MenuItem Header="File">
+					<MenuItem Header="Open"
+							  Click="OpenFileButton_Clicked"/>
+					<Separator/>
+					<MenuItem Header="New"
+							  Command="{Binding New}"/>
+					<Separator/>
+					<MenuItem Header="Save"
+							  Command="{Binding Save}"/>
+					<Separator/>
+					<MenuItem Header="SaveAs"
+							  Click="SaveFileAsButton_Clicked"/>
+				</MenuItem>
+			</Menu>
+			<ComboBox Name="depictionBox"
+					  SelectedIndex="{Binding DepictionIndex}">
+				<ComboBoxItem>Block</ComboBoxItem>
+				<ComboBoxItem>Graph</ComboBoxItem>
+				<ComboBoxItem>Bars</ComboBoxItem>
+			</ComboBox>
+
+			<ComboBox SelectedIndex="{Binding ModusIndex}">
+				<ComboBoxItem>Full</ComboBoxItem>
+				<ComboBoxItem>FOS</ComboBoxItem>
+				<ComboBoxItem>None</ComboBoxItem>
+			</ComboBox>
+		</StackPanel>
+		
+		<StackPanel Margin="20,0,20,20" DockPanel.Dock="Bottom">
+			<TextBlock Text="{Binding Iteration}"
+					   HorizontalAlignment="Center"/>
+			<TickBar HorizontalAlignment="Stretch"
+					 TickFrequency="{Binding TickSpacing}"
+					 Minimum="0"
+					 Maximum="{Binding MaxIteration}">
+				
+			</TickBar>
+			<Slider Value="{Binding Iteration}"
+					Maximum="{Binding MaxIteration}"
+					TickPlacement="None"
+					TickFrequency="1"
+					IsSnapToTickEnabled="True"/>
+			<Grid ColumnDefinitions="*,*,*"
+				  VerticalAlignment="Stretch">
+				<Button Grid.Column="1"
+						Command="{Binding Play}"
+						HorizontalAlignment="Center"
+						IsVisible="{Binding Running}">
+					<Image Source="/Assets/pause.png"
+						   Height="25"/>
+				</Button>
+				<Button Grid.Column="1"
+						Command="{Binding Play}"
+						HorizontalAlignment="Center"
+						IsVisible="{Binding !Running}"
+						IsEnabled="{Binding RightButtonEnabled}">
+					<Image Source="/Assets/play.png"
+						   Height="25"/>
+				</Button>
+				<Button Grid.Column="0"
+						Command="{Binding StepBackward}"
+						HorizontalAlignment="Center"
+						IsEnabled="{Binding LeftButtonEnabled}">
+					<Image Source="/Assets/playpause.png"
+						   Height="25">
+						<Image.RenderTransform>
+							<TransformGroup>
+								<ScaleTransform ScaleX="-1"/>
+							</TransformGroup>
+						</Image.RenderTransform>
+					</Image>
+				</Button>
+				<Button Grid.Column="2"
+						Command="{Binding StepForward}"
+						HorizontalAlignment="Center"
+						IsEnabled="{Binding RightButtonEnabled}">
+					<Image Source="/Assets/playpause.png"
+						   Height="25">
+					</Image>
+				</Button>
+			</Grid>
+		</StackPanel>
+
+
+		<Panel DockPanel.Dock="Top" 
+			   VerticalAlignment="Stretch"
+			   Margin="10">
+			<controls:PopulationBlocksView DataContext="{Binding BlockModel}"
+										  VerticalAlignment="Stretch"
+										  IsVisible="{Binding #depictionBox.SelectedIndex,  
+										  Converter={StaticResource intEqualsConverter},
+									      ConverterParameter=0}"/>
+
+			<controls:PopulationGraphsView DataContext="{Binding GraphModel}"
+											  VerticalAlignment="Stretch"
+											  IsVisible="{Binding #depictionBox.SelectedIndex,  
+										  Converter={StaticResource intEqualsConverter},
+									      ConverterParameter=1}"/>
+
+			<controls:PopulationBarsView DataContext="{Binding BarModel}"
+											VerticalAlignment="Stretch"
+											IsVisible="{Binding #depictionBox.SelectedIndex,  
+										Converter={StaticResource intEqualsConverter},
+									    ConverterParameter=2}"/>
+		</Panel>
+	</DockPanel>
+
+</Window>

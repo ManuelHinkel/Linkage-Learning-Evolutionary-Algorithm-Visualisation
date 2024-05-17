@@ -1,0 +1,71 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\pause.png" />
+    <None Remove="Assets\play.png" />
+    <None Remove="Assets\playpause.png" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.1.0-beta2" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.1.0-beta2" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.0-beta2" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.0-beta2" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.1.0-beta2" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.1.0-beta2" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-rc2" />
+    <PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <AvaloniaResource Update="Assets\pause.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
+    <AvaloniaResource Update="Assets\play.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
+    <AvaloniaResource Update="Assets\playpause.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Compile Update="Views\Controls\IterationDepictions\GOMIterationView.axaml.cs">
+      <DependentUpon>GOMIterationView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Controls\IterationDepictions\MIPIterationView.axaml.cs">
+      <DependentUpon>MIPIterationView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Controls\IterationDepictions\ROMIterationView.axaml.cs">
+      <DependentUpon>ROMIterationView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Controls\PopulationDepictions\PopulationBarsView.axaml.cs">
+      <DependentUpon>PopulationBarsView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Controls\PopulationDepictions\PopulationBlocksView.axaml.cs">
+      <DependentUpon>PopulationBlocksView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Controls\PopulationDepictions\PopulationGraphsView.axaml.cs">
+      <DependentUpon>PopulationGraphsView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Controls\SolutionView.axaml.cs">
+      <DependentUpon>SolutionView.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>

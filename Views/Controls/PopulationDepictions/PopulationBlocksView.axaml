@@ -1,0 +1,99 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:vm="using:LLEAV.ViewModels.Controls.PopulationDepictions"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:converter="using:LLEAV.Converter"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LLEAV.Views.Controls.PopulationDepictions.PopulationBlocksView"
+			 x:Name="Control"
+			  x:DataType="vm:PopulationBlocksViewModel">
+
+	<Design.DataContext>
+	<!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:PopulationBlocksViewModel/>
+	</Design.DataContext>
+
+	<UserControl.Resources>
+		<converter:PopulationSizeToBlockWidthConverter x:Key="populationSizeToBlockWidthConverter"/>
+		<converter:PopulationSizeToBlockHeightConverter x:Key="populationSizeToBlockHeightConverter" />
+	</UserControl.Resources>
+	
+	<ScrollViewer HorizontalScrollBarVisibility="Auto">
+		<ItemsControl ItemsSource="{Binding Containers}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<DockPanel HorizontalAlignment="Center"
+							   LastChildFill="False"/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+
+			<ItemsControl.Styles>
+				<Style Selector="ItemsControl> ContentPresenter">
+					<Setter Property="DockPanel.Dock" Value="Bottom"/>
+				</Style>
+			</ItemsControl.Styles>
+
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="vm:PopulationBlock">
+					<Button x:Name="Item"
+							Classes="transparentButton"
+							HorizontalAlignment="Center"
+							Padding="5"
+							Command="{CompiledBinding #Control.((vm:PopulationDepictionViewModelBase)DataContext).SelectPopulation}"
+							CommandParameter="{Binding #Item.DataContext}">
+						<Border CornerRadius="10"
+								Width="{Binding Population.Solutions.Count,
+								Converter={StaticResource populationSizeToBlockWidthConverter}}"
+								Height="100"
+								Classes="blockContainer"
+								Classes.clicked="{Binding Selected}">
+							<Grid Margin="10"
+								  HorizontalAlignment="Stretch"
+								  VerticalAlignment="Stretch"
+								  ColumnDefinitions="*,*"
+								  RowDefinitions="*,5,*,5,*,5,*">
+								<TextBlock Text="Solutions:"
+										   Grid.Column="0"
+										   Grid.Row="0"/>
+								<TextBlock Text="{Binding Population.Solutions.Count}"
+										   Grid.Column="1"
+										   Grid.Row="0"
+										   HorizontalAlignment="Center"/>
+
+								<TextBlock Text="Maximum Fitness:"
+										   Grid.Column="0"
+										   Grid.Row="2"/>
+								<TextBlock Text="{Binding Population.MaximumFitness, 
+												StringFormat={}{0:0.00}}"
+										   Grid.Column="1"
+										   Grid.Row="2"
+										   HorizontalAlignment="Center"/>
+
+								<TextBlock Text="Average Fitness:"
+										   Grid.Column="0"
+										   Grid.Row="4"/>
+								<TextBlock Text="{Binding Population.AverageFitness,
+												StringFormat={}{0:0.00}}"
+										   Grid.Column="1"
+										   Grid.Row="4"
+										   HorizontalAlignment="Center"/>
+
+								<TextBlock Text="Median Fitness:"
+										   Grid.Column="0"
+										   Grid.Row="6"/>
+								<TextBlock Text="{Binding Population.MedianFitness,
+												StringFormat={}{0:0.00}}"
+										   Grid.Column="1"
+										   Grid.Row="6"
+										   HorizontalAlignment="Center"/>
+							</Grid>
+						</Border>
+					</Button>
+
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+	</ScrollViewer>
+</UserControl>
