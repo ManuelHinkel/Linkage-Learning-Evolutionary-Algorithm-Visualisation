@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LLEAV.Util;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -19,6 +20,19 @@ namespace LLEAV.Models.TerminationCriteria
             }
         }
 
+        public IterationTermination(byte[] bytes) : base(bytes)
+        {
+            argument = BitConverter.ToInt32(bytes, 0);
+            _iteration = (int)argument;
+        }
+
+        public override byte[] ConvertArgumentToBytes()
+        {
+            byte[] bytes = new byte[4];
+            ByteUtil.WriteIntToBuffer(_iteration, bytes, 0);
+            return bytes;
+        }
+
         public override Type GetArgumentType()
         {
             return typeof(int);
@@ -28,5 +42,6 @@ namespace LLEAV.Models.TerminationCriteria
         {
             return iteration.Iteration >= _iteration;
         }
+
     }
 }

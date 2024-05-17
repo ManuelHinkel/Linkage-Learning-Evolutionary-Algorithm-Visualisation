@@ -152,6 +152,10 @@
 			<Style Selector="^:open /template/ ContentPresenter">
 				<Setter Property="Foreground" Value="{DynamicResource TertiaryColor}"/>
 			</Style>
+
+			<Style Selector="^:disabled /template/ ContentPresenter">
+				<Setter Property="Foreground" Value="Gray"/>
+			</Style>
 		</Style>
 
 		<Style Selector="Separator">

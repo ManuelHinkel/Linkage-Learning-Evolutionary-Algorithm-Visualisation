@@ -14,6 +14,13 @@ namespace LLEAV.Util
             bitArray = new long[1 + numberBits / 64];
         }
 
+        public BitList(int numberBits, byte[] bytes)
+        {
+            NumberBits = numberBits;
+            bitArray = new long[1 + numberBits / 64];
+            FromByteArray(bytes);
+        }
+
         public void Set(int index, bool value = true)
         {
             if (index >= NumberBits) { throw new ArgumentOutOfRangeException("index out of range"); }
@@ -137,6 +144,28 @@ namespace LLEAV.Util
                 s += Get(i) ? 1 : 0;
             }
             return s.Trim();
+        }
+
+        public byte[] ToByteArray()
+        {
+            int numberOfBytes = (int)Math.Ceiling(NumberBits / 8f);
+
+            byte[] bytes = new byte[numberOfBytes];
+
+            for (int i = 0; i <  numberOfBytes; i++)
+            {
+                bytes[i] = (byte)(bitArray[i / 8] >> ((i % 8) * 8));
+            }
+
+            return bytes;
+        }
+
+        private void FromByteArray(byte[] bytes)
+        {
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                bitArray[i / 8] |= (long)bytes[i] << ((i % 8) * 8);
+            }
         }
 
         public override bool Equals(object? obj)

@@ -30,11 +30,17 @@
 					<MenuItem Header="New"
 							  Command="{Binding New}"/>
 					<Separator/>
+					
 					<MenuItem Header="Save"
-							  Command="{Binding Save}"/>
+							  Command="{Binding Save}"
+							  IsEnabled="{Binding IsSaveEnabled}">
+					</MenuItem>
+					
 					<Separator/>
 					<MenuItem Header="SaveAs"
-							  Click="SaveFileAsButton_Clicked"/>
+							  Click="SaveFileAsButton_Clicked"
+							  IsEnabled="{Binding RunData, 
+								Converter={x:Static ObjectConverters.IsNotNull}}"/>
 				</MenuItem>
 			</Menu>
 			<ComboBox Name="depictionBox"

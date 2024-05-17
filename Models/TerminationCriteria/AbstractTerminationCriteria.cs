@@ -19,8 +19,13 @@ namespace LLEAV.Models.TerminationCriteria
             }
         }
 
+        public AbstractTerminationCriteria(byte[] bytes)
+        {
+        }
+
         public abstract bool ShouldTerminate(IterationData iteration);
         public abstract Type GetArgumentType();
+        public abstract byte[] ConvertArgumentToBytes();
 
         private bool Convert(string value, Type type, out object output)
         {

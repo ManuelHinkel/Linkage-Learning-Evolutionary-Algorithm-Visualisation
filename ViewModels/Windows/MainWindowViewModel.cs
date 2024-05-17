@@ -1,6 +1,7 @@
 ﻿using Avalonia.Threading;
 using LLEAV.Models;
 using LLEAV.Models.Algorithms;
+using LLEAV.Models.Persistence;
 using LLEAV.ViewModels.Controls.PopulationDepictions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace LLEAV.ViewModels.Windows
 {
@@ -33,9 +35,9 @@ namespace LLEAV.ViewModels.Windows
             {
                 this.RaiseAndSetIfChanged(ref _depictionIndex, value);
 
-                if (_runData != null)
+                if (RunData != null)
                 {
-                    UpdatePopulations(_runData.Iterations[Iteration]);
+                    UpdatePopulations(RunData.Iterations[Iteration]);
                 }
             }
         }
@@ -48,7 +50,7 @@ namespace LLEAV.ViewModels.Windows
             {
                 this.RaiseAndSetIfChanged(ref _modusIndex, value);
 
-                if (value != 0 && _runData != null)
+                if (value != 0 && RunData != null)
                 {
                     GlobalManager.Instance.NotifyFinishedIteration();
                 }
@@ -68,7 +70,7 @@ namespace LLEAV.ViewModels.Windows
 
         public bool RightButtonEnabled
         {
-            get => !Running && _runData != null && !_runData.Iterations[Iteration].LastIteration;
+            get => !Running && RunData != null && !RunData.Iterations[Iteration].LastIteration;
         }
 
         public bool LeftButtonEnabled
@@ -76,14 +78,23 @@ namespace LLEAV.ViewModels.Windows
             get => !Running && Iteration > 0;
         }
 
+        public bool IsSaveEnabled
+        {
+            get
+            {
+                return RunData != null && Saver.IsValidPath(RunData.FilePath);
+            }
+        }
+
         [Reactive]
         public int TickSpacing { get; private set; } = 1;
+
+        [Reactive]
+        public RunData RunData { get; private set; }
 
         public PopulationBlocksViewModel BlockModel { get; set; } = new PopulationBlocksViewModel();
         public PopulationGraphsViewModel GraphModel { get; set; }
         public PopulationBarsViewModel BarModel { get; set; } = new PopulationBarsViewModel();
-
-        private RunData _runData;
 
         private bool _stopThread;
 
@@ -161,16 +172,16 @@ namespace LLEAV.ViewModels.Windows
                 IList<IStateChange> result;
                 if (Iteration > 0)
                 {
-                    result = _runData.Algorithm.CalculateIterationStateChanges(_runData.Iterations[Iteration - 1], _runData);
+                    result = RunData.Algorithm.CalculateIterationStateChanges(RunData.Iterations[Iteration - 1], RunData);
                 } else
                 {
-                    result = _runData.Algorithm.CalculateIterationStateChanges(GlobalManager.Instance.InitialIteration(), _runData); ;
+                    result = RunData.Algorithm.CalculateIterationStateChanges(GlobalManager.Instance.InitialIteration(), RunData); ;
                 }
                 GlobalManager.Instance.StartIterationVisualization(result);
             }
             else if (ModusIndex != 0)
             {
-                UpdatePopulations(_runData.Iterations[Iteration]);
+                UpdatePopulations(RunData.Iterations[Iteration]);
             }
             _excludeRecalculationInNextIterationChange = false;
 
@@ -187,12 +198,12 @@ namespace LLEAV.ViewModels.Windows
         {
             GlobalManager.Instance.NotifyFinishedIteration();
 
-            if (Iteration < _runData.Iterations.Count
-                && _runData.Iterations.ElementAt(Iteration).LastIteration) return;
+            if (Iteration < RunData.Iterations.Count
+                && RunData.Iterations.ElementAt(Iteration).LastIteration) return;
             if (Iteration == MaxIteration)
             {
-                var result = _runData.Algorithm.CalculateIteration(_runData.Iterations[Iteration], _runData);
-                 _runData.Iterations.Add(result.Item1);
+                var result = RunData.Algorithm.CalculateIteration(RunData.Iterations[Iteration], RunData);
+                 RunData.Iterations.Add(result.Item1);
 
                 if (ModusIndex == 0)
                 {
@@ -247,42 +258,51 @@ namespace LLEAV.ViewModels.Windows
 
         public void Save()
         {
-
+            Saver.SaveData(RunData, RunData.FilePath!);
         }
 
         public void SaveAs(string path)
         {
+            Saver.SaveData(RunData, path);
 
+            RunData.FilePath = path;
+            this.RaisePropertyChanged(nameof(IsSaveEnabled));
         }
 
         public void Load(string path)
         {
-
+            GlobalManager.Instance.SetNewRunData(Loader.LoadData(path));
         }
 
         public void SetNewRunData(RunData runData)
         {
-            _runData = runData;
-            GraphModel = new PopulationGraphsViewModel(_runData);
+            RunData = runData;
+            GraphModel = new PopulationGraphsViewModel(RunData);
 
-            var result = _runData.Algorithm.CalculateIteration(
-                GlobalManager.Instance.InitialIteration(),
-                _runData);
-            
-            _runData.Iterations.Add(result.Item1);
-
-            if (ModusIndex == 0)
+            if (runData.Iterations.Count > 0)
             {
-                GlobalManager.Instance.StartIterationVisualization(result.Item2);
+                MaxIteration = runData.Iterations.Count - 1;
             } else
             {
-                UpdatePopulations(_runData.Iterations[0]);
+                var result = RunData.Algorithm.CalculateIteration(
+                GlobalManager.Instance.InitialIteration(),
+                RunData);
+
+                RunData.Iterations.Add(result.Item1);
+
+                if (ModusIndex == 0)
+                {
+                    GlobalManager.Instance.StartIterationVisualization(result.Item2);
+                }
+                else
+                {
+                    UpdatePopulations(RunData.Iterations[0]);
+                }
+
+                _excludeRecalculationInNextIterationChange = true;
+                MaxIteration = 0;
             }
-
-            _excludeRecalculationInNextIterationChange = true;
             Iteration = 0;
-            MaxIteration = 0;
-
             RaiseButtonsChanged();
         }
 
