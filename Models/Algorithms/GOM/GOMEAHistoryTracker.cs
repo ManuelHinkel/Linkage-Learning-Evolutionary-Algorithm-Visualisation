@@ -10,7 +10,7 @@ namespace LLEAV.Models.Algorithms.GOM
 {
     public class GOMEAHistoryTracker
     {
-        public IList<IStateChange> StateChangeHistory { get; private set; }
+        public IList<IStateChange> StateChangeHistory { get; } = new List<IStateChange>();
 
         public void ChangeFOSCluster(Cluster cluster)
         {
@@ -32,9 +32,5 @@ namespace LLEAV.Models.Algorithms.GOM
 
         }
 
-        public void RevertCrossover()
-        {
-
-        }
     }
 }

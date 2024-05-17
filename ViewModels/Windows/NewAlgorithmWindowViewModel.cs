@@ -46,31 +46,38 @@ namespace LLEAV.ViewModels.Windows
 
         public string NumberOfBits { get; set; } = "10";
 
+
+        public int SelectedFitnessFuntion { get; set; }
+        public int SelectedFOSFunction { get; set; }
+        public int SelectedTerminationCriteria { get; set; }
+        public string TerminationArgument { get; set; }
+
         private int _algorithm;
-        public int SelectedAlgorithm 
+        public int SelectedAlgorithm
         {
             get => _algorithm;
-            set 
-            { 
+            set
+            {
                 this.RaiseAndSetIfChanged(ref _algorithm, value);
                 ShowGrowthFunction = value == 0;
                 ShowLocalSearchFunction = value == 0 || value == 1;
+                ShowPopulationSize = value == 2 || value == 3;
             }
         }
 
-        public int SelectedFitnessFuntion { get; set; }
         public int SelectedLocalSearchFunction { get; set; }
-        public int SelectedTerminationCriteria { get; set; }
         
-        public string TerminationArgument { get; set; }
-
         public int SelectedGrowthFunction { get; set; }
-        public int SelectedFOSFunction { get; set; }
+
+        public string PopulationSize { get; set; } = "1";
 
         [Reactive]
         public bool ShowLocalSearchFunction { get; set; } = true;
         [Reactive]
         public bool ShowGrowthFunction { get; set; } = true;
+
+        [Reactive]
+        public bool ShowPopulationSize { get; set; }
 
         [Reactive]
         public string ErrorMessage { get; set; }
@@ -86,17 +93,26 @@ namespace LLEAV.ViewModels.Windows
         {
             ErrorMessage = "";
 
+            // Number of Bits validation
             int numberOfBits;
-
             bool isInt = int.TryParse(NumberOfBits, out numberOfBits);
-
             if (!isInt || numberOfBits < 1)
             {
                 ErrorMessage = "Number Of Bits is not a valid integer.\n Must be greater than 0!";
                 return;
             }
 
+            // Population size validation
+            int populationSize;
+            isInt = int.TryParse(PopulationSize, out populationSize);
+            if (ShowPopulationSize && (!isInt || populationSize < 1))
+            {
+                ErrorMessage = "Population Size is not a valid integer.\n Must be greater than 0!";
+                return;
+            }
 
+
+            // Termination Criteria validation
             AbstractTerminationCriteria terminationCriteria = Activator.CreateInstance(TerminationCriterias[SelectedTerminationCriteria], args: TerminationArgument)
                    as AbstractTerminationCriteria;
 
@@ -115,7 +131,7 @@ namespace LLEAV.ViewModels.Windows
                 FitnessFunction = Activator.CreateInstance(FitnessFunctions[SelectedFitnessFuntion]) as IFitnessFunction,
                 TerminationCriteria = terminationCriteria,
                 NumberOfBits = numberOfBits,
-                NumberOfSolutions = 100,
+                NumberOfSolutions = populationSize,
             };
 
             if (ShowLocalSearchFunction)

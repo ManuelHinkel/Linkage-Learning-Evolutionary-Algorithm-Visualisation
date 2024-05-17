@@ -31,8 +31,8 @@
 					   Value="{Binding NumberOfBits}"
 					   FormatString="N0"
 					   ParsingNumberStyle="Integer" />
-
-		<TextBlock Text="Algorithm:"
+			
+		<TextBlock Text="Fitness Function:"
 				   HorizontalAlignment="Left"
 				   VerticalAlignment="Center"
 				   Grid.Column="0"
@@ -41,26 +41,6 @@
 				   VerticalAlignment="Center"
 				   Grid.Column="1"
 				   Grid.Row="1"
-				   ItemsSource="{Binding Algorithms}"
-				   SelectedIndex="{Binding SelectedAlgorithm}">
-			<ComboBox.ItemTemplate>
-				<DataTemplate>
-					<TextBlock Text="{Binding Name}"/>
-				</DataTemplate>
-			</ComboBox.ItemTemplate>
-		</ComboBox>
-		
-		
-		
-		<TextBlock Text="Fitness Function:"
-				   HorizontalAlignment="Left"
-				   VerticalAlignment="Center"
-				   Grid.Column="0"
-				   Grid.Row="2"/>
-		<ComboBox  HorizontalAlignment="Stretch"
-				   VerticalAlignment="Center"
-				   Grid.Column="1"
-				   Grid.Row="2"
 				   ItemsSource="{Binding FitnessFunctions}"
 				   SelectedIndex="{Binding SelectedFitnessFuntion}">
 			<ComboBox.ItemTemplate>
@@ -74,11 +54,11 @@
 				   HorizontalAlignment="Left"
 				   VerticalAlignment="Center"
 				   Grid.Column="0"
-				   Grid.Row="3"/>
+				   Grid.Row="2"/>
 		<ComboBox  HorizontalAlignment="Stretch"
 				   VerticalAlignment="Center"
 				   Grid.Column="1"
-				   Grid.Row="3"
+				   Grid.Row="2"
 				   ItemsSource="{Binding FOSFunctions}"
 				   SelectedIndex="{Binding SelectedFOSFunction}">
 			<ComboBox.ItemTemplate>
@@ -92,11 +72,11 @@
 				   HorizontalAlignment="Left"
 				   VerticalAlignment="Center"
 				   Grid.Column="0"
-				   Grid.Row="4"/>
+				   Grid.Row="3"/>
 		<ComboBox  HorizontalAlignment="Stretch"
 				   VerticalAlignment="Center"
 				   Grid.Column="1"
-				   Grid.Row="4"
+				   Grid.Row="3"
 				   ItemsSource="{Binding TerminationCriterias}"
 				   SelectedIndex="{Binding SelectedTerminationCriteria}">
 			<ComboBox.ItemTemplate>
@@ -110,15 +90,33 @@
 				   HorizontalAlignment="Left"
 				   VerticalAlignment="Center"
 				   Grid.Column="0"
-				   Grid.Row="5"/>
+				   Grid.Row="4"/>
 		<TextBox  HorizontalAlignment="Stretch"
 				  VerticalAlignment="Center"
 				  Grid.Column="1"
-				  Grid.Row="5"
+				  Grid.Row="4"
 				  Text="{Binding TerminationArgument}">
 		</TextBox>
-		
-		
+
+		<TextBlock Text="Algorithm:"
+			   HorizontalAlignment="Left"
+			   VerticalAlignment="Center"
+			   Grid.Column="0"
+			   Grid.Row="5"/>
+		<ComboBox  HorizontalAlignment="Stretch"
+				   VerticalAlignment="Center"
+				   Grid.Column="1"
+				   Grid.Row="5"
+				   ItemsSource="{Binding Algorithms}"
+				   SelectedIndex="{Binding SelectedAlgorithm}">
+			<ComboBox.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding Name}"/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+
+
 		<TextBlock Text="Local Search Function:"
 				   HorizontalAlignment="Left"
 				   VerticalAlignment="Center"
@@ -138,6 +136,22 @@
 				</DataTemplate>
 			</ComboBox.ItemTemplate>
 		</ComboBox>
+
+		<TextBlock Text="Population Size:"
+				   HorizontalAlignment="Left"
+				   VerticalAlignment="Center"
+				   Grid.Column="0"
+				   Grid.Row="6"
+				   IsVisible="{Binding ShowPopulationSize}"/>
+		<NumericUpDown Grid.Column="1"
+					   Grid.Row="6"
+					   VerticalAlignment="Center"
+					   HorizontalAlignment="Stretch"
+					   Minimum="1"
+					   Value="{Binding PopulationSize}"
+					   FormatString="N0"
+					   ParsingNumberStyle="Integer"
+					   IsVisible="{Binding ShowPopulationSize}"/>
 		
 
 		<TextBlock Text="Growth Function:"
