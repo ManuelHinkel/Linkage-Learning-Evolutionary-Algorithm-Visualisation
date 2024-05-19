@@ -4,6 +4,7 @@ using LLEAV.Models;
 using LLEAV.Models.Algorithms;
 using LLEAV.Models.Algorithms.MIP.StateChange;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -47,7 +48,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     var wrapper = new SolutionWrapper(_visualisationData.CurrentSolution);
                     if (_visualisationData.ActiveCluster != null)
                     {
-                        wrapper.MarkCluster(!_visualisationData.ActiveCluster, "#0000ff");
+                        wrapper.MarkCluster(!_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_1);
                     }
                     return wrapper;
                 }
@@ -62,7 +63,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 if (_visualisationData.CurrentDonor != null)
                 {
                     var wrapper = new SolutionWrapper(_visualisationData.CurrentDonor);
-                    wrapper.MarkCluster(_visualisationData.ActiveCluster, "#00ff00");
+                    wrapper.MarkCluster(_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_2);
                     return wrapper;
                 }
                 return null; 
@@ -78,8 +79,8 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     var wrapper = new SolutionWrapper(_visualisationData.Merged);
                     if (_visualisationData.ActiveCluster != null)
                     {
-                        wrapper.MarkCluster(_visualisationData.ActiveCluster, "#00ff00");
-                        wrapper.MarkCluster(!_visualisationData.ActiveCluster, "#0000ff");
+                        wrapper.MarkCluster(_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_2);
+                        wrapper.MarkCluster(!_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_1);
                     }
                     return wrapper;
                 }
@@ -97,6 +98,13 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             get { return _visualisationData.IsApplyingCrossover; }
         }
 
+        private bool _isApplyingCrossoverRunning { get; set; }
+
+        protected override bool isAnimating
+        {
+            get => IsMerging || _isApplyingCrossoverRunning;
+        }
+
         public MIPIterationViewModel(IList<IMIPStateChange> stateChanges, IterationData workingData)
         {
             _stateChanges = stateChanges;
@@ -104,36 +112,14 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             WorkingData = BaseData.Clone();
             MaxStateChange = _stateChanges.Count - 1;
 
+            _currentStateChange = -1;
 
             if (_stateChanges.Count > 0)
             {
-                _stateChanges[0].Apply(WorkingData, _visualisationData);
+                GoToStateChange(0);
             }
 
             CalculateTickSpacing();
-        }
-
-        public override void StepForward()
-        {
-            if (CurrentStateChange < MaxStateChange)
-            {
-                CurrentStateChange++;
-            } 
-            if (CurrentStateChange == MaxStateChange)
-            {
-                GlobalManager.Instance.NotifyFinishedIteration();
-                Running = false;
-            }
-            RaiseButtonsChanged();
-        }
-
-        public override void StepBackward()
-        {
-            if (CurrentStateChange > 0)
-            {
-                CurrentStateChange--;
-            } 
-            RaiseButtonsChanged();
         }
 
         protected override void RaiseChanged(IList<string> properties)
@@ -141,7 +127,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             foreach (var property in properties)
             {
                 // Start Merging Animation
-                if (property.Equals("IsMerging") && _visualisationData.IsMerging)
+                if (property.Equals(nameof(IsMerging)) && _visualisationData.IsMerging)
                 {
                     IsMergingRunning = true;
                     RaiseButtonsChanged();
@@ -157,9 +143,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     }));
                     t.Start();
                 }
-                else if (property.Equals("IsApplyingCrossover") && _visualisationData.IsApplyingCrossover)
+                else if (property.Equals(nameof(IsApplyingCrossover)) && _visualisationData.IsApplyingCrossover)
                 {
-                    IsApplyingCrossoverRunning = true;
+                    _isApplyingCrossoverRunning = true;
                     RaiseButtonsChanged();
                     Thread t = new Thread(new ThreadStart(() => {
                         Thread.Sleep(GlobalManager.ANIMATION_TIME);
@@ -167,7 +153,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                             _visualisationData.IsApplyingCrossover = false;
                             this.RaisePropertyChanged(nameof(IsApplyingCrossover));
 
-                            IsApplyingCrossoverRunning = false;
+                            _isApplyingCrossoverRunning = false;
                             RaiseButtonsChanged();
                         });
                     }));
@@ -204,7 +190,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 WorkingData = BaseData.Clone();
                 _visualisationData = new MIPVisualisationData();
                 MessageBox.Clear();
-                _currentStateChange = 0;
+                _currentStateChange = -1;
 
                 while (_currentStateChange < index)
                 {

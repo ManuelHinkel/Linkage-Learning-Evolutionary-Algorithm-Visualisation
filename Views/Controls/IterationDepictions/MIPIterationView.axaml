@@ -19,8 +19,7 @@
 				   Grid.Row="0"
 				   Margin="5"
 				   Text="Solutions:"
-				   HorizontalAlignment="Center"
-				   Background="AliceBlue"/>
+				   HorizontalAlignment="Center"/>
 
 		<TextBlock Grid.Column="2"
 				   Grid.Row="0"
@@ -38,9 +37,11 @@
 			
 			<!--Parents-->
 			<ScrollViewer Grid.Row="0"
-						  Margin="0,0,0,5">
+						  Margin="0,0,0,5"
+						  HorizontalScrollBarVisibility="Auto">
 				<ItemsControl ItemsSource="{Binding Solutions}"
-							  HorizontalAlignment="Center">
+							  HorizontalAlignment="Center"
+							  Margin="0,0,5,0">
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
 							<StackPanel Orientation="Horizontal"
@@ -86,6 +87,7 @@
 				       HorizontalAlignment="Left"
 					   VerticalAlignment="Top"
 					   ZIndex="1"
+					   Width="130"
 					   IsVisible="{CompiledBinding CurrentSolution, Converter={x:Static ObjectConverters.IsNotNull}}">
 					<controls:SolutionView  DataContext="{Binding CurrentSolution}"/>
 				</Panel>
@@ -93,6 +95,7 @@
 					   HorizontalAlignment="Right"
 					   VerticalAlignment="Top"
 					   ZIndex="1"
+					   Width="130"
 					   IsVisible="{CompiledBinding CurrentDonor, Converter={x:Static ObjectConverters.IsNotNull}}">
 					<controls:SolutionView DataContext="{Binding CurrentDonor}"/>
 				</Panel>
@@ -100,6 +103,7 @@
 					   Grid.Row="1"
 					   VerticalAlignment="Top"
 					   ZIndex="1"
+					   Width="130"
 					   IsVisible="{CompiledBinding Merged, Converter={x:Static ObjectConverters.IsNotNull}}">
 					<controls:SolutionView DataContext="{Binding Merged}"
 										   HorizontalAlignment="Stretch"/>
@@ -115,7 +119,8 @@
 
 					<StackPanel>
 						<Panel Classes.vertical="{Binding IsMerging}"/>
-						<controls:SolutionView DataContext="{Binding CurrentSolution}"/>
+						<controls:SolutionView DataContext="{Binding CurrentSolution}"
+											   Width="130"/>
 					</StackPanel>
 
 
@@ -134,7 +139,8 @@
 
 					<StackPanel>
 						<Panel Classes.vertical="{Binding IsMerging}"/>
-						<controls:SolutionView DataContext="{Binding CurrentDonor}">
+						<controls:SolutionView DataContext="{Binding CurrentDonor}"
+											   Width="130">
 							<controls:SolutionView.RenderTransform>
 								<ScaleTransform ScaleX="-1"/>
 							</controls:SolutionView.RenderTransform>
@@ -152,7 +158,8 @@
 
 					<StackPanel>
 						<Panel Classes.verticalRevert="{Binding IsApplyingCrossover}"/>
-						<controls:SolutionView DataContext="{Binding CurrentSolution}"/>
+						<controls:SolutionView DataContext="{Binding CurrentSolution}"
+											   Width="130"/>
 					</StackPanel>
 
 

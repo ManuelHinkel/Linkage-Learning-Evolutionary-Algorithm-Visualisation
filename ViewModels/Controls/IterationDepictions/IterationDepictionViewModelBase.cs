@@ -12,31 +12,33 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 {
     public abstract class IterationDepictionViewModelBase : ViewModelBase
     {
+        public const string CLUSTER_HIGHLIGHT_COLOR_1 = "#0000ff";
+        public const string CLUSTER_HIGHLIGHT_COLOR_2 = "#00ff00";
         public bool RightButtonEnabled
         {
-            get => !_isAnimating && !Running  && CurrentStateChange < MaxStateChange;
+            get => !isAnimating && !Running  && CurrentStateChange < MaxStateChange;
         }
 
         public bool LeftButtonEnabled
         {
-            get => !_isAnimating && !Running  && CurrentStateChange > 0;
+            get => !isAnimating && !Running  && CurrentStateChange > 0;
         }
 
         public bool ForwardButtonEnabled
         {
-            get => !_isAnimating && !Running 
+            get => !isAnimating && !Running 
                 && CurrentStateChange == MaxStateChange && GlobalManager.Instance.CanStepForward();
         }
 
         public bool BackwardButtonEnabled
         {
-            get => !_isAnimating && !Running 
+            get => !isAnimating && !Running 
                 && CurrentStateChange == 0 && GlobalManager.Instance.CanStepBackward();
         }
 
-        private bool _isAnimating
+        protected abstract bool isAnimating
         {
-            get => IsMergingRunning || IsApplyingCrossoverRunning;
+            get;
         }
 
 
@@ -48,8 +50,6 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             [Reactive]
         public bool IsMergingRunning { get; set; }
 
-        [Reactive]
-        public bool IsApplyingCrossoverRunning { get; set; }
 
         [Reactive]
         public bool Running { get; set; }
@@ -84,7 +84,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             Thread playThread = new Thread(new ThreadStart(() => {
                 while (!_stopThread)
                 {
-                    if (Running && !IsMergingRunning)
+                    if (Running && !isAnimating)
                     {
                         Dispatcher.UIThread.Invoke(StepForward);
                     }
@@ -104,9 +104,28 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             Running = !Running;
         }
 
-        public abstract void StepForward();
+        public void StepForward()
+        {
+            if (CurrentStateChange < MaxStateChange)
+            {
+                CurrentStateChange++;
+            }
+            if (CurrentStateChange == MaxStateChange)
+            {
+                GlobalManager.Instance.NotifyFinishedIteration();
+                Running = false;
+            }
+            RaiseButtonsChanged();
+        }
 
-        public abstract void StepBackward();
+        public void StepBackward()
+        {
+            if (CurrentStateChange > 0)
+            {
+                CurrentStateChange--;
+            }
+            RaiseButtonsChanged();
+        }
 
         protected abstract void RaiseChanged(IList<string> properties);
 

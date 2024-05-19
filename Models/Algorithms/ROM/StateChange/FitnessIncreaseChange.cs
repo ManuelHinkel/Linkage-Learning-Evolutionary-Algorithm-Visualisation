@@ -1,6 +1,4 @@
-﻿using LLEAV.Models;
-using LLEAV.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,17 +6,23 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.Algorithms.ROM.StateChange
 {
-    public class FitnessIncreaseChange : IROMStateChange
+    public class FitnessIncreaseChange: IROMStateChange
     {
-        public FitnessIncreaseChange(Cluster cluster) { }
-        public void Apply(IterationData state, ROMVisualisationData visualisationData)
-        {
-            throw new NotImplementedException();
-        }
+        private Solution _p0;
+        private Solution _p1;
 
-        public void Revert(IterationData state, ROMVisualisationData visualisationData)
+        public FitnessIncreaseChange(Solution p0, Solution p1)
         {
-            throw new NotImplementedException();
+            _p0 = p0;
+            _p1 = p1;
+        }
+        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData)
+        {
+            visualisationData.IsFitnessIncreasing = true;
+            visualisationData.CurrentDonor1 = _p0;
+            visualisationData.CurrentDonor2 = _p1;
+            return new Tuple<IList<string>, string>(["IsFitnessIncreasing", "CurrentDonor1", "CurrentDonor2"],
+                "Fitness Increased. Applied to parents resulting in:\n " + _p0.Bits + "\n and: " + _p1.Bits);
         }
     }
 }

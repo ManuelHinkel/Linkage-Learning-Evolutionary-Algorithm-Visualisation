@@ -34,6 +34,7 @@ namespace LLEAV.Models
         public static Solution Merge(Solution x, Solution donor, Cluster c)
         {
             Solution merged = new Solution();
+            merged.Fitness = x.Fitness;
             merged.Bits = BitList.Merge(x.Bits, donor.Bits, c);
             return merged;
         }

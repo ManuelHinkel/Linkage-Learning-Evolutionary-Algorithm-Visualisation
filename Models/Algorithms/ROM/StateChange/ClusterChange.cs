@@ -1,4 +1,5 @@
 ﻿using LLEAV.Models;
+using LLEAV.Models.Algorithms.MIP.StateChange;
 using LLEAV.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -10,15 +11,18 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
 {
     public class ClusterChange : IROMStateChange
     {
-        public ClusterChange(Cluster cluster) { }
-        public void Apply(IterationData state, ROMVisualisationData visualisationData)
+        private Cluster _cluster;
+        public ClusterChange(Cluster cluster)
         {
-            throw new NotImplementedException();
+            _cluster = cluster;
         }
 
-        public void Revert(IterationData state, ROMVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData)
         {
-            throw new NotImplementedException();
+            GlobalManager.Instance.SelectCluster(0, _cluster);
+            visualisationData.ActiveCluster = _cluster;
+
+            return new Tuple<IList<string>, string>(["CurrentDonor1", "CurrentDonor2", "CurrentSolution1", "CurrentSolution2"], "Changed the cluster to: \n" + _cluster.Mask);
         }
     }
 }

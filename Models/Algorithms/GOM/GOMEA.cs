@@ -22,27 +22,37 @@ namespace LLEAV.Models.Algorithms.GOM
 
             IterationData iterationData = currentIteration.Clone();
 
-            Population population = iterationData.Populations[0];                
+            Population population = iterationData.Populations[0];
+
+            _tracker.SetViewedPopulation(population.Clone());
 
             IList<Solution> newSolutions = new List<Solution>();
 
             for(int i = 0; i < runData.NumberOfSolutions; i++)
             {
+                _tracker.ChangeActiveSolution(population.Solutions[i]);
                 newSolutions.Add(GOM(population.Solutions[i], population, population.FOS, runData.FitnessFunction, random));
+                _tracker.AddSolutionToNextIteration(newSolutions[i]);
             }
 
             population.ClearAndAddAll(
                 AlgorithmFunctions.TournamentSelection(newSolutions, runData.NumberOfSolutions, 2, random)
             );
-
+            _tracker.ApplyTournamentSelection(population.Solutions);
 
             population.FOS
                 = runData.FOSFunction.CalculateFOS(population, runData.NumberOfBits);
 
+            _tracker.UpdateFOS(population.Clone());
+
+            iterationData.LastIteration = runData.TerminationCriteria.ShouldTerminate(iterationData);
+            iterationData.RNGSeed = random.Next();
+
+            _tracker.SetTermination(iterationData.LastIteration);
+
             return new Tuple<IterationData, IList<IStateChange>>(iterationData, _tracker.StateChangeHistory);
         }
 
-        
         
        
         private Solution GOM(Solution toMix, Population population, FOS fos, IFitnessFunction fitnessFunction, Random random)
@@ -51,19 +61,19 @@ namespace LLEAV.Models.Algorithms.GOM
 
             foreach (Cluster c in fos)
             {
-                //_tracker.ChangeFOSCluster(c);
+                _tracker.ChangeFOSCluster(c);
                 Solution parent = population.Solutions[random.Next(0, population.Solutions.Count)];
-                //_tracker.ChangeDonor(donor);
+                _tracker.ChangeDonor(parent);
 
                 Solution temp = Solution.Merge(o, parent, c);
 
-                //_tracker.Merge(temp);
+                _tracker.Merge(temp);
 
                 temp.Fitness = fitnessFunction.Fitness(temp);
                 if (temp.Fitness > o.Fitness)
                 {
                     o = temp;
-                    //_tracker.ApplyCrossover(temp);
+                    _tracker.ApplyCrossover(temp);
                 }
             }
 

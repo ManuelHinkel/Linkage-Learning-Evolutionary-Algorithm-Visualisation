@@ -9,12 +9,6 @@
 			 x:Name="Control"
 			  x:DataType="vm:PopulationBlocksViewModel">
 
-	<Design.DataContext>
-	<!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-		<vm:PopulationBlocksViewModel/>
-	</Design.DataContext>
-
 	<UserControl.Resources>
 		<converter:PopulationSizeToBlockWidthConverter x:Key="populationSizeToBlockWidthConverter"/>
 		<converter:PopulationSizeToBlockHeightConverter x:Key="populationSizeToBlockHeightConverter" />

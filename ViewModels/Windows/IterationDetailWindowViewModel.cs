@@ -2,6 +2,7 @@
 using LLEAV.Models.Algorithms;
 using LLEAV.Models.Algorithms.GOM.StateChange;
 using LLEAV.Models.Algorithms.MIP.StateChange;
+using LLEAV.Models.Algorithms.ROM.StateChange;
 using LLEAV.ViewModels.Controls.IterationDepictions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -38,6 +39,7 @@ namespace LLEAV.ViewModels.Windows
                     ContentViewModel = new GOMIterationViewModel(stateChanges.Cast<IGOMStateChange>().ToList(), workingCopy);
                     break;
                 case AlgorithmType.ROM:
+                    ContentViewModel = new ROMIterationViewModel(stateChanges.Cast<IROMStateChange>().ToList(), workingCopy);
                     break;
             }
             ContentViewModel!.Running = running;

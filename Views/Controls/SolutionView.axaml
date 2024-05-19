@@ -17,7 +17,6 @@
 		<ScrollViewer HorizontalScrollBarVisibility="Auto"
 					  VerticalScrollBarVisibility="Disabled"
 					  HorizontalContentAlignment="Center"
-					  Width="100"
 					  AllowAutoHide="False">
 			<ItemsControl ItemsSource="{Binding Bits}">
 				<ItemsControl.ItemsPanel>

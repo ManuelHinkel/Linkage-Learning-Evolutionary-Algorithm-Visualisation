@@ -1,19 +1,21 @@
 ﻿using LLEAV.ViewModels;
 using System;
+using System.Collections.Generic;
 
 namespace LLEAV.Models.Algorithms.GOM.StateChange
 {
     public class ActiveSolutionChange : IGOMStateChange
     {
-        public ActiveSolutionChange(Solution activeSolution) { }
-        public void Apply(IterationData state, GOMVisualisationData visualisationData)
+        private Solution _activeSolution;
+        public ActiveSolutionChange(Solution activeSolution)
         {
-            throw new NotImplementedException();
+            _activeSolution = activeSolution;
         }
-
-        public void Revert(IterationData state, GOMVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData)
         {
-            throw new NotImplementedException();
+            visualisationData.CurrentSolution = _activeSolution;
+
+            return new Tuple<IList<string>, string>(["CurrentSolution"], "Changed active solution to: \n" + _activeSolution.Bits);
         }
     }
 }
