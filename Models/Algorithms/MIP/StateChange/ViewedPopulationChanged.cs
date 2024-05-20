@@ -16,9 +16,12 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
         {
             _population = population;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, MIPVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
-            GlobalManager.Instance.SelectPopulation(state, _population.PyramidIndex);
+            if (!onlyOperateOnData)
+            {
+                GlobalManager.Instance.SelectPopulation(state, _population.PyramidIndex);
+            }
 
             visualisationData.ViewedPopulation = _population;
 

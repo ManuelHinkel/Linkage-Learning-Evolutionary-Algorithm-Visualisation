@@ -17,9 +17,12 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
         {
             _population = population;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
-            GlobalManager.Instance.SelectPopulation(state, _population.PyramidIndex);
+            if (!onlyOperateOnData)
+            {
+                GlobalManager.Instance.SelectPopulation(state, _population.PyramidIndex);
+            }
 
             visualisationData.Solutions = _population.Solutions.Select(s => new SolutionWrapper(s)).ToList();
 

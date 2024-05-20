@@ -15,7 +15,7 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
         {
             _population = population;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, MIPVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
            
             state.Populations[_population.PyramidIndex] = _population;

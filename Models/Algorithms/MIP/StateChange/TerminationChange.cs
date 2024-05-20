@@ -15,7 +15,7 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
             _terminate = terminate;
         }
 
-        public Tuple<IList<string>, string> Apply(IterationData state, MIPVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
             return new Tuple<IList<string>, string>([], "Termination criteria was " + (_terminate ? "" : "not ") + "met.");
         }

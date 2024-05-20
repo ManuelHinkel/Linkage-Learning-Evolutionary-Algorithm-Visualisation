@@ -16,7 +16,7 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
             _p0 = p0;
             _p1 = p1;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
             visualisationData.IsFitnessIncreasing = true;
             visualisationData.CurrentDonor1 = _p0;

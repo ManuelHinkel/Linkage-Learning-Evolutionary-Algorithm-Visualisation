@@ -15,7 +15,7 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
             _generated = generated;
         }
 
-        public Tuple<IList<string>,string> Apply(IterationData state, MIPVisualisationData visualisationData)
+        public Tuple<IList<string>,string> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
 
             visualisationData.Solutions = _generated.Select(

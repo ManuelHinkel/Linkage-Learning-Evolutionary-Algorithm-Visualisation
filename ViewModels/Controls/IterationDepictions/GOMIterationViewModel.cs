@@ -5,7 +5,9 @@ using LLEAV.Models.Algorithms.GOM.StateChange;
 using LLEAV.Models.Algorithms.MIP.StateChange;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -18,13 +20,18 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             "CurrentDonor",
             "Merged",
             "Solutions",
-            "IsMerging",
+        ];
+
+        protected override IList<string> animationProperties { get; } = [
+           "IsMerging",
             "IsApplyingCrossover",
         ];
+
 
         private IList<IGOMStateChange> _stateChanges { get; set; }
         private GOMVisualisationData _visualisationData = new GOMVisualisationData();
 
+        private Tuple<IterationData, GOMVisualisationData, IList<string>>[] _checkpoints;
         public IList<SolutionWrapper> Solutions
         {
             get => _visualisationData.Solutions;
@@ -98,15 +105,23 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
         protected override bool isAnimating
         {
-            get => IsMerging || _isApplyingCrossoverRunning;
+            get => IsMergingRunning || _isApplyingCrossoverRunning;
         }
 
-        public GOMIterationViewModel(List<IGOMStateChange> stateChanges, IterationData workingData)
+        public GOMIterationViewModel(List<IGOMStateChange> stateChanges, IterationData workingData): base()
         {
             _stateChanges = stateChanges;
-            BaseData = workingData;
-            WorkingData = BaseData.Clone();
+            WorkingData = workingData.Clone();
             MaxStateChange = _stateChanges.Count - 1;
+
+            _checkpoints = new Tuple<IterationData, GOMVisualisationData, IList<string>>[(int)Math.Ceiling(MaxStateChange / (float)CHECKPOINT_SPACING)];
+
+
+            Thread calculationThread = new Thread(new ThreadStart(() => {
+                CalculateCheckpoints(workingData.Clone());
+            }));
+            calculationThread.Start();
+
 
             _currentStateChange = -1;
 
@@ -118,6 +133,29 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             CalculateTickSpacing();
         }
 
+        private void CalculateCheckpoints(IterationData baseData)
+        {
+            IterationData workingIterationData = baseData;
+            GOMVisualisationData workingVisualisationData = new GOMVisualisationData();
+
+            IList<string> messages = new List<string>();
+
+            for (int i = 0; i < MaxStateChange; i++)
+            {
+                var res = _stateChanges[i].Apply(workingIterationData, workingVisualisationData, true);
+
+                messages.Add(res.Item2);
+                if (i % CHECKPOINT_SPACING == 0)
+                {
+                    _checkpoints[i / CHECKPOINT_SPACING] = new Tuple<IterationData, GOMVisualisationData, IList<string>>(
+                        workingIterationData.Clone(),
+                        (GOMVisualisationData)workingVisualisationData.Clone(),
+                        new List<string>(messages)
+                        );
+                }
+            }
+        }
+
         protected override void RaiseChanged(IList<string> properties)
         {
             foreach (var property in properties)
@@ -125,8 +163,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 // Start Merging Animation
                 if (property.Equals(nameof(IsMerging)) && _visualisationData.IsMerging)
                 {
-                    IsMergingRunning = true;
-                    RaiseButtonsChanged();
+                    IsMergingRunning = true;                  
                     Thread t = new Thread(new ThreadStart(() => {
                         Thread.Sleep(GlobalManager.ANIMATION_TIME);
                         Dispatcher.UIThread.Invoke(() => {
@@ -142,7 +179,6 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 else if (property.Equals(nameof(IsApplyingCrossover)) && _visualisationData.IsApplyingCrossover)
                 {
                     _isApplyingCrossoverRunning = true;
-                    RaiseButtonsChanged();
                     Thread t = new Thread(new ThreadStart(() => {
                         Thread.Sleep(GlobalManager.ANIMATION_TIME);
                         Dispatcher.UIThread.Invoke(() => {
@@ -158,43 +194,56 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
                 this.RaisePropertyChanged(property);
             }
+            RaiseButtonsChanged();
+        }
+
+        private void VisualizeCheckpoint(Tuple<IterationData, GOMVisualisationData, IList<string>> checkPoint)
+        {
+            MessageBox.Clear();
+            foreach(string m in checkPoint.Item3) 
+            {
+                MessageBox.Insert(0, m);
+            }
+
+            GlobalManager.Instance.SelectPopulation(checkPoint.Item1, 0);
+            if (checkPoint.Item2.ActiveCluster != null)
+            {
+                GlobalManager.Instance.SelectCluster(0, checkPoint.Item2.ActiveCluster);
+            }
+
+            WorkingData = checkPoint.Item1.Clone();
+            _visualisationData = (GOMVisualisationData)checkPoint.Item2.Clone();
+
+            RaiseChanged(VISUALISATION_PROPERTIES);
         }
 
         protected override void GoToStateChange(int index)
         {
             if (_currentStateChange == index) return;
-            // Go forward
-            if (index > _currentStateChange)
-            {
-                ISet<string> propertiesChanged = new HashSet<string>();
-                while (_currentStateChange < index)
-                {
-                    _currentStateChange++;
-                    var changed = _stateChanges[_currentStateChange].Apply(WorkingData, _visualisationData);
-                    MessageBox.Insert(0, changed.Item2);
-                    propertiesChanged.UnionWith(changed.Item1);
-                }
-                RaiseChanged(propertiesChanged.ToList());
 
-            }
-            // Go forward from base
-            else
-            {
-                GlobalManager.Instance.UpdatePopulationWindowIfOpen(new Population(0));
-                GlobalManager.Instance.UpdateMainWindow(BaseData);
-                WorkingData = BaseData.Clone();
-                _visualisationData = new GOMVisualisationData();
-                MessageBox.Clear();
-                _currentStateChange = -1;
+            int checkpointIndex = _currentStateChange / CHECKPOINT_SPACING;
+            int targetCheckpointIndex = index / CHECKPOINT_SPACING;
 
-                while (_currentStateChange < index)
+            if ((index != _currentStateChange + 1) && (checkpointIndex != targetCheckpointIndex || index < _currentStateChange))
+            {
+                // Wait until checkpoint calculated
+                while (_checkpoints[targetCheckpointIndex] == null)
                 {
-                    _currentStateChange++;
-                    var changed = _stateChanges[_currentStateChange].Apply(WorkingData, _visualisationData);
-                    MessageBox.Insert(0, changed.Item2);
+                    Thread.Sleep(100);
                 }
-                RaiseChanged(VISUALISATION_PROPERTIES);
+                VisualizeCheckpoint(_checkpoints[targetCheckpointIndex]);
+                _currentStateChange = targetCheckpointIndex * CHECKPOINT_SPACING;
             }
+
+            ISet<string> propertiesChanged = new HashSet<string>();
+            while (_currentStateChange < index)
+            {
+                _currentStateChange++;
+                var changed = _stateChanges[_currentStateChange].Apply(WorkingData, _visualisationData);
+                MessageBox.Insert(0, changed.Item2);
+                CombineProperties(changed.Item1, propertiesChanged);
+            }
+            RaiseChanged(propertiesChanged.ToList());
         }
     }
 }

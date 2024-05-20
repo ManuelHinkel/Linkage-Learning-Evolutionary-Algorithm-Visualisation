@@ -15,7 +15,7 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
         {
             _merged = merged;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, MIPVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
 
             visualisationData.IsMerging = true;

@@ -16,7 +16,7 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
         { 
             _donor = donor;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, MIPVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
 
             visualisationData.CurrentDonor = _donor;

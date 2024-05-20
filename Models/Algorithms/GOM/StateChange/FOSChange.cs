@@ -15,7 +15,7 @@ namespace LLEAV.Models.Algorithms.GOM.StateChange
         {
             _population = population;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
            
             state.Populations[_population.PyramidIndex] = _population;

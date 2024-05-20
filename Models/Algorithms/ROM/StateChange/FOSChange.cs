@@ -15,7 +15,7 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
         {
             _population = population;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
            
             state.Populations[_population.PyramidIndex] = _population;

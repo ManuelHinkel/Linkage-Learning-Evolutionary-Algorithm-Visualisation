@@ -17,9 +17,12 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
             _cluster = cluster;
         }
 
-        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
-            GlobalManager.Instance.SelectCluster(0, _cluster);
+            if (!onlyOperateOnData)
+            {
+                GlobalManager.Instance.SelectCluster(0, _cluster);
+            }
             visualisationData.ActiveCluster = _cluster;
 
             return new Tuple<IList<string>, string>(["CurrentDonor1", "CurrentDonor2", "CurrentSolution1", "CurrentSolution2"], "Changed the cluster to: \n" + _cluster.Mask);

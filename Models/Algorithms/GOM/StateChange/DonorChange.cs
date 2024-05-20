@@ -17,7 +17,7 @@ namespace LLEAV.Models.Algorithms.GOM.StateChange
         {
             _donor = donor;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
 
             visualisationData.CurrentDonor = _donor;

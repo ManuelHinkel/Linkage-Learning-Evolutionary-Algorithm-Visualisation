@@ -4,9 +4,12 @@ using LLEAV.Models;
 using LLEAV.Models.Algorithms.ROM.StateChange;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace LLEAV.ViewModels.Controls.IterationDepictions
 {
@@ -18,6 +21,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             "CurrentDonor1",
             "CurrentDonor2",
             "Solutions",
+        ];
+
+        protected override IList<string> animationProperties { get; } = [
             "IsMerging",
             "IsFitnessIncreasing",
             "IsFitnessDecreasing",
@@ -26,7 +32,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
         private IList<IROMStateChange> _stateChanges { get; set; }
         private ROMVisualisationData _visualisationData = new ROMVisualisationData();
 
-
+        private Tuple<IterationData, ROMVisualisationData, IList<string>>[] _checkpoints;
 
         public IList<SolutionWrapper> Solutions
         {
@@ -121,15 +127,24 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
         protected override bool isAnimating
         {
-            get => IsMerging || _isApplyingFitnessIncreaseRunning || _isApplyingFitnessDecreaseRunning;
+            get => IsMergingRunning || _isApplyingFitnessIncreaseRunning || _isApplyingFitnessDecreaseRunning;
         }
 
-        public ROMIterationViewModel(List<IROMStateChange> stateChanges, IterationData workingData)
+        public ROMIterationViewModel(List<IROMStateChange> stateChanges, IterationData workingData): base()
         {
             _stateChanges = stateChanges;
-            BaseData = workingData;
-            WorkingData = BaseData.Clone();
+            WorkingData = workingData.Clone();
             MaxStateChange = _stateChanges.Count - 1;
+
+            _checkpoints = new Tuple<IterationData, ROMVisualisationData, IList<string>>[(int)Math.Ceiling(MaxStateChange / (float)CHECKPOINT_SPACING)];
+
+
+            Thread calculationThread = new Thread(new ThreadStart(() => {
+                CalculateCheckpoints(workingData.Clone());
+            }));
+            calculationThread.Start();
+
+
             _currentStateChange = -1;
 
             if (_stateChanges.Count > 0)
@@ -140,6 +155,29 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             CalculateTickSpacing();
         }
 
+        private void CalculateCheckpoints(IterationData baseData)
+        {
+            IterationData workingIterationData = baseData;
+            ROMVisualisationData workingVisualisationData = new ROMVisualisationData();
+
+            IList<string> messages = new List<string>();
+
+            for (int i = 0; i < MaxStateChange; i++)
+            {
+                var res = _stateChanges[i].Apply(workingIterationData, workingVisualisationData, true);
+
+                messages.Add(res.Item2);
+                if (i % CHECKPOINT_SPACING == 0)
+                {
+                    _checkpoints[i / CHECKPOINT_SPACING] = new Tuple<IterationData, ROMVisualisationData, IList<string>>(
+                        workingIterationData.Clone(),
+                        (ROMVisualisationData)workingVisualisationData.Clone(),
+                        new List<string>(messages)
+                        );
+                }
+            }
+        }
+
         protected override void RaiseChanged(IList<string> properties)
         {
             foreach (var property in properties)
@@ -148,7 +186,6 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 if (property.Equals(nameof(IsMerging)) && _visualisationData.IsMerging)
                 {
                     IsMergingRunning = true;
-                    RaiseButtonsChanged();
                     Thread t = new Thread(new ThreadStart(() => {
                         Thread.Sleep(GlobalManager.ANIMATION_TIME);
                         Dispatcher.UIThread.Invoke(() => {
@@ -164,7 +201,6 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 else if (property.Equals(nameof(IsFitnessIncreasing)) && _visualisationData.IsFitnessIncreasing)
                 {
                     _isApplyingFitnessIncreaseRunning = true;
-                    RaiseButtonsChanged();
                     Thread t = new Thread(new ThreadStart(() => {
                         Thread.Sleep(GlobalManager.ANIMATION_TIME);
                         Dispatcher.UIThread.Invoke(() => {
@@ -180,7 +216,6 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 else if (property.Equals(nameof(IsFitnessDecreasing)) && _visualisationData.IsFitnessDecreasing)
                 {
                     _isApplyingFitnessDecreaseRunning = true;
-                    RaiseButtonsChanged();
                     Thread t = new Thread(new ThreadStart(() => {
                         Thread.Sleep(GlobalManager.ANIMATION_TIME);
                         Dispatcher.UIThread.Invoke(() => {
@@ -196,43 +231,56 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
                 this.RaisePropertyChanged(property);
             }
+            RaiseButtonsChanged();
+        }
+
+        private void VisualizeCheckpoint(Tuple<IterationData, ROMVisualisationData, IList<string>> checkPoint)
+        {
+            MessageBox.Clear();
+            foreach (string m in checkPoint.Item3)
+            {
+                MessageBox.Insert(0, m);
+            }
+
+            GlobalManager.Instance.SelectPopulation(checkPoint.Item1, 0);
+            if (checkPoint.Item2.ActiveCluster != null)
+            {
+                GlobalManager.Instance.SelectCluster(0, checkPoint.Item2.ActiveCluster);
+            }
+
+            WorkingData = checkPoint.Item1.Clone();
+            _visualisationData = (ROMVisualisationData)checkPoint.Item2.Clone();
+            
+            RaiseChanged(VISUALISATION_PROPERTIES);
         }
 
         protected override void GoToStateChange(int index)
         {
             if (_currentStateChange == index) return;
-            // Go forward
-            if (index > _currentStateChange)
-            {
-                ISet<string> propertiesChanged = new HashSet<string>();
-                while (_currentStateChange < index)
-                {
-                    _currentStateChange++;
-                    var changed = _stateChanges[_currentStateChange].Apply(WorkingData, _visualisationData);
-                    MessageBox.Insert(0, changed.Item2);
-                    propertiesChanged.UnionWith(changed.Item1);
-                }
-                RaiseChanged(propertiesChanged.ToList());
 
-            }
-            // Go forward from base
-            else
-            {
-                GlobalManager.Instance.UpdatePopulationWindowIfOpen(new Population(0));
-                GlobalManager.Instance.UpdateMainWindow(BaseData);
-                WorkingData = BaseData.Clone();
-                _visualisationData = new ROMVisualisationData();
-                MessageBox.Clear();
-                _currentStateChange = -1;
+            int checkpointIndex = _currentStateChange / CHECKPOINT_SPACING;
+            int targetCheckpointIndex = index / CHECKPOINT_SPACING;
 
-                while (_currentStateChange < index)
+            if ((index != _currentStateChange+1) && (checkpointIndex != targetCheckpointIndex || index < _currentStateChange))
+            {
+                // Wait until checkpoint calculated
+                while (_checkpoints[targetCheckpointIndex] == null)
                 {
-                    _currentStateChange++;
-                    var changed = _stateChanges[_currentStateChange].Apply(WorkingData, _visualisationData);
-                    MessageBox.Insert(0, changed.Item2);
+                    Thread.Sleep(100);
                 }
-                RaiseChanged(VISUALISATION_PROPERTIES);
+                VisualizeCheckpoint(_checkpoints[targetCheckpointIndex]);
+                _currentStateChange = targetCheckpointIndex * CHECKPOINT_SPACING;
             }
+
+            ISet<string> propertiesChanged = new HashSet<string>();
+            while (_currentStateChange < index)
+            {
+                _currentStateChange++;
+                var changed = _stateChanges[_currentStateChange].Apply(WorkingData, _visualisationData);
+                MessageBox.Insert(0, changed.Item2);
+                CombineProperties(changed.Item1, propertiesChanged);
+            }
+            RaiseChanged(propertiesChanged.ToList());
         }
     }
 }

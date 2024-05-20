@@ -15,7 +15,7 @@ namespace LLEAV.Models.Algorithms.GOM.StateChange
         {
             _merged = merged;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
 
             visualisationData.IsMerging = true;

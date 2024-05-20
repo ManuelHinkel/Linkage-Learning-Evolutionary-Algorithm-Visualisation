@@ -15,7 +15,7 @@ namespace LLEAV.Models.Algorithms.GOM.StateChange
         {
             _solution = solution;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
 
             visualisationData.NextIteration.Add(new SolutionWrapper(_solution));

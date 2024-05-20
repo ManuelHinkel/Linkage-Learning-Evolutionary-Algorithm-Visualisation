@@ -7,7 +7,7 @@ using LLEAV.ViewModels.Controls;
 
 namespace LLEAV.Models.Algorithms.ROM.StateChange
 {
-    public class ROMVisualisationData()
+    public class ROMVisualisationData(): IVisualisationData
     {
         public Solution? CurrentSolution1 { get; set; }
         public Solution? CurrentSolution2 { get; set; }
@@ -20,9 +20,27 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
 
         public IList<SolutionWrapper> Solutions { get; set; }
         public ObservableCollection<SolutionWrapper> NextIteration { get; set; } = new ObservableCollection<SolutionWrapper>();
+
+        public IVisualisationData Clone()
+        {
+            ROMVisualisationData clone = new ROMVisualisationData();
+
+            clone.NextIteration = new ObservableCollection<SolutionWrapper>(NextIteration);
+            clone.Solutions = new List<SolutionWrapper>(Solutions);
+            clone.IsFitnessDecreasing = IsFitnessDecreasing;
+            clone.IsFitnessIncreasing = IsFitnessIncreasing;
+            clone.IsMerging = IsMerging;
+            clone.ActiveCluster = ActiveCluster;
+            clone.CurrentSolution1 = CurrentSolution1;
+            clone.CurrentSolution2 = CurrentSolution2;
+            clone.CurrentDonor1 = CurrentDonor1;
+            clone.CurrentDonor2 = CurrentDonor2;
+
+            return clone;
+        }
     }
     public interface IROMStateChange : IStateChange
     {
-        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData);
+        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false);
     }
 }

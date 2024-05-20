@@ -12,25 +12,38 @@ namespace LLEAV.Util
     {
         public static IList<Solution> TournamentSelection(IList<Solution> solutions, int n, int s, Random random)
         {
-            if (solutions.Count  == 0) throw new Exception("Solutions must not be emtpy");
+            if (solutions.Count == 0) throw new Exception("Solutions must not be emtpy");
+            if (solutions.Count < n) throw new Exception("Can't select more solutions than population contains.");
+            if (solutions.Count < s || n < s) throw new Exception("Tournament size invalid.");
 
+            List<Solution> samplePopulation = new List<Solution>(solutions);
             List<Solution> selected = new List<Solution>();
 
+            List<Solution> used = new List<Solution>();
             for (int i = 0; i < n; i++)
             {
-                List<Solution> t = new List<Solution>();
-                for(int k = 0; k < s; k++)
+                if (samplePopulation.Count <  s)
                 {
-                    t.Add(solutions[random.Next(0, solutions.Count())]);
+                    samplePopulation.AddRange(used);
+                    used.Clear();
                 }
 
-                Solution best = t[0];
+                List<Solution> tournament = new List<Solution>();
+                for(int k = 0; k < s; k++)
+                {
+                    Solution sampled = samplePopulation[random.Next(0, samplePopulation.Count())];
+                    tournament.Add(sampled);
+                    used.Add(sampled);
+                    samplePopulation.Remove(sampled);
+                }
+
+                Solution best = tournament[0];
 
                 for (int j = 1; j < s; j++)
                 {
-                    if (t[j].Fitness >  best.Fitness)
+                    if (tournament[j].Fitness >  best.Fitness)
                     {
-                        best = t[j];
+                        best = tournament[j];
                     }
                 }
                 selected.Add(best);

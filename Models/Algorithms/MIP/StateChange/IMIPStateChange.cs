@@ -9,7 +9,7 @@ using LLEAV.ViewModels.Controls;
 
 namespace LLEAV.Models.Algorithms.MIP.StateChange
 {
-    public class MIPVisualisationData()
+    public class MIPVisualisationData(): IVisualisationData
     {
         public Solution? CurrentSolution { get; set; }
         public Solution? CurrentDonor { get; set; } 
@@ -23,9 +23,28 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
         public IList<SolutionWrapper> Donors { get; set; } = new List<SolutionWrapper>();
         public bool IsMerging { get; set; }
         public bool IsApplyingCrossover { get; set; }
+
+        public IVisualisationData Clone()
+        {
+            MIPVisualisationData clone = new MIPVisualisationData();
+
+            clone.IsApplyingCrossover = IsApplyingCrossover;
+            clone.IsMerging = IsMerging;
+
+            clone.Donors = new List<SolutionWrapper>(Donors);
+            clone.Solutions = new List<Tuple<SolutionWrapper, SolutionWrapper>>(Solutions);
+            clone.ActiveCluster = ActiveCluster;
+            clone.ViewedPopulation = ViewedPopulation;
+            clone.ActivePopulation = ActivePopulation;
+            clone.Merged = Merged;
+            clone.CurrentDonor = CurrentDonor;
+            clone.CurrentSolution = CurrentSolution;
+
+            return clone;
+        }
     }
     public interface IMIPStateChange : IStateChange
     {
-        public Tuple<IList<string>,string> Apply(IterationData state, MIPVisualisationData visualisationData);
+        public Tuple<IList<string>,string> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false);
     }
 }

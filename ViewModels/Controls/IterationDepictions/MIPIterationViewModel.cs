@@ -22,12 +22,17 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             "Merged",
             "Solutions",
             "Donors",
+        ];
+
+        protected override IList<string> animationProperties { get; } = [
             "IsMerging",
             "IsApplyingCrossover",
         ];
 
         private IList<IMIPStateChange> _stateChanges;
         private MIPVisualisationData _visualisationData = new MIPVisualisationData();
+
+        private Tuple<IterationData, MIPVisualisationData, IList<string>>[] _checkpoints;
 
         public IList<Tuple<SolutionWrapper,SolutionWrapper>> Solutions
         {
@@ -102,15 +107,23 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
         protected override bool isAnimating
         {
-            get => IsMerging || _isApplyingCrossoverRunning;
+            get => IsMergingRunning || _isApplyingCrossoverRunning;
         }
 
-        public MIPIterationViewModel(IList<IMIPStateChange> stateChanges, IterationData workingData)
+        public MIPIterationViewModel(IList<IMIPStateChange> stateChanges, IterationData workingData): base()
         {
             _stateChanges = stateChanges;
-            BaseData = workingData;
-            WorkingData = BaseData.Clone();
+            WorkingData = workingData.Clone();
             MaxStateChange = _stateChanges.Count - 1;
+
+            _checkpoints = new Tuple<IterationData, MIPVisualisationData, IList<string>>[(int)Math.Ceiling(MaxStateChange / (float)CHECKPOINT_SPACING)];
+
+
+            Thread calculationThread = new Thread(new ThreadStart(() => {
+                CalculateCheckpoints(workingData.Clone());
+            }));
+            calculationThread.Start();
+
 
             _currentStateChange = -1;
 
@@ -122,6 +135,29 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             CalculateTickSpacing();
         }
 
+        private void CalculateCheckpoints(IterationData baseData)
+        {
+            IterationData workingIterationData = baseData;
+            MIPVisualisationData workingVisualisationData = new MIPVisualisationData();
+
+            IList<string> messages = new List<string>();
+
+            for (int i = 0; i < MaxStateChange; i++)
+            {
+                var res = _stateChanges[i].Apply(workingIterationData, workingVisualisationData, true);
+
+                messages.Add(res.Item2);
+                if (i % CHECKPOINT_SPACING == 0)
+                {
+                    _checkpoints[i / CHECKPOINT_SPACING] = new Tuple<IterationData, MIPVisualisationData, IList<string>>(
+                        workingIterationData.Clone(),
+                        (MIPVisualisationData)workingVisualisationData.Clone(),
+                        new List<string>(messages)
+                        );
+                }
+            }
+        }
+
         protected override void RaiseChanged(IList<string> properties)
         {
             foreach (var property in properties)
@@ -130,7 +166,6 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 if (property.Equals(nameof(IsMerging)) && _visualisationData.IsMerging)
                 {
                     IsMergingRunning = true;
-                    RaiseButtonsChanged();
                     Thread t = new Thread(new ThreadStart(() => {
                         Thread.Sleep(GlobalManager.ANIMATION_TIME);
                         Dispatcher.UIThread.Invoke(() => {
@@ -146,7 +181,6 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 else if (property.Equals(nameof(IsApplyingCrossover)) && _visualisationData.IsApplyingCrossover)
                 {
                     _isApplyingCrossoverRunning = true;
-                    RaiseButtonsChanged();
                     Thread t = new Thread(new ThreadStart(() => {
                         Thread.Sleep(GlobalManager.ANIMATION_TIME);
                         Dispatcher.UIThread.Invoke(() => {
@@ -163,45 +197,59 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
                 this.RaisePropertyChanged(property);
             }
+            RaiseButtonsChanged();
+        }
+
+        private void VisualizeCheckpoint(Tuple<IterationData, MIPVisualisationData, IList<string>> checkPoint)
+        {
+            MessageBox.Clear();
+            foreach (string m in checkPoint.Item3)
+            {
+                MessageBox.Insert(0, m);
+            }
+
+            if (checkPoint.Item2.ViewedPopulation != null)
+            {
+                GlobalManager.Instance.SelectPopulation(checkPoint.Item1, checkPoint.Item2.ViewedPopulation.PyramidIndex);
+                if (checkPoint.Item2.ActiveCluster != null)
+                {
+                    GlobalManager.Instance.SelectCluster(checkPoint.Item2.ViewedPopulation.PyramidIndex, checkPoint.Item2.ActiveCluster);
+                }
+            }
+
+            WorkingData = checkPoint.Item1.Clone();
+            _visualisationData = (MIPVisualisationData)checkPoint.Item2.Clone();
+
+            RaiseChanged(VISUALISATION_PROPERTIES);
         }
 
         protected override void GoToStateChange(int index)
         {
             if (_currentStateChange == index) return;
-            // Go forward
-            if (index > _currentStateChange)
-            {
-                ISet<string> propertiesChanged = new HashSet<string>();
-                while (_currentStateChange < index)
-                {
-                    _currentStateChange++;
-                    var changed = _stateChanges[_currentStateChange].Apply(WorkingData, _visualisationData);
-                    MessageBox.Insert(0, changed.Item2);
-                    propertiesChanged.UnionWith(changed.Item1);
-                }
-                RaiseChanged(propertiesChanged.ToList());
 
-            } 
-            // Go forward from base
-            else 
-            {
-                GlobalManager.Instance.UpdatePopulationWindowIfOpen(new Population(0));
-                GlobalManager.Instance.UpdateMainWindow(BaseData);
-                WorkingData = BaseData.Clone();
-                _visualisationData = new MIPVisualisationData();
-                MessageBox.Clear();
-                _currentStateChange = -1;
+            int checkpointIndex = _currentStateChange / CHECKPOINT_SPACING;
+            int targetCheckpointIndex = index / CHECKPOINT_SPACING;
 
-                while (_currentStateChange < index)
+            if ((index != _currentStateChange + 1) &&  (checkpointIndex != targetCheckpointIndex || index < _currentStateChange))
+            {
+                // Wait until checkpoint calculated
+                while (_checkpoints[targetCheckpointIndex] == null)
                 {
-                    _currentStateChange++;
-                    var changed = _stateChanges[_currentStateChange].Apply(WorkingData, _visualisationData);
-                    MessageBox.Insert(0, changed.Item2);
+                    Thread.Sleep(100);
                 }
-                RaiseChanged(VISUALISATION_PROPERTIES);
+                VisualizeCheckpoint(_checkpoints[targetCheckpointIndex]);
+                _currentStateChange = targetCheckpointIndex * CHECKPOINT_SPACING;
             }
-        }
 
-        
+            ISet<string> propertiesChanged = new HashSet<string>();
+            while (_currentStateChange < index)
+            {
+                _currentStateChange++;
+                var changed = _stateChanges[_currentStateChange].Apply(WorkingData, _visualisationData);
+                MessageBox.Insert(0, changed.Item2);
+                CombineProperties(changed.Item1, propertiesChanged);
+            }
+            RaiseChanged(propertiesChanged.ToList());
+        }
     }
 }

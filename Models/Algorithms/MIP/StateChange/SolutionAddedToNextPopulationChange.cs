@@ -16,7 +16,7 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
         { 
             _population = population;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, MIPVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
            
             if (state.Populations.Count < _population.PyramidIndex) { throw new Exception("Wrong execution of operations, can't skip a population."); }

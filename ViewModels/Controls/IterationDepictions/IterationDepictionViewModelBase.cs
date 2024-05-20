@@ -12,6 +12,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 {
     public abstract class IterationDepictionViewModelBase : ViewModelBase
     {
+        public const int CHECKPOINT_SPACING = 50;
         public const string CLUSTER_HIGHLIGHT_COLOR_1 = "#0000ff";
         public const string CLUSTER_HIGHLIGHT_COLOR_2 = "#00ff00";
         public bool RightButtonEnabled
@@ -37,6 +38,11 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
         }
 
         protected abstract bool isAnimating
+        {
+            get;
+        }
+
+        protected abstract IList<string> animationProperties
         {
             get;
         }
@@ -169,6 +175,12 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             {
                 TickSpacing = 5;
             }
+        }
+
+        protected void CombineProperties(IList<string> newProperties, ISet<string> oldProperties)
+        {
+            oldProperties.ExceptWith(animationProperties);
+            oldProperties.UnionWith(newProperties);
         }
     }
 }

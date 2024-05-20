@@ -17,9 +17,12 @@ namespace LLEAV.Models.Algorithms.GOM.StateChange
             _cluster = cluster;
         }
 
-        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
-            GlobalManager.Instance.SelectCluster(0, _cluster);
+            if (!onlyOperateOnData)
+            {
+                GlobalManager.Instance.SelectCluster(0, _cluster);
+            }
             visualisationData.ActiveCluster = _cluster;
 
             return new Tuple<IList<string>, string>(["CurrentDonor", "CurrentSolution"], "Changed the cluster to: \n" + _cluster.Mask);

@@ -69,7 +69,7 @@ namespace LLEAV.ViewModels.Windows
         
         public int SelectedGrowthFunction { get; set; }
 
-        public string PopulationSize { get; set; } = "1";
+        public string PopulationSize { get; set; } = "2";
 
         [Reactive]
         public bool ShowLocalSearchFunction { get; set; } = true;
@@ -105,9 +105,9 @@ namespace LLEAV.ViewModels.Windows
             // Population size validation
             int populationSize;
             isInt = int.TryParse(PopulationSize, out populationSize);
-            if (ShowPopulationSize && (!isInt || populationSize < 1))
+            if (ShowPopulationSize && (!isInt || populationSize < 2))
             {
-                ErrorMessage = "Population Size is not a valid integer.\n Must be greater than 0!";
+                ErrorMessage = "Population Size is not valid.\n Must be greater than 1!";
                 return;
             }
 

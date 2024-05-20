@@ -15,7 +15,7 @@ namespace LLEAV.Models.Algorithms.GOM.StateChange
             _current = current;
         }
 
-        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
             visualisationData.IsApplyingCrossover = true;
             visualisationData.CurrentSolution = _current;

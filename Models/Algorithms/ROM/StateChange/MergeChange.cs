@@ -16,7 +16,7 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
             _o0 = o0;
             _o1 = o1;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
             visualisationData.IsMerging = true;
             visualisationData.CurrentSolution1 = _o0;

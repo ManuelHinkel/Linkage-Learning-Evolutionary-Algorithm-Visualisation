@@ -17,7 +17,7 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
             _solutions = solutions; 
         }
 
-        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
 
             visualisationData.NextIteration = new ObservableCollection<SolutionWrapper> (_solutions.Select(s => new SolutionWrapper(s)).ToList());

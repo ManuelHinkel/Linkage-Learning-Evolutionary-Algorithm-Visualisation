@@ -11,11 +11,13 @@ namespace LLEAV.Models.Algorithms.GOM.StateChange
         {
             _activeSolution = activeSolution;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
             visualisationData.CurrentSolution = _activeSolution;
+            visualisationData.Merged = null;
+            visualisationData.CurrentDonor = null;
 
-            return new Tuple<IList<string>, string>(["CurrentSolution"], "Changed active solution to: \n" + _activeSolution.Bits);
+            return new Tuple<IList<string>, string>(["CurrentSolution", "CurrentDonor", "Merged"], "Changed active solution to: \n" + _activeSolution.Bits);
         }
     }
 }

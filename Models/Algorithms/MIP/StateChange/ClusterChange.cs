@@ -16,9 +16,12 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
             _cluster = cluster;
         }
 
-        public Tuple<IList<string>, string> Apply(IterationData state, MIPVisualisationData visualisationData)
+        public Tuple<IList<string>, string> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
-            GlobalManager.Instance.SelectCluster(visualisationData.ViewedPopulation.PyramidIndex, _cluster);
+            if (!onlyOperateOnData)
+            {
+                GlobalManager.Instance.SelectCluster(visualisationData.ViewedPopulation.PyramidIndex, _cluster);
+            }
             visualisationData.ActiveCluster = _cluster;
 
             return new Tuple<IList<string>, string>(["CurrentDonor", "CurrentSolution"],"Changed the cluster to: \n" + _cluster.Mask);
