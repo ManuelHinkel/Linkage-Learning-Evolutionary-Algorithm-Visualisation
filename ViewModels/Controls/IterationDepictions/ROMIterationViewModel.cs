@@ -21,6 +21,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             "CurrentDonor1",
             "CurrentDonor2",
             "Solutions",
+            "NextIteration",
         ];
 
         protected override IList<string> animationProperties { get; } = [
@@ -53,7 +54,14 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     var wrapper = new SolutionWrapper(_visualisationData.CurrentSolution1);
                     if (_visualisationData.ActiveCluster != null)
                     {
-                        wrapper.MarkCluster(!_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_1);
+                        if (GlobalManager.Instance.IsBarCodeDepiction)
+                        {
+                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE, CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE);
+                        }
+                        else
+                        {
+                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE);
+                        }
                     }
                     return wrapper;
                 }
@@ -70,7 +78,14 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     var wrapper = new SolutionWrapper(_visualisationData.CurrentSolution1);
                     if (_visualisationData.ActiveCluster != null)
                     {
-                        wrapper.MarkCluster(!_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_1);
+                        if (GlobalManager.Instance.IsBarCodeDepiction)
+                        {
+                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE, CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE);
+                        }
+                        else
+                        {
+                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE);
+                        }
                     }
                     return wrapper;
                 }
@@ -85,7 +100,17 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 if (_visualisationData.CurrentDonor1 != null)
                 {
                     var wrapper = new SolutionWrapper(_visualisationData.CurrentDonor1);
-                    wrapper.MarkCluster(_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_2);
+                    if (_visualisationData.ActiveCluster != null)
+                    {
+                        if (GlobalManager.Instance.IsBarCodeDepiction)
+                        {
+                            wrapper.MarkCluster(_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE, CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE);
+                        }
+                        else
+                        {
+                            wrapper.MarkCluster(_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE);
+                        }
+                    }
                     return wrapper;
                 }
                 return null;
@@ -99,7 +124,17 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 if (_visualisationData.CurrentDonor1 != null)
                 {
                     var wrapper = new SolutionWrapper(_visualisationData.CurrentDonor1);
-                    wrapper.MarkCluster(_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_2);
+                    if (_visualisationData.ActiveCluster != null)
+                    {
+                        if (GlobalManager.Instance.IsBarCodeDepiction)
+                        {
+                            wrapper.MarkCluster(_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE, CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE);
+                        }
+                        else
+                        {
+                            wrapper.MarkCluster(_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE);
+                        }
+                    }
                     return wrapper;
                 }
                 return null;
@@ -281,6 +316,24 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 CombineProperties(changed.Item1, propertiesChanged);
             }
             RaiseChanged(propertiesChanged.ToList());
+        }
+
+        public override void ChangeSolutionDepiction()
+        {
+            foreach(var checkpoint in  _checkpoints)
+            {
+                checkpoint.Item2.NextIteration.ToList().ForEach(d => d.IsBarCode = GlobalManager.Instance.IsBarCodeDepiction);
+                checkpoint.Item2.Solutions.ToList().ForEach(d =>
+                {
+                    d.IsBarCode = GlobalManager.Instance.IsBarCodeDepiction;
+                });
+            }
+            _visualisationData.NextIteration.ToList().ForEach(d => d.IsBarCode = GlobalManager.Instance.IsBarCodeDepiction);
+            _visualisationData.Solutions.ToList().ForEach(d =>
+            {
+                d.IsBarCode = GlobalManager.Instance.IsBarCodeDepiction;
+            });
+            RaiseChanged(VISUALISATION_PROPERTIES);
         }
     }
 }

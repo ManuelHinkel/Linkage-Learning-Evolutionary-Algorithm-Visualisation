@@ -164,5 +164,10 @@ namespace LLEAV.ViewModels.Windows
                 SetMarkedStatus(toMark, true);
             }
         }
+
+        public void ChangeSolutionDepiction()
+        {
+
+        }
     }
 }

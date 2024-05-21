@@ -47,7 +47,7 @@ namespace LLEAV.Models
         public ILocalSearchFunction LocalSearchFunction { get; set; }
         public IFOSFunction FOSFunction { get; set; }
 
-        public AbstractTerminationCriteria TerminationCriteria { get; set; } 
+        public ITerminationCriteria TerminationCriteria { get; set; } 
         public IGrowthFunction GrowthFunction { get; set; }
         public int NumberOfBits { get; set; }
         public int NumberOfSolutions { get; set; }

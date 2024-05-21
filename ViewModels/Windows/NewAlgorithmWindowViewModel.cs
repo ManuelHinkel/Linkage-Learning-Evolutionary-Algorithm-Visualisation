@@ -98,7 +98,7 @@ namespace LLEAV.ViewModels.Windows
             bool isInt = int.TryParse(NumberOfBits, out numberOfBits);
             if (!isInt || numberOfBits < 1)
             {
-                ErrorMessage = "Number Of Bits is not a valid integer.\n Must be greater than 0!";
+                ErrorMessage = "Number Of Bits is not a valid integer.\nMust be greater than 0!";
                 return;
             }
 
@@ -107,16 +107,16 @@ namespace LLEAV.ViewModels.Windows
             isInt = int.TryParse(PopulationSize, out populationSize);
             if (ShowPopulationSize && (!isInt || populationSize < 2))
             {
-                ErrorMessage = "Population Size is not valid.\n Must be greater than 1!";
+                ErrorMessage = "Population Size is not valid.\nMust be greater than 1!";
                 return;
             }
 
 
             // Termination Criteria validation
-            AbstractTerminationCriteria terminationCriteria = Activator.CreateInstance(TerminationCriterias[SelectedTerminationCriteria], args: TerminationArgument)
-                   as AbstractTerminationCriteria;
+            ITerminationCriteria terminationCriteria = Activator.CreateInstance(TerminationCriterias[SelectedTerminationCriteria])
+                   as ITerminationCriteria;
 
-            if (!terminationCriteria.IsValid)
+            if (!terminationCriteria.CreateArgumentFromString(TerminationArgument))
             {
                 ErrorMessage = "Can't parse the termination argument.\n Must be of type: " + terminationCriteria.GetArgumentType().Name;
                 return;

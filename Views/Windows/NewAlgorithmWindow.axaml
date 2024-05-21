@@ -30,7 +30,8 @@
 					   Minimum="1"
 					   Value="{Binding NumberOfBits}"
 					   FormatString="N0"
-					   ParsingNumberStyle="Integer" />
+					   ParsingNumberStyle="Integer"
+					   Increment="1"/>
 			
 		<TextBlock Text="Fitness Function:"
 				   HorizontalAlignment="Left"

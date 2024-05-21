@@ -14,7 +14,7 @@
 		<ItemsControl ItemsSource="{Binding Containers}">
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
-					<DockPanel HorizontalAlignment="Center"/>
+					<DockPanel LastChildFill="False"/>
 				</ItemsPanelTemplate>
 			</ItemsControl.ItemsPanel>
 
@@ -26,27 +26,22 @@
 
 			<ItemsControl.ItemTemplate>
 				<DataTemplate x:DataType="vm:PopulationBar">
-					<!--
-					<Rectangle Width="{Binding Solutions.Count,
-							   Converter={StaticResource populationSizeToBlockWidthConverter}}" 
-							   Height="{Binding Solutions.Count,
-							   Converter={StaticResource populationSizeToBlockHeightConverter}}" 
-							   Fill="Red"></Rectangle>-->
 					<Button x:Name="Item"
 						    Classes="transparentButton"							
-							HorizontalAlignment="Center"
 							Padding="5"
+							HorizontalAlignment="Stretch"
 							Command="{CompiledBinding #Control.((vm:PopulationDepictionViewModelBase)DataContext).SelectPopulation}"
 							CommandParameter="{Binding #Item.DataContext}">
 						<Border CornerRadius="10"
-								Width="600"
-								Height="200"
+								MinWidth="600"
+								MinHeight="200"
 								Classes="blockContainer"
 								Classes.clicked="{Binding Selected}">
 							<lvc:CartesianChart Series="{Binding Series}"
-								VerticalAlignment="Stretch"
-								HorizontalAlignment="Stretch"
-												XAxes="{Binding XAxis}"/>
+												VerticalAlignment="Stretch"
+												HorizontalAlignment="Stretch"
+												XAxes="{Binding XAxis}"
+												YAxes="{Binding YAxis}"/>
 						</Border>
 					</Button>
 

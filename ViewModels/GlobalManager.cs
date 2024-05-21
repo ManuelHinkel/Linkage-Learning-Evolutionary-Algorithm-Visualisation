@@ -62,6 +62,25 @@ namespace LLEAV.ViewModels
                 }
             } 
         }
+
+        private bool _isBarCodeDepiction;
+        public bool IsBarCodeDepiction
+        {
+            get => _isBarCodeDepiction;
+            set
+            {
+                _isBarCodeDepiction = value;
+                if (_populationWindowViewModel != null)
+                {
+                    _populationWindowViewModel.ChangeSolutionDepiction();
+                }
+                if (_iterationDetailWindowViewModel != null && _iterationDetailWindowViewModel.ContentViewModel != null)
+                {
+                    _iterationDetailWindowViewModel.ChangeSolutionDepiction();
+                }
+            }
+        }
+
         public PopulationDepiction PopulationDepiction { get; set; }
 
         public int CurrentIteration { get; set; }

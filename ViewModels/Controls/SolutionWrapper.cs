@@ -12,12 +12,13 @@ namespace LLEAV.ViewModels.Controls
 {
     public class ColoredChar: ReactiveObject
     {
-        public const string DEFAULT_COLOR = "#feedf2";
+        public const string DEFAULT_WHITE = "#feedf2";
+        public const string DEFAULT_BLACK = "#25020a";
         public char Character { get; set; }
         [Reactive]
         public string Color { get; set; }
 
-        public ColoredChar(char character, string color = DEFAULT_COLOR)
+        public ColoredChar(char character, string color = DEFAULT_WHITE)
         {
             Character = character;
             Color = color;
@@ -33,22 +34,59 @@ namespace LLEAV.ViewModels.Controls
         [Reactive]
         public bool Selected { get; set; }
 
+
+        private bool _isBarCode;
+        public bool IsBarCode
+        {
+            get => _isBarCode;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _isBarCode, value);
+                Spacing = value ? 0 : 5;
+
+                if (Bits != null)
+                {
+                    ChangeBitVisualisation();
+                }
+            }
+        }
+
+        public int BarCodeWidth { get; }
+
+        [Reactive]
+        public int Spacing { get; set; }
+
         public SolutionWrapper(Solution solution)
         {
+            IsBarCode = GlobalManager.Instance.IsBarCodeDepiction;
             Solution = solution;
+            BarCodeWidth = Math.Max(100 / solution.Bits.NumberBits, 1);
             CreateColoredString();
         }
 
         public void MarkCluster(Cluster? cluster, string color) 
         {
             if (cluster == null) return;
-            if (string.IsNullOrEmpty(color)) color = ColoredChar.DEFAULT_COLOR;
+            if (string.IsNullOrEmpty(color)) color = ColoredChar.DEFAULT_WHITE;
             for (int i = 0; i < Bits.Length; i++)
             {
                 if (cluster.Mask.Get(i))
                 {
                     Bits[i].Color = color;
                 }
+            }
+        }
+
+        public void MarkCluster(Cluster? cluster, string colorFor1, string colorFor0)
+        {
+            if (cluster == null) return;
+            if (string.IsNullOrEmpty(colorFor1)) colorFor1 = ColoredChar.DEFAULT_WHITE;
+            for (int i = 0; i < Bits.Length; i++)
+            {
+                if (cluster.Mask.Get(i))
+                {
+                    Bits[i].Color = Bits[i].Character == '1' ? colorFor1 : colorFor0;
+                } 
             }
         }
 
@@ -60,7 +98,23 @@ namespace LLEAV.ViewModels.Controls
 
             for(int i = 0; i  < numberOfBits; i++) 
             {
-                Bits[i] = new ColoredChar(Solution.Bits.Get(i) ? '1' : '0'); 
+                Bits[i] = new ColoredChar(Solution.Bits.Get(i) ? '1' : '0');
+                if (IsBarCode)
+                {
+                    Bits[i].Color = Bits[i].Character == '1' ? ColoredChar.DEFAULT_WHITE : ColoredChar.DEFAULT_BLACK;
+                }
+            }
+            ChangeBitVisualisation();
+        }
+
+        private void ChangeBitVisualisation()
+        {
+            if (IsBarCode)
+            {
+                Bits.ToList().ForEach(b => b.Color = b.Character == '1' ? ColoredChar.DEFAULT_WHITE : ColoredChar.DEFAULT_BLACK);
+            } else
+            {
+                Bits.ToList().ForEach(b => b.Color = ColoredChar.DEFAULT_WHITE);
             }
         }
     }

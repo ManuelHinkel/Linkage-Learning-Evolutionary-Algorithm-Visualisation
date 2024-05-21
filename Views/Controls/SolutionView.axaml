@@ -3,12 +3,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:cm="using:LLEAV.ViewModels.Controls"
+			 xmlns:converter="using:LLEAV.Converter"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="LLEAV.Views.Controls.SolutionView"
 			 x:DataType="cm:SolutionWrapper"
-			 HorizontalAlignment="Center"
-			 VerticalAlignment="Center">
-	
+			 HorizontalAlignment="Stretch"
+			 VerticalAlignment="Stretch">
+
 	<Border CornerRadius="5"
 			Padding="5"
 			Classes="stackContainer"
@@ -17,19 +18,32 @@
 		<ScrollViewer HorizontalScrollBarVisibility="Auto"
 					  VerticalScrollBarVisibility="Disabled"
 					  HorizontalContentAlignment="Center"
+					  HorizontalAlignment="Stretch"
 					  AllowAutoHide="False">
 			<ItemsControl ItemsSource="{Binding Bits}">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
 						<StackPanel Orientation="Horizontal"
-									HorizontalAlignment="Center"/>
+									HorizontalAlignment="Center"
+									Spacing="{Binding $parent[UserControl].DataContext.Spacing}"/>
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
+
 				<ItemsControl.ItemTemplate>
 					<DataTemplate x:DataType="cm:ColoredChar">
-						<TextBlock Text="{Binding Character}"
-								   Foreground="{Binding Color}"
-								   Width="10"/>
+						<Panel x:Name="panel"
+							   HorizontalAlignment="Stretch">
+							<TextBlock Text="{Binding Character}"
+									   Foreground="{Binding Color}"
+									   Width="10"
+									   IsVisible="{Binding !$parent[UserControl].DataContext.IsBarCode}"/>
+							<Panel Width="{Binding  $parent[UserControl].DataContext.BarCodeWidth}"
+								   MinHeight="10"
+								   VerticalAlignment="Stretch"
+								   HorizontalAlignment="Stretch"
+								   Background="{Binding Color}"
+								   IsVisible="{Binding $parent[UserControl].DataContext.IsBarCode}"/>
+						</Panel>
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>

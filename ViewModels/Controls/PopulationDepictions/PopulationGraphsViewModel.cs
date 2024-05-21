@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using LLEAV.Models;
 using System.Diagnostics;
 using Avalonia.Controls;
+using ReactiveUI;
 
 namespace LLEAV.ViewModels.Controls.PopulationDepictions
 {
@@ -18,7 +19,7 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
         public Axis[] XAxis { get; set; }
         public ISeries[] Series { get; set; }
 
-        public PopulationGraph(IList<Population> populations, int iteration, bool[] flags) : base(populations.Count > 0 ? populations.Last(): null)
+        public PopulationGraph(IList<Population> populations, int iteration, bool[] flags, int windowSize) : base(populations.Count > 0 ? populations.Last(): null)
         {
             Series = new ISeries[]
             {
@@ -76,7 +77,7 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
                 {
                     Labels = Enumerable.Range(
                         Math.Max(0, iteration + 1 - Math.Min(
-                            PopulationGraphsViewModel.WINDOW_SIZE,
+                            windowSize,
                             populations.Count)),
                         iteration + 1).Select(i => i.ToString()).ToList(),
                     ForceStepToMin = true,
@@ -93,7 +94,19 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
 
     public class PopulationGraphsViewModel : PopulationDepictionViewModelBase
     {
-        public const int WINDOW_SIZE = 10;
+        private int _windowSize = 10;
+        public int WindowSize {
+            get => _windowSize; 
+            
+            set 
+            { 
+                this.RaiseAndSetIfChanged(ref _windowSize, value); 
+                if (_shownIteration != null)
+                {
+                    Update(_shownIteration);
+                }
+            }
+        }
 
         private bool _averageScoreVisible = true;
         public bool AverageScoreVisible
@@ -150,6 +163,8 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
         }
 
 
+        private IterationData? _shownIteration;
+
         private RunData _runData;
         public PopulationGraphsViewModel(RunData runData)
         {
@@ -158,13 +173,14 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
 
         public override void Update(IterationData iteration)
         {
+            _shownIteration = iteration;
             FindIndexOfSelected();
             Containers.Clear();
 
             for (int i = 0; i < iteration.Populations.Count; i++) 
             {
                 List<Population> populations = new List<Population>();
-                for (int j = 0; j < WINDOW_SIZE; j++)
+                for (int j = 0; j < WindowSize; j++)
                 {
                     int index = iteration.Iteration - j;
                     if (index < 0 || _runData.Iterations[index].Populations.Count <= i) break;
@@ -176,7 +192,7 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
                     MedianScoreVisible,
                     MaximumScoreVisible,
                     MinimumScoreVisible,
-                }));
+                }, WindowSize));
             }
 
             SelectPopulation(SelectedPopulation);

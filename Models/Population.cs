@@ -1,4 +1,5 @@
-﻿using LLEAV.Util;
+﻿using DynamicData;
+using LLEAV.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -17,13 +18,13 @@ namespace LLEAV.Models
         public IList<Solution> Solutions { get; set; } = new List<Solution>();
         public FOS? FOS { get; set; }
 
-        public double MaximumFitness { get; private set; } = int.MinValue;
+        public double MaximumFitness { get; private set; } = double.NaN;
 
-        public double MinimumFitness { get; private set; } = int.MaxValue;
+        public double MinimumFitness { get; private set; } = double.NaN;
 
-        public double AverageFitness { get; private set; }
-        
-        public double MedianFitness { get; private set; }
+        public double AverageFitness { get; private set; } = double.NaN;
+
+        public double MedianFitness { get; private set; } = double.NaN;
 
         public int PyramidIndex { get; private set; }
 
@@ -35,27 +36,30 @@ namespace LLEAV.Models
         public void Add(Solution solution)
         {
             Solutions.Add(solution);
-            if (solution.Fitness > MaximumFitness)
-            {
-                MaximumFitness = solution.Fitness;
-            }
-
-            if (solution.Fitness < MinimumFitness)
-            {
-                MinimumFitness = solution.Fitness;
-            }
             CalculateAverageFitness();
             CalculateMedianFitness();
-
+            CalculateMaximumFitness();
+            CalculateMinimumFitness();
         }
 
         public void ClearAndAddAll(IList<Solution> solutions)
         {
             Solutions.Clear();
-            foreach(Solution solution in solutions)
-            {
-                Add(solution);
-            }
+            Solutions.AddRange(solutions);
+
+            CalculateAverageFitness();
+            CalculateMedianFitness();
+            CalculateMaximumFitness();
+            CalculateMinimumFitness();
+        }
+        private void CalculateMinimumFitness()
+        {
+            MinimumFitness = Solutions.Min(s => s.Fitness);
+        }
+
+        private void CalculateMaximumFitness()
+        {
+            MaximumFitness = Solutions.Max(s => s.Fitness);
         }
 
         private void CalculateAverageFitness()

@@ -17,7 +17,19 @@
 				Grid.Column="1"
 				VerticalAlignment="Center"
 				HorizontalAlignment="Center">
+				
 			<StackPanel>
+				<TextBlock Text="Window Size:"/>
+				<NumericUpDown
+					   VerticalAlignment="Center"
+					   HorizontalAlignment="Stretch"
+					   Minimum="1"
+					   Value="{Binding WindowSize}"
+					   FormatString="N0"
+					   ParsingNumberStyle="Integer" />
+
+				<Panel Height="10"/>
+
 				<CheckBox IsChecked="{Binding AverageScoreVisible}">
 					<TextBlock Text="Average Fitness"/>
 				</CheckBox>
@@ -34,12 +46,11 @@
 		</Border>
 		
 		<ScrollViewer HorizontalScrollBarVisibility="Auto"
-					  Grid.Column="0">
+					  Grid.Column="0" >
 			<ItemsControl ItemsSource="{Binding Containers}">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
-						<DockPanel HorizontalAlignment="Center"
-								   LastChildFill="False"/>
+						<DockPanel LastChildFill="False"/>
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
 
@@ -51,21 +62,15 @@
 				
 				<ItemsControl.ItemTemplate>
 					<DataTemplate x:DataType="vm:PopulationGraph">
-						<!--
-					<Rectangle Width="{Binding Solutions.Count,
-							   Converter={StaticResource populationSizeToBlockWidthConverter}}" 
-							   Height="{Binding Solutions.Count,
-							   Converter={StaticResource populationSizeToBlockHeightConverter}}" 
-							   Fill="Red"></Rectangle>-->
 						<Button x:Name="Item"
 								Classes="transparentButton"
-								HorizontalAlignment="Center"
+								HorizontalAlignment="Stretch"
 								Padding="5"
 								Command="{CompiledBinding #Control.((vm:PopulationDepictionViewModelBase)DataContext).SelectPopulation}"
 								CommandParameter="{Binding #Item.DataContext}">
 							<Border CornerRadius="10"
-									Width="600"
-									Height="200"
+									MinWidth="600"
+									MinHeight="200"
 									Classes="blockContainer"
 									Classes.clicked="{Binding Selected}">
 								<lvc:CartesianChart Series="{Binding Series}"

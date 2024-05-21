@@ -55,6 +55,11 @@
 				<ComboBoxItem>FOS</ComboBoxItem>
 				<ComboBoxItem>None</ComboBoxItem>
 			</ComboBox>
+
+			<ComboBox SelectedIndex="{Binding BitDepictionIndex}">
+				<ComboBoxItem>Character</ComboBoxItem>
+				<ComboBoxItem>Barcode</ComboBoxItem>
+			</ComboBox>
 		</StackPanel>
 		
 		<StackPanel Margin="20,0,20,20" DockPanel.Dock="Bottom">

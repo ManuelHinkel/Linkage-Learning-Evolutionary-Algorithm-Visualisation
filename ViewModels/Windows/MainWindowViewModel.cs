@@ -37,8 +37,19 @@ namespace LLEAV.ViewModels.Windows
 
                 if (RunData != null)
                 {
-                    UpdatePopulations(RunData.Iterations[Iteration]);
+                    UpdatePopulations(_shownIterationData);
                 }
+            }
+        }
+
+        private int _bitDepictionIndex;
+        public int BitDepictionIndex
+        {
+            get => _bitDepictionIndex;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _bitDepictionIndex, value);
+                GlobalManager.Instance.IsBarCodeDepiction = value == 1;
             }
         }
 
@@ -99,6 +110,8 @@ namespace LLEAV.ViewModels.Windows
         private bool _stopThread;
 
         private bool _excludeRecalculationInNextIterationChange;
+
+        private IterationData _shownIterationData;
         public MainWindowViewModel()
         {
             Thread playThread = new Thread(new ThreadStart(() => {
@@ -139,7 +152,8 @@ namespace LLEAV.ViewModels.Windows
 
         public void UpdatePopulations(IterationData iterationData)
         {
-            if (iterationData.LastIteration)
+            _shownIterationData = iterationData;
+            if (_shownIterationData.LastIteration)
             {
                 Running = false;
                 RaiseButtonsChanged();
@@ -148,15 +162,15 @@ namespace LLEAV.ViewModels.Windows
             switch (DepictionIndex)
             {
                 case 0:
-                    BlockModel.Update(iterationData);
+                    BlockModel.Update(_shownIterationData);
                     this.RaisePropertyChanged(nameof(BlockModel));
                     break;
                 case 1:
-                    GraphModel.Update(iterationData);
+                    GraphModel.Update(_shownIterationData);
                     this.RaisePropertyChanged(nameof(GraphModel));
                     break;
                 default:
-                    BarModel.Update(iterationData);
+                    BarModel.Update(_shownIterationData);
                     this.RaisePropertyChanged(nameof(BarModel));
                     break;
             }

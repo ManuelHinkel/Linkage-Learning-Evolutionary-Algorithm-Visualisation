@@ -54,6 +54,14 @@ namespace LLEAV.ViewModels.Windows
             }
         }
 
+        public void ChangeSolutionDepiction()
+        {
+            if (_contentViewModel != null)
+            {
+                _contentViewModel.ChangeSolutionDepiction();
+            }
+        }
+
 
     }
 }

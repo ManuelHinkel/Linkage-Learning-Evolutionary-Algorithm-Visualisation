@@ -87,9 +87,9 @@ namespace LLEAV.Models.Persistence
                 index = result.Item2;
             }
 
-            AbstractTerminationCriteria terminationCriteria = Activator.CreateInstance(NAWVM.TerminationCriterias[terminationCriteriaIndex], args: terminationArg)
-                   as AbstractTerminationCriteria;
-
+            ITerminationCriteria terminationCriteria = Activator.CreateInstance(NAWVM.TerminationCriterias[terminationCriteriaIndex])
+                   as ITerminationCriteria;
+            terminationCriteria.CreateArgumentFromBytes(terminationArg);
 
             RunData newRunData = new RunData
             {

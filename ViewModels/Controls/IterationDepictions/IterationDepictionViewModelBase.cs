@@ -13,8 +13,11 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
     public abstract class IterationDepictionViewModelBase : ViewModelBase
     {
         public const int CHECKPOINT_SPACING = 50;
-        public const string CLUSTER_HIGHLIGHT_COLOR_1 = "#0000ff";
-        public const string CLUSTER_HIGHLIGHT_COLOR_2 = "#00ff00";
+        public const string CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE = "#84fc03";
+        public const string CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE = "#03f8fc";
+
+        public const string CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE = "#1a4f20";
+        public const string CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE = "#1600a3";
         public bool RightButtonEnabled
         {
             get => !isAnimating && !Running  && CurrentStateChange < MaxStateChange;
@@ -182,5 +185,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             oldProperties.ExceptWith(animationProperties);
             oldProperties.UnionWith(newProperties);
         }
+
+        public abstract void ChangeSolutionDepiction();
     }
 }

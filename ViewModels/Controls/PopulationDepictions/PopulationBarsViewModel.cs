@@ -18,6 +18,7 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
         private const double EPSILON = 0.0001;
 
         public Axis[] XAxis { get; set; }
+        public Axis[] YAxis { get; set; }
         public ISeries[] Series { get; set; }
 
         public PopulationBar(Population population) : base(population)
@@ -41,9 +42,19 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
                     MinStep = 1,
                 },
             ];
+
+
+            YAxis = [
+                new Axis()
+                {
+                    MinLimit = 0,
+                }
+            ];
         }
         private IList<string> CalculateLabels(Population population)
         {
+            if (double.IsNaN(population.MinimumFitness) || double.IsNaN(population.MaximumFitness)) return [];
+
             int min = (int)Math.Floor(population.MinimumFitness);
             int max = (int)Math.Ceiling(population.MaximumFitness);
             if (min == max) max++;
