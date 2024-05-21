@@ -45,6 +45,7 @@ namespace LLEAV.Models.Algorithms.ROM
 
             _tracker.UpdateFOS(population.Clone());
 
+            iterationData.Iteration = currentIteration.Iteration + 1;
             iterationData.LastIteration = runData.TerminationCriteria.ShouldTerminate(iterationData);
             iterationData.RNGSeed = random.Next();
 

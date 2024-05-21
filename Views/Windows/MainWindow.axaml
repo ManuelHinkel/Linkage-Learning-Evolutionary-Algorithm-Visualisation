@@ -48,6 +48,7 @@
 				<ComboBoxItem>Block</ComboBoxItem>
 				<ComboBoxItem>Graph</ComboBoxItem>
 				<ComboBoxItem>Bars</ComboBoxItem>
+				<ComboBoxItem>BoxPlot</ComboBoxItem>
 			</ComboBox>
 
 			<ComboBox SelectedIndex="{Binding ModusIndex}">
@@ -121,23 +122,29 @@
 		<Panel DockPanel.Dock="Top" 
 			   VerticalAlignment="Stretch"
 			   Margin="10">
-			<controls:PopulationBlocksView DataContext="{Binding BlockModel}"
+			<controls:PopulationBlocksView DataContext="{Binding Model}"
 										  VerticalAlignment="Stretch"
 										  IsVisible="{Binding #depictionBox.SelectedIndex,  
 										  Converter={StaticResource intEqualsConverter},
 									      ConverterParameter=0}"/>
 
-			<controls:PopulationGraphsView DataContext="{Binding GraphModel}"
+			<controls:PopulationGraphsView DataContext="{Binding Model}"
 											  VerticalAlignment="Stretch"
 											  IsVisible="{Binding #depictionBox.SelectedIndex,  
 										  Converter={StaticResource intEqualsConverter},
 									      ConverterParameter=1}"/>
 
-			<controls:PopulationBarsView DataContext="{Binding BarModel}"
+			<controls:PopulationBarsView DataContext="{Binding Model}"
 											VerticalAlignment="Stretch"
 											IsVisible="{Binding #depictionBox.SelectedIndex,  
 										Converter={StaticResource intEqualsConverter},
 									    ConverterParameter=2}"/>
+
+			<controls:PopulationBoxPlotView DataContext="{Binding Model}"
+											VerticalAlignment="Stretch"
+											IsVisible="{Binding #depictionBox.SelectedIndex,  
+										Converter={StaticResource intEqualsConverter},
+									    ConverterParameter=3}"/>
 		</Panel>
 	</DockPanel>
 

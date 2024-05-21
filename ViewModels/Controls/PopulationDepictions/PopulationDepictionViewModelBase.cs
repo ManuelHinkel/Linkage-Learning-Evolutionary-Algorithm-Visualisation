@@ -31,14 +31,9 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
     public abstract class PopulationDepictionViewModelBase : ViewModelBase
     {
         public ObservableCollection<PopulationContainerViewModelBase> Containers { get; set; } = new ObservableCollection<PopulationContainerViewModelBase> { };
-        public int SelectedPopulation { get; private set; } = -1;
+        public int SelectedPopulation { get; set; } = -1;
 
         public abstract void Update(IterationData iteration);
-
-        public void FindIndexOfSelected()
-        {
-            SelectedPopulation = Containers.Select((c, i) => (c, i)).FirstOrOptional(t => t.c.Selected == true).ValueOr(() => (null, -1)).i;
-        }
 
         // Called when clicking on a population block
         public void SelectPopulation(PopulationContainerViewModelBase o)
@@ -49,11 +44,13 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
                 o.Selected = true;
             }
             GlobalManager.Instance.OpenPopulation(o.Population);
+            SelectedPopulation = Containers.Select((c, i) => (c, i)).FirstOrOptional(t => t.c.Selected == true).ValueOr(() => (null, -1)).i;
         }
 
         // Called when switching iterations
         public void SelectPopulation(int index)
         {
+            SelectedPopulation = index;
             ClearSelected();
             if (index >= Containers.Count || index < 0) return;
             if (!Containers[index].Selected)

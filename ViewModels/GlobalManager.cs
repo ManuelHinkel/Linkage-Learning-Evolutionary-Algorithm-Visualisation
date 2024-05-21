@@ -123,7 +123,9 @@ namespace LLEAV.ViewModels
                 _populationWindow.DataContext = _populationWindowViewModel;
                 _populationWindow.Closing += (s, e) => { 
                     _populationWindow = null; 
-                    _mainWindowViewModel!.SelectPopulation(-1); };
+                    // Clear selected highlighting
+                    _mainWindowViewModel!.SelectPopulation(-1);
+                    };
             }
         }
 

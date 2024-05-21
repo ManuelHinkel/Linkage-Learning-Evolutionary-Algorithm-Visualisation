@@ -103,9 +103,16 @@ namespace LLEAV.ViewModels.Windows
         [Reactive]
         public RunData RunData { get; private set; }
 
-        public PopulationBlocksViewModel BlockModel { get; set; } = new PopulationBlocksViewModel();
-        public PopulationGraphsViewModel GraphModel { get; set; }
-        public PopulationBarsViewModel BarModel { get; set; } = new PopulationBarsViewModel();
+
+        private PopulationDepictionViewModelBase[] _models = [
+            new PopulationBlocksViewModel(),
+            null, // Graph needs rundata
+            new PopulationBarsViewModel(),
+            null, // BoxPlot needs rundata
+        ];
+
+
+        public PopulationDepictionViewModelBase Model { get; set; }
 
         private bool _stopThread;
 
@@ -136,7 +143,8 @@ namespace LLEAV.ViewModels.Windows
 
         public void SelectPopulation(int index)
         {
-            switch (DepictionIndex)
+            _models[DepictionIndex].SelectPopulation(index);
+            /*switch (DepictionIndex)
             {
                 case 0:
                     BlockModel.SelectPopulation(index);
@@ -147,7 +155,7 @@ namespace LLEAV.ViewModels.Windows
                 default:
                     BarModel.SelectPopulation(index);
                     break;
-            }
+            }*/
         }
 
         public void UpdatePopulations(IterationData iterationData)
@@ -159,7 +167,7 @@ namespace LLEAV.ViewModels.Windows
                 RaiseButtonsChanged();
             }
 
-            switch (DepictionIndex)
+            /*switch (DepictionIndex)
             {
                 case 0:
                     BlockModel.Update(_shownIterationData);
@@ -173,7 +181,11 @@ namespace LLEAV.ViewModels.Windows
                     BarModel.Update(_shownIterationData);
                     this.RaisePropertyChanged(nameof(BarModel));
                     break;
-            }
+            }*/
+            _models[DepictionIndex].SelectedPopulation = Model != null ? Model.SelectedPopulation : -1;
+            _models[DepictionIndex].Update(_shownIterationData);
+            Model = _models[DepictionIndex];
+            this.RaisePropertyChanged(nameof(Model));
         }
 
         public void ChangeCurrentIteration()
@@ -291,7 +303,8 @@ namespace LLEAV.ViewModels.Windows
         public void SetNewRunData(RunData runData)
         {
             RunData = runData;
-            GraphModel = new PopulationGraphsViewModel(RunData);
+            _models[1] = new PopulationGraphsViewModel(RunData);
+            _models[3] = new PopulationBoxPlotViewModel(RunData);
 
             if (runData.Iterations.Count > 0)
             {

@@ -174,18 +174,24 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
         public override void Update(IterationData iteration)
         {
             _shownIteration = iteration;
-            FindIndexOfSelected();
             Containers.Clear();
 
             for (int i = 0; i < iteration.Populations.Count; i++) 
             {
                 List<Population> populations = new List<Population>();
-                for (int j = 0; j < WindowSize; j++)
+               
+                if (iteration.Iteration == -1)
                 {
-                    int index = iteration.Iteration - j;
-                    if (index < 0 || _runData.Iterations[index].Populations.Count <= i) break;
+                    populations.Add(iteration.Populations[0]);
+                } else
+                {
+                    for (int j = 0; j < WindowSize; j++)
+                    {
+                        int index = iteration.Iteration - j;
+                        if (index < 0 || _runData.Iterations[index].Populations.Count <= i) break;
 
-                    populations.Insert(0, _runData.Iterations[index].Populations[i]);
+                        populations.Insert(0, _runData.Iterations[index].Populations[i]);
+                    }
                 }
                 Containers.Add(new PopulationGraph(populations, iteration.Iteration, new bool[] {
                     AverageScoreVisible,

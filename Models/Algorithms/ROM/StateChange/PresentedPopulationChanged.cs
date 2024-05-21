@@ -21,7 +21,7 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
         {
             if (!onlyOperateOnData)
             {
-                GlobalManager.Instance.SelectPopulation(state, _population.PyramidIndex);
+                GlobalManager.Instance.SelectPopulation(state, 0);
             }
 
             visualisationData.Solutions = _population.Solutions.Select(s => new SolutionWrapper(s)).ToList();

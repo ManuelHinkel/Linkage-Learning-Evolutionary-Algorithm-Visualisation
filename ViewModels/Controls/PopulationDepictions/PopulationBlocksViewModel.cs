@@ -17,7 +17,6 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
     {
         public override void Update(IterationData iteration)
         {
-            FindIndexOfSelected();
             Containers.Clear();
             foreach (Population pop in iteration.Populations)
             {

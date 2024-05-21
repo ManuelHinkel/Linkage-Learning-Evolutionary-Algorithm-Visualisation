@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             xmlns:vm="using:LLEAV.ViewModels.Controls.PopulationDepictions"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LLEAV.Views.Controls.PopulationDepictions.PopulationBoxPlotView"
+			 x:Name="Control"
+			 x:DataType="vm:PopulationBoxPlotViewModel">
+	<Grid ColumnDefinitions="5*, *">
+
+		<Border Padding="5"
+				CornerRadius="5"
+				Classes="panel"
+				Grid.Column="1"
+				VerticalAlignment="Center"
+				HorizontalAlignment="Center">
+
+			<StackPanel>
+				<TextBlock Text="Window Size:"/>
+				<NumericUpDown
+					   VerticalAlignment="Center"
+					   HorizontalAlignment="Stretch"
+					   Minimum="1"
+					   Value="{Binding WindowSize}"
+					   FormatString="N0"
+					   ParsingNumberStyle="Integer" />
+			</StackPanel>
+		</Border>
+
+		<ScrollViewer HorizontalScrollBarVisibility="Auto"
+					  Grid.Column="0" >
+			<ItemsControl ItemsSource="{Binding Containers}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<DockPanel LastChildFill="False"/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+
+				<ItemsControl.Styles>
+					<Style Selector="ItemsControl> ContentPresenter">
+						<Setter Property="DockPanel.Dock" Value="Bottom"/>
+					</Style>
+				</ItemsControl.Styles>
+
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="vm:PopulationBoxPlot">
+						<Button x:Name="Item"
+								Classes="transparentButton"
+								HorizontalAlignment="Stretch"
+								Padding="5"
+								Command="{CompiledBinding #Control.((vm:PopulationDepictionViewModelBase)DataContext).SelectPopulation}"
+								CommandParameter="{Binding #Item.DataContext}">
+							<Border CornerRadius="10"
+									MinWidth="600"
+									MinHeight="200"
+									Classes="blockContainer"
+									Classes.clicked="{Binding Selected}">
+								<lvc:CartesianChart Series="{Binding Series}"
+													LegendPosition="Right"
+													VerticalAlignment="Stretch"
+													HorizontalAlignment="Stretch"
+												    EasingFunction="{x:Null}"
+													XAxes="{Binding XAxis}"/>
+							</Border>
+						</Button>
+
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</ScrollViewer>
+	</Grid>
+</UserControl>

@@ -102,7 +102,6 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
         public const int BAR_COUNT = 10;
         public override void Update(IterationData iteration)
         {
-            FindIndexOfSelected();
             Containers.Clear();
             foreach (Population pop in iteration.Populations)
             {
