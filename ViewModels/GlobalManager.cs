@@ -104,7 +104,7 @@ namespace LLEAV.ViewModels
 
         public int CurrentIteration { get; set; }
         public bool IsAnimatingDetails { get; private set; }
-        public bool IsAnimatingFOS { get; private set; }
+        public bool IsAnimatingFOS { get; set; }
 
         private MainWindowViewModel? _mainWindowViewModel;
         private PopulationWindowViewModel? _populationWindowViewModel;
@@ -119,6 +119,8 @@ namespace LLEAV.ViewModels
 
         private bool _newAlgorithmWindowOpen;
         private RunData? _runData;
+
+        private bool _threadRunning;
 
         public GlobalManager()
         {
@@ -174,15 +176,24 @@ namespace LLEAV.ViewModels
             if (_populationWindow != null)
             {
                 IsAnimatingFOS = true;
+
                 _populationWindowViewModel!.SetPopulation(population);
 
-                Thread t = new Thread(new ThreadStart(() => {
-                    Thread.Sleep(ANIMATION_TIME);
-                    Dispatcher.UIThread.Invoke(() => {
-                        IsAnimatingFOS = false;
-                    });
-                }));
-                t.Start();
+                if (!_threadRunning)
+                {
+                    _threadRunning = true;
+                    Thread t = new Thread(new ThreadStart(() => {
+                        Thread.Sleep(ANIMATION_TIME);
+                        Dispatcher.UIThread.Invoke(() => {
+                            IsAnimatingFOS = false;
+                        });
+                        _threadRunning = false;
+                    }));
+                    t.Start();
+                }
+            } else
+            {
+                IsAnimatingFOS = false;
             }
         }
 

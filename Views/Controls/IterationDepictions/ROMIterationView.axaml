@@ -122,7 +122,7 @@
 
 					<StackPanel>
 						<Panel Classes.verticalRevert="{Binding IsMerging}"/>
-						<controls:SolutionView DataContext="{Binding CurrentDonor2}"
+						<controls:SolutionView DataContext="{Binding CurrentDonor2Animated}"
 											    Width="130"/>
 					</StackPanel>
 				</StackPanel>
@@ -136,7 +136,7 @@
 
 					<StackPanel>
 						<Panel Classes.vertical="{Binding IsMerging}"/>
-						<controls:SolutionView DataContext="{Binding CurrentDonor1}"
+						<controls:SolutionView DataContext="{Binding CurrentDonor1Animated}"
 											    Width="130"/>
 					</StackPanel>
 				</StackPanel>
@@ -151,7 +151,7 @@
 							IsVisible="{Binding IsFitnessIncreasing}">
 					<Panel Classes.horizontalROM="{Binding IsFitnessIncreasing}"/>
 
-					<controls:SolutionView DataContext="{Binding CurrentSolution1}"
+					<controls:SolutionView DataContext="{Binding CurrentSolution1Animated}"
 										    Width="130"/>
 				</StackPanel>
 
@@ -161,7 +161,7 @@
 							IsVisible="{Binding IsFitnessIncreasing}">
 					<Panel Classes.horizontalROM="{Binding IsFitnessIncreasing}"/>
 
-					<controls:SolutionView DataContext="{Binding CurrentSolution2}"
+					<controls:SolutionView DataContext="{Binding CurrentSolution2Animated}"
 										    Width="130"/>
 				</StackPanel>
 
@@ -173,7 +173,7 @@
 							IsVisible="{Binding IsFitnessDecreasing}">
 					<Panel Classes.horizontalRevertROM="{Binding IsFitnessDecreasing}"/>
 
-					<controls:SolutionView DataContext="{Binding CurrentDonor1}"
+					<controls:SolutionView DataContext="{Binding CurrentDonor1Animated}"
 										    Width="130"/>
 				</StackPanel>
 
@@ -183,7 +183,7 @@
 						IsVisible="{Binding IsFitnessDecreasing}">
 					<Panel Classes.horizontalRevertROM="{Binding IsFitnessDecreasing}"/>
 
-					<controls:SolutionView DataContext="{Binding CurrentDonor2}"
+					<controls:SolutionView DataContext="{Binding CurrentDonor2Animated}"
 										    Width="130"/>
 				</StackPanel>
 			</Grid>

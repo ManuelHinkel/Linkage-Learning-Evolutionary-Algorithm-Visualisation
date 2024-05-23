@@ -36,7 +36,7 @@ namespace LLEAV.ViewModels.Windows
         }
 
         [Reactive]
-        public Tree? Tree { get; private set; } = new Tree([], []);
+        public Tree? Tree { get; private set; } = new Tree([], [], null);
 
         private bool[] _reservedColors = new bool[_colors.Length];
 
@@ -58,9 +58,6 @@ namespace LLEAV.ViewModels.Windows
 
             //Wait for loading Thread to stop
             while (_threadRunning) Thread.Sleep(10);
-
-
-            Solutions.Clear();
 
             Thread t = new Thread(new ThreadStart(() => {
                 LoadSolutions(population);
@@ -101,8 +98,10 @@ namespace LLEAV.ViewModels.Windows
         private void LoadSolutions(Population population)
         {
             _threadRunning = true;
-            _wrappers.Clear();
             _wrappers = population.Solutions.Select(s => new SolutionWrapper(s, GlobalManager.DEFAULT_WHITE, GlobalManager.TEXT_COLOR)).ToList();
+            Dispatcher.UIThread.InvokeAsync(() => {
+                Solutions.Clear();
+            });
 
             foreach (SolutionWrapper w in _wrappers)
             {
@@ -126,6 +125,7 @@ namespace LLEAV.ViewModels.Windows
             if (node.Cluster == null) return;
 
             SetMarkedStatus(node, string.IsNullOrEmpty(node.Color));
+            ColorSolutions();
         }
 
         private void SetMarkedStatus(Node node, bool marked)
@@ -159,15 +159,37 @@ namespace LLEAV.ViewModels.Windows
             }
 
             node.Color = color;
+        }
 
-            foreach (SolutionWrapper solutionWrapper in _wrappers)
+        private void ColorSolutions()
+        {
+            if (Tree == null) return;
+
+            foreach(SolutionWrapper wrapper in _wrappers)
             {
-                if (!GlobalManager.Instance.IsBarCodeDepiction)
+                wrapper.ClearColoring();
+            }
+
+            List<Node> dfs = [Tree!.Root];
+            while (dfs.Count > 0)
+            {
+                Node current = dfs[0];
+                dfs.RemoveAt(0);
+                dfs.AddRange(current.Children);
+
+                if (current.Cluster != null && !string.IsNullOrEmpty(current.Color))
                 {
-                    solutionWrapper.MarkCluster(node.Cluster, color);
-                } else
-                {
-                    solutionWrapper.MarkCluster(color, color.Replace('f', '9'), node.Cluster);
+                    foreach (SolutionWrapper wrapper in _wrappers)
+                    {
+                        if (!GlobalManager.Instance.IsBarCodeDepiction)
+                        {
+                            wrapper.MarkCluster(current.Cluster, current.Color);
+                        }
+                        else
+                        {
+                            wrapper.MarkCluster(current.Color, current.Color.Replace('f', '9'), current.Cluster);
+                        }
+                    }
                 }
             }
         }
@@ -212,6 +234,7 @@ namespace LLEAV.ViewModels.Windows
             { 
                 SetMarkedStatus(toMark, true);
             }
+            ColorSolutions();
         }
 
         public void ChangeSolutionDepiction()
@@ -226,11 +249,6 @@ namespace LLEAV.ViewModels.Windows
             foreach (SolutionWrapper solutionWrapper in _wrappers)
             {
                 solutionWrapper.IsBarCode = GlobalManager.Instance.IsBarCodeDepiction;
-                /*foreach (Node n in Tree!.Nodes)
-                {
-                    if (n.Cluster == null) continue;
-                    solutionWrapper.MarkCluster(n.Cluster, n.Color);
-                }*/
             }
         }
     }

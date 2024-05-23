@@ -20,7 +20,8 @@
 			<ComboBox Grid.Column="1"
 					  Grid.Row="0"
 					  SelectedIndex="{Binding MessagePriorityIndex}"
-					  HorizontalAlignment="Right">
+					  HorizontalAlignment="Right"
+					  Margin="5">
 				<ComboBoxItem>All</ComboBoxItem>
 				<ComboBoxItem>Interessting</ComboBoxItem>
 				<ComboBoxItem>Important</ComboBoxItem>

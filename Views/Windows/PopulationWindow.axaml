@@ -134,8 +134,8 @@
 							<DataTemplate x:DataType="data:Edge">
 								<Line StartPoint="{Binding Start}"
 									  EndPoint="{Binding End}"
-									  Classes.appearing="{Binding Appearing}"
-									  Classes.disappearing="{Binding Disappering}"/>
+									  Classes.appearing="{CompiledBinding Appearing}"
+									  Classes.disappearing="{CompiledBinding Disappering}"/>
 							</DataTemplate>
 						</ItemsControl.DataTemplates>
 					</ItemsControl>

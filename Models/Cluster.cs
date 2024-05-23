@@ -18,7 +18,7 @@ namespace LLEAV.Models
 
         public Cluster(List<int> bits, int numberOfBits)
         {
-            this.NumberOfBits = numberOfBits;
+            NumberOfBits = numberOfBits;
             Mask = new BitList(numberOfBits);
             foreach (int bit in bits)
             {
@@ -128,6 +128,12 @@ namespace LLEAV.Models
             Cluster inverted = new Cluster(bits, a.NumberOfBits);
 
             return inverted;
+        }
+
+        public int PositionOfFirstBit()
+        {
+            if (bits.Count == 0) return 0;
+            return bits.ElementAt(0);
         }
     }
 }

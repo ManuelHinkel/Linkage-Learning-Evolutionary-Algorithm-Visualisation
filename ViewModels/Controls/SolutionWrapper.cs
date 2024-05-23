@@ -69,6 +69,10 @@ namespace LLEAV.ViewModels.Controls
             BackgroundColor = backgroundColor;
         }
 
+        public void ClearColoring()
+        {
+            ChangeBitVisualisation();
+        }
         public void MarkCluster(Cluster? cluster, string color) 
         {
             if (cluster == null) return;

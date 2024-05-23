@@ -121,6 +121,57 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
+        public SolutionWrapper? CurrentSolutionAnimated
+        {
+            get
+            {
+                if (_visualisationData.CurrentSolution != null)
+                {
+                    var wrapper = new SolutionWrapper(_visualisationData.CurrentSolution);
+                    if (_visualisationData.ActiveCluster != null)
+                    {
+                        if (GlobalManager.Instance.IsBarCodeDepiction)
+                        {
+                            wrapper.MarkCluster(GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE,
+                                !_visualisationData.ActiveCluster);
+                        }
+                        else
+                        {
+                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE);
+                        }
+                        wrapper.MarkCluster(_visualisationData.ActiveCluster, "#00000000");
+                    }
+                    return wrapper;
+                }
+                return null;
+            }
+        }
+
+        public SolutionWrapper? CurrentDonorAnimated
+        {
+            get
+            {
+                if (_visualisationData.CurrentDonor != null)
+                {
+                    var wrapper = new SolutionWrapper(_visualisationData.CurrentDonor);
+                    if (_visualisationData.ActiveCluster != null)
+                    {
+                        if (GlobalManager.Instance.IsBarCodeDepiction)
+                        {
+                            wrapper.MarkCluster(GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE, _visualisationData.ActiveCluster);
+                        }
+                        else
+                        {
+                            wrapper.MarkCluster(_visualisationData.ActiveCluster, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE);
+                        }
+                        wrapper.MarkCluster(!_visualisationData.ActiveCluster, "#00000000");
+                    }
+                    return wrapper;
+                }
+                return null;
+            }
+        }
+
         public bool IsMerging
         {
             get { return _visualisationData.IsMerging; }
@@ -259,6 +310,10 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     }));
                     t.Start();
 
+                }
+                else if (property.Equals(nameof(CurrentDonor)) || property.Equals(nameof(CurrentSolution)))
+                {
+                    this.RaisePropertyChanged(property + "Animated");
                 }
 
                 this.RaisePropertyChanged(property);

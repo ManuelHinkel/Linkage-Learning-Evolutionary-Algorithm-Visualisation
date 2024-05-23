@@ -144,6 +144,110 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
+        public SolutionWrapper CurrentSolution1Animated
+        {
+            get
+            {
+                if (_visualisationData.CurrentSolution1 != null)
+                {
+                    var wrapper = new SolutionWrapper(_visualisationData.CurrentSolution1);
+                    if (_visualisationData.ActiveCluster != null)
+                    {
+                        if (GlobalManager.Instance.IsBarCodeDepiction)
+                        {
+                            wrapper.MarkCluster(GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE,
+                                !_visualisationData.ActiveCluster);
+                        }
+                        else
+                        {
+                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE);
+                        }
+                        wrapper.MarkCluster(_visualisationData.ActiveCluster, "#00000000");
+                    }
+                    return wrapper;
+                }
+                return null;
+            }
+        }
+
+        public SolutionWrapper CurrentSolution2Animated
+        {
+            get
+            {
+                if (_visualisationData.CurrentSolution1 != null)
+                {
+                    var wrapper = new SolutionWrapper(_visualisationData.CurrentSolution1);
+                    if (_visualisationData.ActiveCluster != null)
+                    {
+                        if (GlobalManager.Instance.IsBarCodeDepiction)
+                        {
+                            wrapper.MarkCluster(GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE,
+                                !_visualisationData.ActiveCluster);
+                        }
+                        else
+                        {
+                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE);
+                        }
+                        wrapper.MarkCluster(_visualisationData.ActiveCluster, "#00000000");
+                    }
+                    return wrapper;
+                }
+                return null;
+            }
+        }
+
+        public SolutionWrapper CurrentDonor1Animated
+        {
+            get
+            {
+                if (_visualisationData.CurrentDonor1 != null)
+                {
+                    var wrapper = new SolutionWrapper(_visualisationData.CurrentDonor1);
+                    if (_visualisationData.ActiveCluster != null)
+                    {
+                        if (GlobalManager.Instance.IsBarCodeDepiction)
+                        {
+                            wrapper.MarkCluster(GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE,
+                                _visualisationData.ActiveCluster);
+                        }
+                        else
+                        {
+                            wrapper.MarkCluster(_visualisationData.ActiveCluster, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE);
+                        }
+                        wrapper.MarkCluster(!_visualisationData.ActiveCluster, "#00000000");
+                    }
+                    return wrapper;
+                }
+                return null;
+            }
+        }
+
+        public SolutionWrapper CurrentDonor2Animated
+        {
+            get
+            {
+                if (_visualisationData.CurrentDonor1 != null)
+                {
+                    var wrapper = new SolutionWrapper(_visualisationData.CurrentDonor1);
+                    if (_visualisationData.ActiveCluster != null)
+                    {
+                        if (GlobalManager.Instance.IsBarCodeDepiction)
+                        {
+                            wrapper.MarkCluster(GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE,
+                                _visualisationData.ActiveCluster);
+                        }
+                        else
+                        {
+                            wrapper.MarkCluster(_visualisationData.ActiveCluster, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE);
+                        }
+                        wrapper.MarkCluster(!_visualisationData.ActiveCluster, "#00000000");
+                    }
+                    return wrapper;
+                }
+                return null;
+            }
+        }
+
         public bool IsMerging
         {
             get { return _visualisationData.IsMerging; }
@@ -304,6 +408,8 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     }));
                     t.Start();
 
+                } else if (property.Contains("Current")) {
+                    this.RaisePropertyChanged(property + "Animated");
                 }
 
                 this.RaisePropertyChanged(property);

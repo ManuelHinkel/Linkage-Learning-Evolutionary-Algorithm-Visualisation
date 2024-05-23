@@ -28,10 +28,13 @@ namespace LLEAV.Models.Tree
         public ObservableCollection<Node> Nodes { get; private set; }
         public ObservableCollection<Edge> Edges { get; private set; }
 
-        public Tree(IList<Node> nodes, IList<Edge> edges)
+        public Node Root { get; private set; }
+
+        public Tree(IList<Node> nodes, IList<Edge> edges, Node root)
         {
             Nodes = new ObservableCollection<Node>(nodes);
             Edges = new ObservableCollection<Edge>(edges);
+            Root = root;
         }
 
         public void CalculateDimensions()
@@ -82,7 +85,7 @@ namespace LLEAV.Models.Tree
         public void SetText(string text)
         {
             Text = text;
-            Width = 20 + Text.Length * 7;
+            Width = (25 + Text.Length * 6);
             Height = (int)(20 + Math.Sqrt(Width));
         }
 

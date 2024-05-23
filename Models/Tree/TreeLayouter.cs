@@ -10,7 +10,7 @@ namespace LLEAV.Models.Tree
 {
     public class TreeLayouter
     {
-        private const int X_SPACING = 20; 
+        private const int X_SPACING = 30; 
         private const int Y_SPACING = 50;
 
         private Node _root = new Node(null);
@@ -29,12 +29,12 @@ namespace LLEAV.Models.Tree
             _edges = new List<Edge>();
             _root.SetText("root");
 
-            if (currentFOS == null || currentFOS.Count() == 0) return new Tree([_root], []);
+            if (currentFOS == null || currentFOS.Count() == 0) return new Tree([_root], [], _root);
 
             // Cast to list to have access to sort function
             _clusters = new List<Cluster>(currentFOS.Clusters);
-            _clusters.Sort((a, b) => a.Count() - b.Count());
-            
+            _clusters = _clusters.OrderBy(c => c.Count() + c.PositionOfFirstBit() / (float)c.NumberOfBits).ToList();
+
             //Remove the cluster containing all bits
             if (_clusters.Last().Count() == _clusters.Last().NumberOfBits)
             {
@@ -74,7 +74,7 @@ namespace LLEAV.Models.Tree
 
             LayoutTree(revert);
 
-            Tree t = new Tree(_nodes, _edges);
+            Tree t = new Tree(_nodes, _edges, _root);
 
             t.CalculateDimensions();
 

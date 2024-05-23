@@ -115,7 +115,7 @@
 
 					<StackPanel>
 						<Panel Classes.vertical="{Binding IsMerging}"/>
-						<controls:SolutionView DataContext="{Binding CurrentSolution}" Width="130"/>
+						<controls:SolutionView DataContext="{Binding CurrentSolutionAnimated}" Width="130"/>
 					</StackPanel>
 
 
@@ -134,7 +134,7 @@
 
 					<StackPanel>
 						<Panel Classes.vertical="{Binding IsMerging}"/>
-						<controls:SolutionView DataContext="{Binding CurrentDonor}" Width="130"> 
+						<controls:SolutionView DataContext="{Binding CurrentDonorAnimated}" Width="130"> 
 							<controls:SolutionView.RenderTransform>
 								<ScaleTransform ScaleX="-1"/>
 							</controls:SolutionView.RenderTransform>

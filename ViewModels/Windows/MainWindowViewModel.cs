@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace LLEAV.ViewModels.Windows
 {
@@ -81,12 +80,16 @@ namespace LLEAV.ViewModels.Windows
 
         public bool RightButtonEnabled
         {
-            get => !Running && RunData != null && !RunData.Iterations[Iteration].LastIteration;
+            get => !Running && RunData != null && !RunData.Iterations[Iteration].LastIteration
+                && (GlobalManager.Instance.AnimationModus == AnimationModus.NONE
+                        || !GlobalManager.Instance.IsAnimatingFOS);
         }
 
         public bool LeftButtonEnabled
         {
-            get => !Running && Iteration > 0;
+            get => !Running && Iteration > 0
+                 && (GlobalManager.Instance.AnimationModus == AnimationModus.NONE
+                        || !GlobalManager.Instance.IsAnimatingFOS);
         }
 
         public bool IsSaveEnabled
@@ -121,15 +124,21 @@ namespace LLEAV.ViewModels.Windows
         private IterationData _shownIterationData;
         public MainWindowViewModel()
         {
-            Thread playThread = new Thread(new ThreadStart(() => {
+            Thread playThread = new Thread(new ThreadStart(async () => {
                 while (!_stopThread)
                 {
                     if (Running && !GlobalManager.Instance.IsAnimatingDetails 
                         && (GlobalManager.Instance.AnimationModus == AnimationModus.NONE 
                         || !GlobalManager.Instance.IsAnimatingFOS))
                     {
-                        Dispatcher.UIThread.Invoke(StepForward);
+                        long start = Stopwatch.GetTimestamp();
+                        await Dispatcher.UIThread.InvokeAsync(StepForward);
+                        long delay = Stopwatch.GetTimestamp() - start;
+
+                        // Ensure that mouseclick is registered, when calculation takes long
+                        Thread.Sleep((int)(delay / TimeSpan.TicksPerMillisecond));
                     }
+                    RaiseButtonsChanged();
                     Thread.Sleep(100);
                 }
             }));
@@ -144,18 +153,6 @@ namespace LLEAV.ViewModels.Windows
         public void SelectPopulation(int index)
         {
             _models[DepictionIndex].SelectPopulation(index);
-            /*switch (DepictionIndex)
-            {
-                case 0:
-                    BlockModel.SelectPopulation(index);
-                    break;
-                case 1:
-                    GraphModel.SelectPopulation(index);
-                    break;
-                default:
-                    BarModel.SelectPopulation(index);
-                    break;
-            }*/
         }
 
         public void UpdatePopulations(IterationData iterationData)
@@ -167,21 +164,6 @@ namespace LLEAV.ViewModels.Windows
                 RaiseButtonsChanged();
             }
 
-            /*switch (DepictionIndex)
-            {
-                case 0:
-                    BlockModel.Update(_shownIterationData);
-                    this.RaisePropertyChanged(nameof(BlockModel));
-                    break;
-                case 1:
-                    GraphModel.Update(_shownIterationData);
-                    this.RaisePropertyChanged(nameof(GraphModel));
-                    break;
-                default:
-                    BarModel.Update(_shownIterationData);
-                    this.RaisePropertyChanged(nameof(BarModel));
-                    break;
-            }*/
             _models[DepictionIndex].SelectedPopulation = Model != null ? Model.SelectedPopulation : -1;
             _models[DepictionIndex].Update(_shownIterationData);
             Model = _models[DepictionIndex];
@@ -228,7 +210,7 @@ namespace LLEAV.ViewModels.Windows
                 && RunData.Iterations.ElementAt(Iteration).LastIteration) return;
             if (Iteration == MaxIteration)
             {
-                var result = RunData.Algorithm.CalculateIteration(RunData.Iterations[Iteration], RunData);
+                 var result = RunData.Algorithm.CalculateIteration(RunData.Iterations[Iteration], RunData);
                  RunData.Iterations.Add(result.Item1);
 
                 if (ModusIndex == 0)
