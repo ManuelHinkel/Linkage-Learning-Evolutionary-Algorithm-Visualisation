@@ -6,6 +6,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -33,17 +34,15 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
         private IList<IROMStateChange> _stateChanges { get; set; }
         private ROMVisualisationData _visualisationData = new ROMVisualisationData();
 
-        private Tuple<IterationData, ROMVisualisationData, IList<string>>[] _checkpoints;
+        private Tuple<IterationData, ROMVisualisationData, IList<Message>>[] _checkpoints;
 
-        public IList<SolutionWrapper> Solutions
-        {
-            get => _visualisationData.Solutions;
-        }
+        private bool _stopAddSolution;
+        private bool _addSolutionRunning;
+        public ObservableCollection<SolutionWrapper> Solutions { get; } = new ObservableCollection<SolutionWrapper>();
 
-        public IList<SolutionWrapper> NextIteration
-        {
-            get => _visualisationData.NextIteration;
-        }
+        private bool _stopAddNextIteration;
+        private bool _addNextIterationRunning;
+        public ObservableCollection<SolutionWrapper> NextIteration { get; } = [];
 
         public SolutionWrapper CurrentSolution1
         {
@@ -56,11 +55,12 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     {
                         if (GlobalManager.Instance.IsBarCodeDepiction)
                         {
-                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE, CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE);
+                            wrapper.MarkCluster(GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE,
+                                !_visualisationData.ActiveCluster);
                         }
                         else
                         {
-                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE);
+                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE);
                         }
                     }
                     return wrapper;
@@ -80,11 +80,12 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     {
                         if (GlobalManager.Instance.IsBarCodeDepiction)
                         {
-                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE, CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE);
+                            wrapper.MarkCluster(GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE,
+                                !_visualisationData.ActiveCluster);
                         }
                         else
                         {
-                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE);
+                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE);
                         }
                     }
                     return wrapper;
@@ -104,11 +105,12 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     {
                         if (GlobalManager.Instance.IsBarCodeDepiction)
                         {
-                            wrapper.MarkCluster(_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE, CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE);
+                            wrapper.MarkCluster(GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE,
+                                _visualisationData.ActiveCluster);
                         }
                         else
                         {
-                            wrapper.MarkCluster(_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE);
+                            wrapper.MarkCluster(_visualisationData.ActiveCluster, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE);
                         }
                     }
                     return wrapper;
@@ -128,11 +130,12 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     {
                         if (GlobalManager.Instance.IsBarCodeDepiction)
                         {
-                            wrapper.MarkCluster(_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE, CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE);
+                            wrapper.MarkCluster(GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE,
+                                _visualisationData.ActiveCluster);
                         }
                         else
                         {
-                            wrapper.MarkCluster(_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE);
+                            wrapper.MarkCluster(_visualisationData.ActiveCluster, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE);
                         }
                     }
                     return wrapper;
@@ -171,7 +174,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             WorkingData = workingData.Clone();
             MaxStateChange = _stateChanges.Count - 1;
 
-            _checkpoints = new Tuple<IterationData, ROMVisualisationData, IList<string>>[(int)Math.Ceiling(MaxStateChange / (float)CHECKPOINT_SPACING)];
+            _checkpoints = new Tuple<IterationData, ROMVisualisationData, IList<Message>>[(int)Math.Ceiling(MaxStateChange / (float)CHECKPOINT_SPACING)];
 
 
             Thread calculationThread = new Thread(new ThreadStart(() => {
@@ -195,7 +198,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             IterationData workingIterationData = baseData;
             ROMVisualisationData workingVisualisationData = new ROMVisualisationData();
 
-            IList<string> messages = new List<string>();
+            IList<Message> messages = new List<Message>();
 
             for (int i = 0; i < MaxStateChange; i++)
             {
@@ -204,10 +207,10 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 messages.Add(res.Item2);
                 if (i % CHECKPOINT_SPACING == 0)
                 {
-                    _checkpoints[i / CHECKPOINT_SPACING] = new Tuple<IterationData, ROMVisualisationData, IList<string>>(
+                    _checkpoints[i / CHECKPOINT_SPACING] = new Tuple<IterationData, ROMVisualisationData, IList<Message>>(
                         workingIterationData.Clone(),
                         (ROMVisualisationData)workingVisualisationData.Clone(),
-                        new List<string>(messages)
+                        new List<Message>(messages)
                         );
                 }
             }
@@ -263,16 +266,55 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     }));
                     t.Start();
                 }
+                else if (property.Equals(nameof(Solutions)))
+                {
+                    _stopAddSolution = _addSolutionRunning;
+                    while (_addSolutionRunning)
+                    {
+                        Thread.Sleep(10);
+                    }
+
+                    Solutions.Clear();
+
+                    Thread t = new Thread(new ThreadStart(() => {
+                        LoadWrappersAsync(Solutions,
+                            // Clone for use in another thread
+                            new List<SolutionWrapper>(_visualisationData.Solutions),
+                            ref _addSolutionRunning, ref _stopAddSolution);
+                    }));
+                    _addSolutionRunning = true;
+                    t.Start();
+
+                }
+                else if (property.Equals(nameof(NextIteration)))
+                {
+                    _stopAddNextIteration = _addNextIterationRunning;
+                    while (_addNextIterationRunning)
+                    {
+                        Thread.Sleep(10);
+                    }
+
+                    NextIteration.Clear();
+
+                    Thread t = new Thread(new ThreadStart(() => {
+                        LoadWrappersAsync(NextIteration,
+                            // Clone for use in another thread
+                            new List<SolutionWrapper>(_visualisationData.NextIteration),
+                            ref _addNextIterationRunning, ref _stopAddNextIteration);
+                    }));
+                    t.Start();
+
+                }
 
                 this.RaisePropertyChanged(property);
             }
             RaiseButtonsChanged();
         }
 
-        private void VisualizeCheckpoint(Tuple<IterationData, ROMVisualisationData, IList<string>> checkPoint)
+        private void VisualizeCheckpoint(Tuple<IterationData, ROMVisualisationData, IList<Message>> checkPoint)
         {
             MessageBox.Clear();
-            foreach (string m in checkPoint.Item3)
+            foreach (Message m in checkPoint.Item3)
             {
                 MessageBox.Insert(0, m);
             }

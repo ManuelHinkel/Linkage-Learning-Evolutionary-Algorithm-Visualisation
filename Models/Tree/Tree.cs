@@ -82,7 +82,7 @@ namespace LLEAV.Models.Tree
         public void SetText(string text)
         {
             Text = text;
-            Width = 25 + Text.Length * 5;
+            Width = 20 + Text.Length * 7;
             Height = (int)(20 + Math.Sqrt(Width));
         }
 

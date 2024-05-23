@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LLEAV.ViewModels.Controls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,9 +16,10 @@ namespace LLEAV.Models.Algorithms.GOM.StateChange
             _terminate = terminate;
         }
 
-        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData, bool onlyOperateOnData = false)
+        public Tuple<IList<string>, Message> Apply(IterationData state, GOMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
-            return new Tuple<IList<string>, string>([], "Termination criteria was " + (_terminate ? "" : "not ") + "met.");
+            return new Tuple<IList<string>, Message>([], 
+                new Message("Termination criteria was " + (_terminate ? "" : "not ") + "met.", MessagePriority.IMPORTANT));
         }
     }
 }

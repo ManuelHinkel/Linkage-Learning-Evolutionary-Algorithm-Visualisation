@@ -41,6 +41,6 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
     }
     public interface IROMStateChange : IStateChange
     {
-        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false);
+        public Tuple<IList<string>, Message> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false);
     }
 }

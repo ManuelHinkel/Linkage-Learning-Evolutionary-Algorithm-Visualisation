@@ -17,7 +17,7 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
         {
             _population = population;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false)
+        public Tuple<IList<string>, Message> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
             if (!onlyOperateOnData)
             {
@@ -27,7 +27,8 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
             visualisationData.Solutions = _population.Solutions.Select(s => new SolutionWrapper(s)).ToList();
 
 
-            return new Tuple<IList<string>, string>(["Solutions"], "Changed the population currently viewed");
+            return new Tuple<IList<string>, Message>(["Solutions"],
+                new Message("Changed the population currently viewed", MessagePriority.INTERESTING));
         }
 
     }

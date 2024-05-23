@@ -7,17 +7,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace LLEAV.ViewModels.Controls.IterationDepictions
 {
     public abstract class IterationDepictionViewModelBase : ViewModelBase
     {
         public const int CHECKPOINT_SPACING = 50;
-        public const string CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE = "#84fc03";
-        public const string CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE = "#03f8fc";
-
-        public const string CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE = "#1a4f20";
-        public const string CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE = "#1600a3";
+       
         public bool RightButtonEnabled
         {
             get => !isAnimating && !Running  && CurrentStateChange < MaxStateChange;
@@ -111,6 +108,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
         public void Play()
         {            
             Running = !Running;
+            RaiseButtonsChanged();
         }
 
         public void StepForward()
@@ -184,6 +182,27 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
         {
             oldProperties.ExceptWith(animationProperties);
             oldProperties.UnionWith(newProperties);
+        }
+
+        protected void LoadWrappersAsync<T>(ObservableCollection<T> output, IList<T> input, ref bool running, ref bool stoppingCondition)
+        {
+            running = true;
+            foreach (T w in input)
+            {
+                if (stoppingCondition)
+                {
+                    stoppingCondition = false;
+                    running = false;
+                    return;
+                }
+                // Call on UI for correct event handling
+                Dispatcher.UIThread.InvokeAsync(() => {
+                    output.Add(w);
+                });
+                Thread.Sleep(50);
+            }
+            stoppingCondition = false;
+            running = false;
         }
 
         public abstract void ChangeSolutionDepiction();

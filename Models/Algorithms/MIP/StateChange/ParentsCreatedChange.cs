@@ -15,13 +15,14 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
             _generated = generated;
         }
 
-        public Tuple<IList<string>,string> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false)
+        public Tuple<IList<string>, Message> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
 
             visualisationData.Solutions = _generated.Select(
                     s => new Tuple<SolutionWrapper, SolutionWrapper>(new SolutionWrapper(s.Item1), new SolutionWrapper(s.Item2))
                 ).ToList();
-            return new Tuple<IList<string>, string>(["Solutions"], "Created new solutions.");
+            return new Tuple<IList<string>, Message>(["Solutions"], 
+                new Message("Created new solutions.",MessagePriority.IMPORTANT));
         }
 
     }

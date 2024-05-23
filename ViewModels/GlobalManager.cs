@@ -30,6 +30,25 @@ namespace LLEAV.ViewModels
 
     public class GlobalManager
     {
+        public const string TEXT_COLOR = "#25020a";
+        public const string DEFAULT_WHITE = "#feedf2";
+        public const string PRIMARY_COLOR = "#f50f54";
+        public const string SECONDARY_COLOR = "#f9b178";
+        public const string TERTIARY_COLOR = "#f7bd45";
+
+        public const string CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE = "#84fc03";
+        public const string CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE = "#03f8fc";
+
+        public const string CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE = "#1a4f20";
+        public const string CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE = "#1600a3";
+
+
+        public static readonly string[] MESSAGE_COLORS = [
+            SECONDARY_COLOR,
+            CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE,
+            CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE,
+        ];
+
         public const int ANIMATION_TIME = 500;
         private static GlobalManager? _instance;
         public static GlobalManager Instance

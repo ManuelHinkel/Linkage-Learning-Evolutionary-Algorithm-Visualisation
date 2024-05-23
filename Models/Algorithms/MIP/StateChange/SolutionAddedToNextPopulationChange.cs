@@ -1,4 +1,5 @@
 ﻿using LLEAV.ViewModels;
+using LLEAV.ViewModels.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,7 +17,7 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
         { 
             _population = population;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false)
+        public Tuple<IList<string>, Message> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
            
             if (state.Populations.Count < _population.PyramidIndex) { throw new Exception("Wrong execution of operations, can't skip a population."); }
@@ -28,7 +29,8 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
                 state.Populations[_population.PyramidIndex] = _population;
             }
 
-            return new Tuple<IList<string>, string>([], "Added solution(s) to the next population.");
+            return new Tuple<IList<string>, Message>([], 
+                new Message("Added solution(s) to the next population.", MessagePriority.INTERESTING));
         }
 
     }

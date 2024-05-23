@@ -5,7 +5,6 @@ using LLEAV.Models.Algorithms.MIP.StateChange;
 using LLEAV.Models.Algorithms.ROM.StateChange;
 using LLEAV.ViewModels.Controls.IterationDepictions;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -43,7 +42,6 @@ namespace LLEAV.ViewModels.Windows
                     break;
             }
             ContentViewModel!.Running = running;
-
         }
 
         public void Stop()
@@ -61,7 +59,6 @@ namespace LLEAV.ViewModels.Windows
                 _contentViewModel.ChangeSolutionDepiction();
             }
         }
-
 
     }
 }

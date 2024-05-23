@@ -1,6 +1,7 @@
 ﻿using LLEAV.Models;
 using LLEAV.Models.Algorithms.MIP.StateChange;
 using LLEAV.ViewModels;
+using LLEAV.ViewModels.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
             _cluster = cluster;
         }
 
-        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false)
+        public Tuple<IList<string>, Message> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
             if (!onlyOperateOnData)
             {
@@ -25,7 +26,8 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
             }
             visualisationData.ActiveCluster = _cluster;
 
-            return new Tuple<IList<string>, string>(["CurrentDonor1", "CurrentDonor2", "CurrentSolution1", "CurrentSolution2"], "Changed the cluster to: \n" + _cluster.Mask);
+            return new Tuple<IList<string>, Message>(["CurrentDonor1", "CurrentDonor2", "CurrentSolution1", "CurrentSolution2"],
+                  new Message("Changed the cluster to: \n" + _cluster.Mask, MessagePriority.INTERESTING));
         }
     }
 }

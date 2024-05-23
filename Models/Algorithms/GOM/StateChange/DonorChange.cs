@@ -1,6 +1,7 @@
 ﻿using LLEAV.Models;
 using LLEAV.Models.Algorithms.MIP.StateChange;
 using LLEAV.ViewModels;
+using LLEAV.ViewModels.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,14 +18,15 @@ namespace LLEAV.Models.Algorithms.GOM.StateChange
         {
             _donor = donor;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData, bool onlyOperateOnData = false)
+        public Tuple<IList<string>, Message> Apply(IterationData state, GOMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
 
             visualisationData.CurrentDonor = _donor;
             visualisationData.Solutions.ToList().ForEach(s =>  s.Selected = false );
             visualisationData.Solutions.First(d => d.Solution.Equals(_donor)).Selected = true;
 
-            return new Tuple<IList<string>, string>(["CurrentDonor"], "Changed the donor to: \n" + _donor.Bits);
+            return new Tuple<IList<string>, Message>(["CurrentDonor"], 
+                new Message("Changed the donor to: \n" + _donor.Bits));
         }
     }
 }

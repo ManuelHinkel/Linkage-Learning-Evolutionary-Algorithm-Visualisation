@@ -1,4 +1,5 @@
 ﻿using LLEAV.ViewModels;
+using LLEAV.ViewModels.Controls;
 using System;
 using System.Collections.Generic;
 
@@ -17,14 +18,15 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
             _p0 = p0;
             _p1 = p1;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false)
+        public Tuple<IList<string>, Message> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
             visualisationData.CurrentSolution1 = _o0;
             visualisationData.CurrentSolution2 = _o1;
             visualisationData.CurrentDonor1 = _p0;
             visualisationData.CurrentDonor2 = _p1;
 
-            return new Tuple<IList<string>, string>(["CurrentDonor1", "CurrentDonor2", "CurrentSolution1", "CurrentSolution2"], "Changed active solutions");
+            return new Tuple<IList<string>, Message>(["CurrentDonor1", "CurrentDonor2", "CurrentSolution1", "CurrentSolution2"],
+                new Message("Changed active solutions", MessagePriority.INTERESTING));
         }
     }
 }

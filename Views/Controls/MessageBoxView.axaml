@@ -9,18 +9,33 @@
 	<Border Margin="0,5,0,0"
 			CornerRadius="5"
 			Classes="stackContainer">
-		<DockPanel Margin="5">
-			<TextBlock DockPanel.Dock="Top"
+		<Grid Margin="5"
+			  ColumnDefinitions="Auto ,*"
+			  RowDefinitions="Auto,*">
+			<TextBlock Grid.Column="0" 
+					   Grid.Row="0"
 					   Text="Messages:"
-					   Margin="5"/>
-			<ScrollViewer DockPanel.Dock="Top"
+					   Margin="5"
+					   HorizontalAlignment="Left"/>
+			<ComboBox Grid.Column="1"
+					  Grid.Row="0"
+					  SelectedIndex="{Binding MessagePriorityIndex}"
+					  HorizontalAlignment="Right">
+				<ComboBoxItem>All</ComboBoxItem>
+				<ComboBoxItem>Interessting</ComboBoxItem>
+				<ComboBoxItem>Important</ComboBoxItem>
+			</ComboBox>
+			<ScrollViewer Grid.Column="0"
+					      Grid.Row="1"
+						  Grid.ColumnSpan="2"
 						  VerticalScrollBarVisibility="Visible">
 				<ItemsControl ItemsSource="{Binding Messages}"
 							  Margin="5,0,5,0">
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
-							<Border Classes = "message">
-								<TextBlock Text="{Binding .}"
+							<Border Classes = "message"
+									Background="{Binding Color}">
+								<TextBlock Text="{Binding Content}"
 										   HorizontalAlignment="Left"
 											TextWrapping="Wrap"/>
 							</Border>
@@ -28,6 +43,6 @@
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
 			</ScrollViewer>
-		</DockPanel>
+		</Grid>
 	</Border>
 </UserControl>

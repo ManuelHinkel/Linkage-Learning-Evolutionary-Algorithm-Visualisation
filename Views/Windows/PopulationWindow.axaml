@@ -5,22 +5,26 @@
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:data="using:LLEAV.Models.Tree"
+		xmlns:controls="clr-namespace:LLEAV.Views.Controls;assembly=LLEAV"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="LLEAV.Views.Windows.PopulationWindow"
 		x:DataType="vm:PopulationWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="PopulationWindow"
-		Classes="bigWindow">
+		Classes="bigWindow"
+		MinWidth="800">
 
 
 	<Grid HorizontalAlignment="Stretch"
 		  VerticalAlignment="Stretch"
-		  ColumnDefinitions="*,Auto"
+		  ColumnDefinitions="Auto,*"
 		  IsVisible="{CompiledBinding AnimationModus, 
 						Converter={StaticResource animationModusConverter},
 						ConverterParameter=FOS}">
 		<!--List of Solutions-->
-		<ScrollViewer Margin="0,10,0,10">
+		<ScrollViewer Margin="0,10,0,10"
+					  MinWidth="250"
+					  MaxWidth="350">
 			<ItemsControl Margin="10,0,10,0"
 						  ItemsSource="{Binding Solutions}">
 				<ItemsControl.ItemTemplate>
@@ -30,30 +34,8 @@
 								Classes="stackContainer">
 							<Grid ColumnDefinitions="*,Auto,Auto"
 							  Margin="5">
-								<Border CornerRadius="5"
-										Padding="5"
-										Grid.Column="0"
-										Classes ="background">
-									<ScrollViewer HorizontalContentAlignment="Center"
-											      HorizontalScrollBarVisibility="Auto"
-												  AllowAutoHide="False">
-										<ItemsControl ItemsSource="{Binding Bits}">
-											<ItemsControl.ItemsPanel>
-												<ItemsPanelTemplate>
-													<StackPanel Orientation="Horizontal"/>
-												</ItemsPanelTemplate>
-											</ItemsControl.ItemsPanel>
-											<ItemsControl.ItemTemplate>
-												<DataTemplate x:DataType="cm:ColoredChar">
-													<TextBlock Text="{Binding Character}"
-															   Foreground="{Binding Color}"
-															   Width="10"/>
-												</DataTemplate>
-											</ItemsControl.ItemTemplate>
-										</ItemsControl>
-									</ScrollViewer>
-								</Border>
-
+								<controls:SolutionView Grid.Column="0"/>
+						
 								<Panel Grid.Column="1"
 									   Classes="seperator"
 									   Width="2"
@@ -78,8 +60,8 @@
 				Padding="10"
 				CornerRadius="10"
 				MinWidth="400"
-				MaxWidth="800"
-				Classes="stackContainer"> 
+				Classes="stackContainer"
+				HorizontalAlignment="Stretch"> 
 			<ScrollViewer HorizontalScrollBarVisibility="Visible"
 						  VerticalScrollBarVisibility="Visible"
 						  DataContext="{Binding Tree}">

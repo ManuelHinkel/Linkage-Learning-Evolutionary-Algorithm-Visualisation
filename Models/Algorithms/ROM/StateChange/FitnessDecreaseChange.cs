@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LLEAV.ViewModels.Controls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,13 +17,13 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
             _o0 = o0;
             _o1 = o1;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false)
+        public Tuple<IList<string>, Message> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
             visualisationData.IsFitnessDecreasing = true;
             visualisationData.CurrentSolution1 = _o0;
             visualisationData.CurrentSolution2 = _o1;
-            return new Tuple<IList<string>, string>(["IsFitnessDecreasing", "CurrentSolution1", "CurrentSolution2"],
-                "Fitness Decreased. Reverted solutions:\n " + _o0.Bits + "\n and: " + _o1.Bits);
+            return new Tuple<IList<string>, Message>(["IsFitnessDecreasing", "CurrentSolution1", "CurrentSolution2"],
+               new Message("Fitness Decreased. Reverted solutions:\n " + _o0.Bits + "\n and: " + _o1.Bits));
         }
     }
 }

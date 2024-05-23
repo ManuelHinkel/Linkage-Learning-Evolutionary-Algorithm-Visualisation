@@ -45,6 +45,6 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
     }
     public interface IMIPStateChange : IStateChange
     {
-        public Tuple<IList<string>,string> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false);
+        public Tuple<IList<string>, Message> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false);
     }
 }

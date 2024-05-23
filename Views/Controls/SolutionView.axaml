@@ -11,42 +11,48 @@
 			 VerticalAlignment="Stretch">
 
 	<Border CornerRadius="5"
-			Padding="5"
 			Classes="stackContainer"
 			Classes.clicked="{Binding Selected}"
 			HorizontalAlignment="Stretch">
-		<ScrollViewer HorizontalScrollBarVisibility="Auto"
-					  VerticalScrollBarVisibility="Disabled"
-					  HorizontalContentAlignment="Center"
-					  HorizontalAlignment="Stretch"
-					  AllowAutoHide="False">
-			<ItemsControl ItemsSource="{Binding Bits}">
-				<ItemsControl.ItemsPanel>
-					<ItemsPanelTemplate>
-						<StackPanel Orientation="Horizontal"
-									HorizontalAlignment="Center"
-									Spacing="{Binding $parent[UserControl].DataContext.Spacing}"/>
-					</ItemsPanelTemplate>
-				</ItemsControl.ItemsPanel>
+		<Border CornerRadius="5"
+				Padding="5"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Stretch"
+				Background="{Binding BackgroundColor}">
+			<ScrollViewer HorizontalScrollBarVisibility="Auto"
+						  VerticalScrollBarVisibility="Disabled"
+						  HorizontalContentAlignment="Center"
+						  HorizontalAlignment="Stretch"
+						  AllowAutoHide="False">
+				<ItemsControl ItemsSource="{Binding Bits}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Horizontal"
+										HorizontalAlignment="Center"
+										Spacing="{Binding $parent[UserControl].DataContext.Spacing}"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
 
-				<ItemsControl.ItemTemplate>
-					<DataTemplate x:DataType="cm:ColoredChar">
-						<Panel x:Name="panel"
-							   HorizontalAlignment="Stretch">
-							<TextBlock Text="{Binding Character}"
-									   Foreground="{Binding Color}"
-									   Width="10"
-									   IsVisible="{Binding !$parent[UserControl].DataContext.IsBarCode}"/>
-							<Panel Width="{Binding  $parent[UserControl].DataContext.BarCodeWidth}"
-								   MinHeight="10"
-								   VerticalAlignment="Stretch"
-								   HorizontalAlignment="Stretch"
-								   Background="{Binding Color}"
-								   IsVisible="{Binding $parent[UserControl].DataContext.IsBarCode}"/>
-						</Panel>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-		</ScrollViewer>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate x:DataType="cm:ColoredChar">
+							<Panel x:Name="panel"
+								   HorizontalAlignment="Stretch">
+								<TextBlock Text="{Binding Character}"
+										   Foreground="{Binding Color}"
+										   Width="10"
+										   IsVisible="{Binding !$parent[UserControl].DataContext.IsBarCode}"/>
+								<Panel Width="{Binding  $parent[UserControl].DataContext.BarCodeWidth}"
+									   MinHeight="10"
+									   VerticalAlignment="Stretch"
+									   HorizontalAlignment="Stretch"
+									   Background="{Binding Color}"
+									   IsVisible="{Binding $parent[UserControl].DataContext.IsBarCode}"/>
+							</Panel>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</ScrollViewer>
+
+		</Border>
 	</Border>
 </UserControl>

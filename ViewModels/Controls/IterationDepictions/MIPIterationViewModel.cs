@@ -7,6 +7,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -32,17 +33,15 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
         private IList<IMIPStateChange> _stateChanges;
         private MIPVisualisationData _visualisationData = new MIPVisualisationData();
 
-        private Tuple<IterationData, MIPVisualisationData, IList<string>>[] _checkpoints;
+        private Tuple<IterationData, MIPVisualisationData, IList<Message>>[] _checkpoints;
 
-        public IList<Tuple<SolutionWrapper,SolutionWrapper>> Solutions
-        {
-            get => _visualisationData.Solutions;
-        }
+        private bool _stopAddSolution;
+        private bool _addSolutionRunning;
+        public ObservableCollection<Tuple<SolutionWrapper,SolutionWrapper>> Solutions { get; } = new ObservableCollection<Tuple<SolutionWrapper, SolutionWrapper>>();
 
-        public IList<SolutionWrapper> Donors
-        {
-            get => _visualisationData.Donors;
-        }
+        private bool _stopAddDonor;
+        private bool _addDonorRunning;
+        public ObservableCollection<SolutionWrapper> Donors { get; } = [];
 
         public SolutionWrapper? CurrentSolution
         {
@@ -55,11 +54,12 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     {
                         if (GlobalManager.Instance.IsBarCodeDepiction)
                         {
-                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE, CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE);
+                            wrapper.MarkCluster(GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE,
+                                !_visualisationData.ActiveCluster);
                         }
                         else
                         {
-                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE);
+                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE);
                         }
                     }
                     return wrapper;
@@ -79,11 +79,12 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     {
                         if (GlobalManager.Instance.IsBarCodeDepiction)
                         {
-                            wrapper.MarkCluster(_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE, CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE);
+                            wrapper.MarkCluster(GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE,
+                                _visualisationData.ActiveCluster);
                         }
                         else
                         {
-                            wrapper.MarkCluster(_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE);
+                            wrapper.MarkCluster(_visualisationData.ActiveCluster, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE);
                         }
                     }
                     return wrapper;
@@ -103,12 +104,14 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     {
                         if (GlobalManager.Instance.IsBarCodeDepiction)
                         {
-                            wrapper.MarkCluster(_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE, CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE);
-                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE, CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE);
+                            wrapper.MarkCluster(GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE,
+                                _visualisationData.ActiveCluster);
+                            wrapper.MarkCluster(GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE,
+                                !_visualisationData.ActiveCluster);
                         }else
                         {
-                            wrapper.MarkCluster(_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE);
-                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE);
+                            wrapper.MarkCluster(_visualisationData.ActiveCluster, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE);
+                            wrapper.MarkCluster(!_visualisationData.ActiveCluster, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE);
                         }
                     }
                     return wrapper;
@@ -140,7 +143,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             WorkingData = workingData.Clone();
             MaxStateChange = _stateChanges.Count - 1;
 
-            _checkpoints = new Tuple<IterationData, MIPVisualisationData, IList<string>>[(int)Math.Ceiling(MaxStateChange / (float)CHECKPOINT_SPACING)];
+            _checkpoints = new Tuple<IterationData, MIPVisualisationData, IList<Message>>[(int)Math.Ceiling(MaxStateChange / (float)CHECKPOINT_SPACING)];
 
 
             Thread calculationThread = new Thread(new ThreadStart(() => {
@@ -164,7 +167,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             IterationData workingIterationData = baseData;
             MIPVisualisationData workingVisualisationData = new MIPVisualisationData();
 
-            IList<string> messages = new List<string>();
+            IList<Message> messages = new List<Message>();
 
             for (int i = 0; i < MaxStateChange; i++)
             {
@@ -173,10 +176,10 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 messages.Add(res.Item2);
                 if (i % CHECKPOINT_SPACING == 0)
                 {
-                    _checkpoints[i / CHECKPOINT_SPACING] = new Tuple<IterationData, MIPVisualisationData, IList<string>>(
+                    _checkpoints[i / CHECKPOINT_SPACING] = new Tuple<IterationData, MIPVisualisationData, IList<Message>>(
                         workingIterationData.Clone(),
                         (MIPVisualisationData)workingVisualisationData.Clone(),
-                        new List<string>(messages)
+                        new List<Message>(messages)
                         );
                 }
             }
@@ -217,6 +220,46 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     }));
                     t.Start();
                 }
+                else if (property.Equals(nameof(Solutions)))
+                {
+                    _stopAddSolution = _addSolutionRunning;
+                    while (_addSolutionRunning)
+                    {
+                        Thread.Sleep(10);
+                    }
+
+                    Solutions.Clear();
+
+                    Thread t = new Thread(new ThreadStart(() => {
+                        LoadWrappersAsync(Solutions,
+                            // Clone for use in another thread
+                            new List<Tuple<SolutionWrapper, SolutionWrapper>>(_visualisationData.Solutions),
+                            ref _addSolutionRunning, ref _stopAddSolution);
+                    }));
+                    _addSolutionRunning = true;
+                    t.Start();
+
+                }
+                else if (property.Equals(nameof(Donors)))
+                {
+                    _stopAddDonor = _addDonorRunning;
+                    while (_addDonorRunning)
+                    {
+                        Thread.Sleep(10);
+                    }
+
+                    Donors.Clear();
+
+                    Thread t = new Thread(new ThreadStart(() => {
+                        LoadWrappersAsync(Donors,
+                            // Clone for use in another thread
+                            new List<SolutionWrapper>(_visualisationData.Donors),
+                            ref _addDonorRunning, ref _stopAddDonor);
+                    }));
+                    t.Start();
+
+                }
+
 
 
                 this.RaisePropertyChanged(property);
@@ -224,10 +267,10 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             RaiseButtonsChanged();
         }
 
-        private void VisualizeCheckpoint(Tuple<IterationData, MIPVisualisationData, IList<string>> checkPoint)
+        private void VisualizeCheckpoint(Tuple<IterationData, MIPVisualisationData, IList<Message>> checkPoint)
         {
             MessageBox.Clear();
-            foreach (string m in checkPoint.Item3)
+            foreach (Message m in checkPoint.Item3)
             {
                 MessageBox.Insert(0, m);
             }

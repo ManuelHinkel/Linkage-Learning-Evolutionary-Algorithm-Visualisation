@@ -41,6 +41,6 @@ namespace LLEAV.Models.Algorithms.GOM.StateChange
     }
     public interface IGOMStateChange : IStateChange
     {
-        public Tuple<IList<string>, string> Apply(IterationData state, GOMVisualisationData visualisationData, bool onlyOperateOnData = false);
+        public Tuple<IList<string>, Message> Apply(IterationData state, GOMVisualisationData visualisationData, bool onlyOperateOnData = false);
     }
 }

@@ -1,4 +1,5 @@
-﻿using DynamicData;
+﻿using Avalonia.Threading;
+using DynamicData;
 using DynamicData.Kernel;
 using LLEAV.Models;
 using LLEAV.Models.Tree;
@@ -11,6 +12,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace LLEAV.ViewModels.Windows
 {
@@ -19,11 +22,12 @@ namespace LLEAV.ViewModels.Windows
         private static readonly string[] _colors = [
             "#ff0000",
             "#00ff00",
-            "#0000ff",
+            "#00aaff",
             "#ffff00",
             "#ff00ff",
             "#00ffff",
         ];
+
         private static int _id;
 
         public AnimationModus AnimationModus
@@ -36,22 +40,37 @@ namespace LLEAV.ViewModels.Windows
 
         private bool[] _reservedColors = new bool[_colors.Length];
 
-        private Population? currentlyShownPopulation;
+        private Population? _currentlyShownPopulation;
 
         public ObservableCollection<SolutionWrapper> Solutions { get; private set; }
             = new ObservableCollection<SolutionWrapper> { };
 
+        private IList<SolutionWrapper> _wrappers = new List<SolutionWrapper>();
+
+        private bool _stopLoading;
+        private bool _threadRunning;
+
         public void SetPopulation(Population population)
         {
-            if (currentlyShownPopulation == population) return;
+            if (_currentlyShownPopulation == population) return;
+
+            _stopLoading = _threadRunning;
+
+            //Wait for loading Thread to stop
+            while (_threadRunning) Thread.Sleep(10);
+
 
             Solutions.Clear();
-            Solutions.AddRange(population.Solutions.Select(s => new SolutionWrapper(s)));
+
+            Thread t = new Thread(new ThreadStart(() => {
+                LoadSolutions(population);
+            }));
+            t.Start();
 
 
             TreeLayouter layouter = new TreeLayouter();
 
-            if (currentlyShownPopulation != null && currentlyShownPopulation.Equals(population.Previous)) 
+            if (_currentlyShownPopulation != null && _currentlyShownPopulation.Equals(population.Previous)) 
             {
                 layouter.UpdateTree(population.FOS, Tree!);
 
@@ -76,7 +95,30 @@ namespace LLEAV.ViewModels.Windows
                 _reservedColors = new bool[_colors.Length];
                 Tree = layouter.CalculateTree(population.FOS);
             }
-            currentlyShownPopulation = population;
+            _currentlyShownPopulation = population;
+        }
+
+        private void LoadSolutions(Population population)
+        {
+            _threadRunning = true;
+            _wrappers.Clear();
+            _wrappers = population.Solutions.Select(s => new SolutionWrapper(s, GlobalManager.DEFAULT_WHITE, GlobalManager.TEXT_COLOR)).ToList();
+
+            foreach (SolutionWrapper w in _wrappers)
+            {
+                if (_stopLoading)
+                {
+                    _stopLoading = false;
+                    _threadRunning = false;
+                    return;
+                }
+                Dispatcher.UIThread.InvokeAsync(() => {
+                    Solutions.Add(w);
+                });
+                Thread.Sleep(50);
+            }
+            _threadRunning = false;
+            _stopLoading = false;
         }
 
         public void ToggleCluster(Node node)
@@ -117,9 +159,16 @@ namespace LLEAV.ViewModels.Windows
             }
 
             node.Color = color;
-            foreach (SolutionWrapper solutionWrapper in Solutions)
+
+            foreach (SolutionWrapper solutionWrapper in _wrappers)
             {
-                solutionWrapper.MarkCluster(node.Cluster, color);
+                if (!GlobalManager.Instance.IsBarCodeDepiction)
+                {
+                    solutionWrapper.MarkCluster(node.Cluster, color);
+                } else
+                {
+                    solutionWrapper.MarkCluster(color, color.Replace('f', '9'), node.Cluster);
+                }
             }
         }
  
@@ -167,7 +216,22 @@ namespace LLEAV.ViewModels.Windows
 
         public void ChangeSolutionDepiction()
         {
+            if (_currentlyShownPopulation == null) return;
 
+            foreach(Node node in Tree!.Nodes)
+            {
+                SetMarkedStatus(node, false);
+            }
+
+            foreach (SolutionWrapper solutionWrapper in _wrappers)
+            {
+                solutionWrapper.IsBarCode = GlobalManager.Instance.IsBarCodeDepiction;
+                /*foreach (Node n in Tree!.Nodes)
+                {
+                    if (n.Cluster == null) continue;
+                    solutionWrapper.MarkCluster(n.Cluster, n.Color);
+                }*/
+            }
         }
     }
 }

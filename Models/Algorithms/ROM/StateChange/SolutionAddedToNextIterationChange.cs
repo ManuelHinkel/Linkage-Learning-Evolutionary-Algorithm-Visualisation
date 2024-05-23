@@ -15,12 +15,13 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
         {
             _solution = solution;
         }
-        public Tuple<IList<string>, string> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false)
+        public Tuple<IList<string>, Message> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
 
             visualisationData.NextIteration.Add(new SolutionWrapper(_solution));
 
-            return new Tuple<IList<string>, string>([], "Added solution to the next iteration.");
+            return new Tuple<IList<string>, Message>([],
+                new Message("Added solution to the next iteration.", MessagePriority.INTERESTING));
         }
     }
 }

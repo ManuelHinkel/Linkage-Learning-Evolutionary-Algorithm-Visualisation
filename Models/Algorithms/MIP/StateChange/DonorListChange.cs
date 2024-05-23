@@ -19,7 +19,7 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
             _population = population;
         }
 
-        public Tuple<IList<string>, string> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false)
+        public Tuple<IList<string>, Message> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
             visualisationData.CurrentSolution = null;
             visualisationData.CurrentDonor = null;
@@ -28,7 +28,8 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
             visualisationData.ActivePopulation = _population;
             visualisationData.Donors = _population.Solutions.Select(s => new SolutionWrapper(s)).ToList();
 
-            return new Tuple<IList<string>, string>(["Donors", "Merged", "CurrentDonor", "CurrentSolution"], "Changed the population and donor list.");
+            return new Tuple<IList<string>, Message>(["Donors", "Merged", "CurrentDonor", "CurrentSolution"], 
+                new Message("Changed the population and donor list.",MessagePriority.IMPORTANT));
         }
 
     }
