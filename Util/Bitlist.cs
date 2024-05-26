@@ -1,5 +1,6 @@
 ﻿using LLEAV.Models;
 using System;
+using System.Diagnostics;
 
 namespace LLEAV.Util
 {
@@ -46,6 +47,22 @@ namespace LLEAV.Util
             int slotIndex = index % 64;
             long mask = 1L << slotIndex;
             return (bitArray[slot] & mask) > 0;
+        }
+
+        public BitList Get(int startIndex, int endIndex)
+        {
+            int count = endIndex - startIndex;
+            BitList range = new BitList(count);
+
+            for (int i = 0; i < count; i++)
+            {
+                if (Get(i + startIndex))
+                {
+                    range.Set(i);
+                }
+            }
+
+            return range; 
         }
 
         public void Flip(int index)
@@ -204,6 +221,7 @@ namespace LLEAV.Util
                 b.Set(i, random.Next(0, 2) == 0 ? false : true);
             }
             return b;
+
         }
     }
 }

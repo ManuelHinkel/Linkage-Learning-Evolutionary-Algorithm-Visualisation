@@ -47,7 +47,10 @@ namespace LLEAV.Models.Tree
                 int currentWidth = n.Width + n.X;   
                 if (currentHeight > Height) { Height = currentHeight; }
                 if (currentWidth > Width) {  Width = currentWidth; }
-            } 
+            }
+
+            Width = (int)(Width * 1.02f);
+            Height = (int)(Height * 1.02f);
         }
     }
 

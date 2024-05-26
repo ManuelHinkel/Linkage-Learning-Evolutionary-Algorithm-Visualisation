@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.FitnessFunction
 {
-    public class LeadingOnes : IFitnessFunction
+    public class OneMax : IFitnessFunction
     {
         public double Fitness(Solution solution)
         {

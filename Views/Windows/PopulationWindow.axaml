@@ -21,6 +21,7 @@
 		  IsVisible="{CompiledBinding AnimationModus, 
 						Converter={StaticResource animationModusConverter},
 						ConverterParameter=FOS}">
+		
 		<!--List of Solutions-->
 		<ScrollViewer Margin="0,10,0,10"
 					  MinWidth="250"
@@ -61,88 +62,101 @@
 				CornerRadius="10"
 				MinWidth="400"
 				Classes="stackContainer"
-				HorizontalAlignment="Stretch"> 
-			<ScrollViewer HorizontalScrollBarVisibility="Visible"
+				HorizontalAlignment="Stretch">
+			<Panel>
+
+				<Button Grid.Column="1"
+						HorizontalAlignment="Right"
+						VerticalAlignment="Top"
+						Margin="5"
+						Click="Save_Clicked"
+						ZIndex="1">
+					<Image Source="/Assets/save.png"
+						 Height="25"/>
+				</Button>
+
+				<ScrollViewer HorizontalScrollBarVisibility="Visible"
 						  VerticalScrollBarVisibility="Visible"
 						  DataContext="{Binding Tree}">
-				<Panel>
-					<ItemsControl ItemsSource="{Binding Nodes}">
-						<ItemsControl.ItemsPanel>
-							<ItemsPanelTemplate>
-								<Canvas HorizontalAlignment="Left"
-										VerticalAlignment="Top"
-										Width="{Binding $parent[ScrollViewer].DataContext.Width}"
-										Height="{Binding $parent[ScrollViewer].DataContext.Height}"/>
-							</ItemsPanelTemplate>
-						</ItemsControl.ItemsPanel>
+					<Panel x:Name="Tree">
+						<ItemsControl ItemsSource="{Binding Nodes}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<Canvas HorizontalAlignment="Left"
+											VerticalAlignment="Top"
+											Width="{Binding $parent[ScrollViewer].DataContext.Width}"
+											Height="{Binding $parent[ScrollViewer].DataContext.Height}"/>
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
 
-						<!--Properties regarding the container have to be specified here-->
-						<ItemsControl.Styles>
-							<Style Selector="ItemsControl > ContentPresenter">
-								<Setter Property="Canvas.Left" Value="{Binding X}"/>
-								<Setter Property="Canvas.Top" Value="{Binding Y}"/>
-								<Setter Property="Transitions">
-									<Transitions>
-										<DoubleTransition Property="Canvas.Left" Duration="0:0:0.5"/>
-										<DoubleTransition Property="Canvas.Top" Duration="0:0:0.5"/>
-									</Transitions>
-								</Setter>
-							</Style>
-						</ItemsControl.Styles>
+							<!--Properties regarding the container have to be specified here-->
+							<ItemsControl.Styles>
+								<Style Selector="ItemsControl > ContentPresenter">
+									<Setter Property="Canvas.Left" Value="{Binding X}"/>
+									<Setter Property="Canvas.Top" Value="{Binding Y}"/>
+									<Setter Property="Transitions">
+										<Transitions>
+											<DoubleTransition Property="Canvas.Left" Duration="0:0:0.5"/>
+											<DoubleTransition Property="Canvas.Top" Duration="0:0:0.5"/>
+										</Transitions>
+									</Setter>
+								</Style>
+							</ItemsControl.Styles>
 
 
-						<ItemsControl.DataTemplates>
-							<DataTemplate x:DataType="data:Node">
-								<Button HorizontalAlignment="Center"
-										VerticalAlignment="Center"
-										Classes="transparentButton"
-										Command="{CompiledBinding $parent[Window].((vm:PopulationWindowViewModel)DataContext).ToggleCluster }"
-										CommandParameter="{Binding .}">
-									<Panel>
-										<Ellipse Width="{Binding Width}"
-												 Height="{Binding Height}"
-												 Classes.new="{Binding IsNewNode}"
-												 Classes.colored="{Binding Color, 
+							<ItemsControl.DataTemplates>
+								<DataTemplate x:DataType="data:Node">
+									<Button HorizontalAlignment="Center"
+											VerticalAlignment="Center"
+											Classes="transparentButton"
+											Command="{CompiledBinding $parent[Window].((vm:PopulationWindowViewModel)DataContext).ToggleCluster }"
+											CommandParameter="{Binding .}">
+										<Panel>
+											<Ellipse Width="{Binding Width}"
+													 Height="{Binding Height}"
+													 Classes.new="{Binding IsNewNode}"
+													 Classes.colored="{Binding Color, 
 										 Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-											<Ellipse.Styles>
-												<Style Selector="Ellipse.colored">
-													<Setter Property="Fill" Value="{Binding Color}"/>
-												</Style>
-											</Ellipse.Styles>
-										</Ellipse>
-										<TextBlock  HorizontalAlignment="Center"
-													VerticalAlignment="Center"
-													Text="{Binding Text}"
-													IsHitTestVisible="False"/>
-									</Panel>
-								</Button>
-							</DataTemplate>
-						</ItemsControl.DataTemplates>
-					</ItemsControl>
+												<Ellipse.Styles>
+													<Style Selector="Ellipse.colored">
+														<Setter Property="Fill" Value="{Binding Color}"/>
+													</Style>
+												</Ellipse.Styles>
+											</Ellipse>
+											<TextBlock  HorizontalAlignment="Center"
+														VerticalAlignment="Center"
+														Text="{Binding Text}"
+														IsHitTestVisible="False"/>
+										</Panel>
+									</Button>
+								</DataTemplate>
+							</ItemsControl.DataTemplates>
+						</ItemsControl>
 
-					<ItemsControl ItemsSource="{Binding Edges}">
-						<ItemsControl.ItemsPanel>
-							<ItemsPanelTemplate>
-								<Canvas HorizontalAlignment="Left"
-										VerticalAlignment="Top"
-										Width="{Binding $parent[ScrollViewer].DataContext.Width}"
-										Height="{Binding $parent[ScrollViewer].DataContext.Height}"/>
-							</ItemsPanelTemplate>
-						</ItemsControl.ItemsPanel>
+						<ItemsControl ItemsSource="{Binding Edges}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<Canvas HorizontalAlignment="Left"
+											VerticalAlignment="Top"
+											Width="{Binding $parent[ScrollViewer].DataContext.Width}"
+											Height="{Binding $parent[ScrollViewer].DataContext.Height}"/>
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
 
-						<ItemsControl.DataTemplates>
-							<DataTemplate x:DataType="data:Edge">
-								<Line StartPoint="{Binding Start}"
-									  EndPoint="{Binding End}"
-									  Classes.appearing="{CompiledBinding Appearing}"
-									  Classes.disappearing="{CompiledBinding Disappering}"/>
-							</DataTemplate>
-						</ItemsControl.DataTemplates>
-					</ItemsControl>
-				</Panel>
-				
-				
-			</ScrollViewer>
+							<ItemsControl.DataTemplates>
+								<DataTemplate x:DataType="data:Edge">
+									<Line StartPoint="{Binding Start}"
+										  EndPoint="{Binding End}"
+										  Classes.appearing="{CompiledBinding Appearing}"
+										  Classes.disappearing="{CompiledBinding Disappering}"/>
+								</DataTemplate>
+							</ItemsControl.DataTemplates>
+						</ItemsControl>
+					</Panel>
+
+
+				</ScrollViewer>
+			</Panel>
 		</Border>
 	</Grid>
 </Window>

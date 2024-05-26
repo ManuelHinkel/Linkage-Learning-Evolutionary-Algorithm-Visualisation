@@ -23,7 +23,8 @@
 				   VerticalAlignment="Center"
 				   Grid.Column="0"
 				   Grid.Row="0"/>
-		<NumericUpDown Grid.Column="1"
+		<NumericUpDown x:Name="SolutionLength"
+				       Grid.Column="1"
 					   Grid.Row="0"
 					   VerticalAlignment="Center"
 					   HorizontalAlignment="Stretch"
@@ -38,7 +39,8 @@
 				   VerticalAlignment="Center"
 				   Grid.Column="0"
 				   Grid.Row="1"/>
-		<ComboBox  HorizontalAlignment="Stretch"
+		<ComboBox x:Name="FitnessFunction"
+				  HorizontalAlignment="Stretch"
 				   VerticalAlignment="Center"
 				   Grid.Column="1"
 				   Grid.Row="1"
@@ -56,7 +58,8 @@
 				   VerticalAlignment="Center"
 				   Grid.Column="0"
 				   Grid.Row="2"/>
-		<ComboBox  HorizontalAlignment="Stretch"
+		<ComboBox x:Name="FOS"
+				  HorizontalAlignment="Stretch"
 				   VerticalAlignment="Center"
 				   Grid.Column="1"
 				   Grid.Row="2"
@@ -74,7 +77,8 @@
 				   VerticalAlignment="Center"
 				   Grid.Column="0"
 				   Grid.Row="3"/>
-		<ComboBox  HorizontalAlignment="Stretch"
+		<ComboBox x:Name="TerminationCriteria" 
+				  HorizontalAlignment="Stretch"
 				   VerticalAlignment="Center"
 				   Grid.Column="1"
 				   Grid.Row="3"
@@ -92,7 +96,8 @@
 				   VerticalAlignment="Center"
 				   Grid.Column="0"
 				   Grid.Row="4"/>
-		<TextBox  HorizontalAlignment="Stretch"
+		<TextBox x:Name="TerminationArgument"
+				HorizontalAlignment="Stretch"
 				  VerticalAlignment="Center"
 				  Grid.Column="1"
 				  Grid.Row="4"
@@ -104,7 +109,8 @@
 			   VerticalAlignment="Center"
 			   Grid.Column="0"
 			   Grid.Row="5"/>
-		<ComboBox  HorizontalAlignment="Stretch"
+		<ComboBox x:Name="Algorithm"
+				  HorizontalAlignment="Stretch"
 				   VerticalAlignment="Center"
 				   Grid.Column="1"
 				   Grid.Row="5"
@@ -124,7 +130,8 @@
 				   Grid.Column="0"
 				   Grid.Row="6"
 				   IsVisible="{Binding ShowLocalSearchFunction}"/>
-		<ComboBox  HorizontalAlignment="Stretch"
+		<ComboBox x:Name="LocalSearchFunction"
+				  HorizontalAlignment="Stretch"
 				   VerticalAlignment="Center"
 				   Grid.Column="1"
 				   Grid.Row="6"
@@ -144,7 +151,8 @@
 				   Grid.Column="0"
 				   Grid.Row="6"
 				   IsVisible="{Binding ShowPopulationSize}"/>
-		<NumericUpDown Grid.Column="1"
+		<NumericUpDown x:Name="PopulationSize"
+					   Grid.Column="1"
 					   Grid.Row="6"
 					   VerticalAlignment="Center"
 					   HorizontalAlignment="Stretch"
@@ -161,7 +169,8 @@
 				   Grid.Column="0"
 				   Grid.Row="7"
 				   IsVisible="{Binding ShowGrowthFunction}"/>
-		<ComboBox  HorizontalAlignment="Stretch"
+		<ComboBox x:Name="GrowthFunction"
+				  HorizontalAlignment="Stretch"
 				   VerticalAlignment="Center"
 				   Grid.Column="1"
 				   Grid.Row="7"
@@ -194,7 +203,8 @@
 			</StackPanel>
 		</Border>
 		
-		<Button Grid.Column="0"
+		<Button x:Name="Ok"
+				Grid.Column="0"
 				Grid.Row="9"
 				HorizontalAlignment="Center"
 				VerticalAlignment="Center"
@@ -202,7 +212,8 @@
 			Ok
 		</Button>
 
-		<Button Grid.Column="1"
+		<Button x:Name="Cancel"
+				Grid.Column="1"
 				Grid.Row="9"
 				HorizontalAlignment="Center"
 				VerticalAlignment="Center"

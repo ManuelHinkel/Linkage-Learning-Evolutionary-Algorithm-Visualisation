@@ -23,27 +23,32 @@
 					DockPanel.Dock="Top"
 					Spacing="5">
 			<Menu VerticalAlignment="Top">
-				<MenuItem Header="File">
-					<MenuItem Header="Open"
+				<MenuItem x:Name="File"
+						  Header="File">
+					<MenuItem x:Name="OpenFile"
+							  Header="Open"
 							  Click="OpenFileButton_Clicked"/>
 					<Separator/>
-					<MenuItem Header="New"
+					<MenuItem x:Name="NewFile"
+							  Header="New"
 							  Command="{Binding New}"/>
 					<Separator/>
 					
-					<MenuItem Header="Save"
+					<MenuItem x:Name="SaveFile"
+							  Header="Save"
 							  Command="{Binding Save}"
 							  IsEnabled="{Binding IsSaveEnabled}">
 					</MenuItem>
 					
 					<Separator/>
-					<MenuItem Header="SaveAs"
+					<MenuItem x:Name="SaveAsFile"
+							  Header="SaveAs"
 							  Click="SaveFileAsButton_Clicked"
 							  IsEnabled="{Binding RunData, 
 								Converter={x:Static ObjectConverters.IsNotNull}}"/>
 				</MenuItem>
 			</Menu>
-			<ComboBox Name="depictionBox"
+			<ComboBox x:Name="depictionBox"
 					  SelectedIndex="{Binding DepictionIndex}">
 				<ComboBoxItem>Block</ComboBoxItem>
 				<ComboBoxItem>Graph</ComboBoxItem>
@@ -86,7 +91,8 @@
 					<Image Source="/Assets/pause.png"
 						   Height="25"/>
 				</Button>
-				<Button Grid.Column="1"
+				<Button x:Name="PlayButton"
+						Grid.Column="1"
 						Command="{Binding Play}"
 						HorizontalAlignment="Center"
 						IsVisible="{Binding !Running}"
