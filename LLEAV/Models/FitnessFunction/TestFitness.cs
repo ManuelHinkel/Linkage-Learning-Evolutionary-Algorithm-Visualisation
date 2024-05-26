@@ -17,5 +17,15 @@ namespace LLEAV.Models.FitnessFunction
             value += 2 * (solution.Bits.Get(3) & solution.Bits.Get(4) ? 1 : 0);
             return value;
         }
+
+        public string GetValidationErrorMessage(int solutionLength)
+        {
+            return "Solution length must be at least seven.";
+        }
+
+        public bool ValidateSolutionLength(int solutionLength)
+        {
+            return solutionLength > 6;
+        }
     }
 }

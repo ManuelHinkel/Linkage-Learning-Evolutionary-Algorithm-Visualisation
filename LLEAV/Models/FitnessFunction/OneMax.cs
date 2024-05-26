@@ -24,5 +24,15 @@ namespace LLEAV.Models.FitnessFunction
             }
             return leadingOnes;
         }
+
+        public string GetValidationErrorMessage(int solutionLength)
+        {
+            return "Solution length must be at least one.";
+        }
+
+        public bool ValidateSolutionLength(int solutionLength)
+        {
+            return solutionLength > 0;
+        }
     }
 }

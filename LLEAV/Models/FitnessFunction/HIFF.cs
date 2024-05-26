@@ -1,6 +1,7 @@
 ﻿using LLEAV.Util;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,16 @@ namespace LLEAV.Models.FitnessFunction
             _sum = 0;
             F(solution.Bits);
             return _sum;
+        }
+
+        public string GetValidationErrorMessage(int solutionLength)
+        {
+            return "Solution length mus be a power of two.";
+        }
+
+        public bool ValidateSolutionLength(int solutionLength)
+        {
+            return (solutionLength != 0) && ((solutionLength & (solutionLength - 1)) == 0);
         }
 
         private double F(BitList bits)

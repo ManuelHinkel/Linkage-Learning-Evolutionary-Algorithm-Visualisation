@@ -124,13 +124,19 @@ namespace LLEAV.ViewModels.Windows
                 return;
             }
 
+            var f = Activator.CreateInstance(FitnessFunctions[SelectedFitnessFuntion]) as IFitnessFunction;
 
+            if (!f.ValidateSolutionLength(numberOfBits))
+            {
+                ErrorMessage = f.GetValidationErrorMessage(numberOfBits);
+                return;
+            }
 
             RunData newRunData = new RunData
             {
                 Algorithm = Activator.CreateInstance(Algorithms[SelectedAlgorithm]) as ILinkageLearningAlgorithm,
                 FOSFunction = Activator.CreateInstance(FOSFunctions[SelectedFOSFunction]) as IFOSFunction,
-                FitnessFunction = Activator.CreateInstance(FitnessFunctions[SelectedFitnessFuntion]) as IFitnessFunction,
+                FitnessFunction = f,
                 TerminationCriteria = terminationCriteria,
                 NumberOfBits = numberOfBits,
                 NumberOfSolutions = populationSize,

@@ -49,5 +49,15 @@ namespace LLEAV.Models.FitnessFunction
             }
             return numberOfOnes;
         }
+
+        public bool ValidateSolutionLength(int solutionLength)
+        {
+            return solutionLength % K == 0;
+        }
+
+        public string GetValidationErrorMessage(int solutionLength)
+        {
+            return "Solution length must be a multiple of: " + K + "\nMaybe you ment: " + (solutionLength + (K - (solutionLength % K)));
+        }
     }
 }
