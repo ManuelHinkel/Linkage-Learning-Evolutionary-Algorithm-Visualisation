@@ -32,7 +32,7 @@ namespace LLEAV.ViewModels
     {
         public const string TEXT_COLOR = "#25020a";
         public const string DEFAULT_WHITE = "#feedf2";
-        public const string PRIMARY_COLOR = "#f50f54";
+        public const string PRIMARY_COLOR = "#ff8566";
         public const string SECONDARY_COLOR = "#f9b178";
         public const string TERTIARY_COLOR = "#f7bd45";
 

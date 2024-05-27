@@ -53,7 +53,8 @@
 
 			<!--MessageBox-->
 			<controls:MessageBoxView DataContext="{Binding MessageBox}"
-									 Grid.Row="1"/>
+									 Grid.Row="1"
+									  IsEnabled="{Binding $parent[UserControl].IsEnabled}"/>
 		</Grid>
 
 		<!--NextIteration-->

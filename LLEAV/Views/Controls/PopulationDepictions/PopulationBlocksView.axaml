@@ -14,7 +14,8 @@
 	</UserControl.Resources>
 	
 	<ScrollViewer HorizontalScrollBarVisibility="Auto">
-		<ItemsControl ItemsSource="{Binding Containers}">
+		<ItemsControl ItemsSource="{Binding Containers}"
+					   x:Name="Containers">
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
 					<DockPanel HorizontalAlignment="Center"

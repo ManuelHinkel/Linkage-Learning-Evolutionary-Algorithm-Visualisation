@@ -11,13 +11,14 @@
 
 	<Application.Resources>
 		<converter:AnimationModusConverter x:Key="animationModusConverter" />
+		<converter:IntEqualsConverter x:Key="intEqualsConverter" />
 	</Application.Resources>
 	
 	<Application.Resources>
 		<x:Double x:Key="ScrollBarSize">7.5</x:Double>
 		<SolidColorBrush x:Key="TextColor">#25020a</SolidColorBrush>
 		<SolidColorBrush x:Key="BackgroundColor">#feedf2</SolidColorBrush>
-		<SolidColorBrush x:Key="PrimaryColor">#f50f54</SolidColorBrush>
+		<SolidColorBrush x:Key="PrimaryColor">#ff8566</SolidColorBrush>
 		<SolidColorBrush x:Key="SecondaryColor">#f9b178</SolidColorBrush>
 		<SolidColorBrush x:Key="TertiaryColor">#f7bd45</SolidColorBrush>
 	</Application.Resources>
@@ -37,14 +38,14 @@
 		<SolidColorBrush x:Key="TextControlForeground">#25020a</SolidColorBrush>
 		<SolidColorBrush x:Key="TextControlBackgroundPointerOver">#f7bd45</SolidColorBrush>
 		<SolidColorBrush x:Key="TextControlBorderBrushFocused">#f9b178</SolidColorBrush>
-		<SolidColorBrush x:Key="TextControlBackgroundFocused">#f50f54</SolidColorBrush>
+		<SolidColorBrush x:Key="TextControlBackgroundFocused">#ff8566</SolidColorBrush>
 
 		<!--Slider-->
 		<SolidColorBrush x:Key="SliderTrackFillPointerOver">#f7bd45</SolidColorBrush>
 		<SolidColorBrush x:Key="SliderTrackFillPressed">#f7bd45</SolidColorBrush>
 
-		<SolidColorBrush x:Key="SliderTrackValueFillPointerOver">#f50f54</SolidColorBrush>
-		<SolidColorBrush x:Key="SliderTrackValueFillPressed">#f50f54</SolidColorBrush>
+		<SolidColorBrush x:Key="SliderTrackValueFillPointerOver">#ff8566</SolidColorBrush>
+		<SolidColorBrush x:Key="SliderTrackValueFillPressed">#ff8566</SolidColorBrush>
 
 		<SolidColorBrush x:Key="SliderThumbBackgroundPointerOver">#f7bd45</SolidColorBrush>
 		<SolidColorBrush x:Key="SliderThumbBackgroundPressed">#f7bd45</SolidColorBrush>

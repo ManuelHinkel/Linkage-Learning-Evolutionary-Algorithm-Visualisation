@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 
 namespace LLEAV.Views.Controls.PopulationDepictions
 {
-    public partial class PopulationBoxPlotView : UserControl
+    public partial class PopulationBoxPlotView : PopulationDepictionViewBase
     {
         public PopulationBoxPlotView()
         {

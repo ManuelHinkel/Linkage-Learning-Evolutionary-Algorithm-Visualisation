@@ -31,7 +31,8 @@
 
 		<ScrollViewer HorizontalScrollBarVisibility="Auto"
 					  Grid.Column="0" >
-			<ItemsControl ItemsSource="{Binding Containers}">
+			<ItemsControl ItemsSource="{Binding Containers}"
+						   x:Name="Containers">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
 						<DockPanel LastChildFill="False"/>

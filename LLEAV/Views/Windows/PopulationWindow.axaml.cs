@@ -23,12 +23,14 @@ namespace LLEAV.Views.Windows
         {
             var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
-                Title = "Save Bitmap",
+                Title = "Save Image",
             });
 
             if (file is not null)
             {
                 var target = this.Find<Panel>("Tree");
+
+                if (target == null) return;
 
                 var pixelSize = new PixelSize((int)target.Bounds.Width, (int)target.Bounds.Height);
                 var size = new Size(target.Bounds.Width, target.Bounds.Height);
