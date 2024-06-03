@@ -33,6 +33,9 @@ namespace LLEAVTest
         public static Window Find<T>() where T: Window {
 
             var app = AvaloniaApp.GetApp();
+
+            WaitFor(() => app.Windows.OfType<T>().Count() > 0, 500);
+
             return app.Windows.OfType<T>().Single();
         } 
 
@@ -43,6 +46,13 @@ namespace LLEAVTest
             Assert.True(b.IsVisible);
 
             b.Command.Execute(null);
+        }
+
+        public static void PressButton(Button b)
+        {
+            Assert.True(b.IsVisible);
+
+            b.Command.Execute(b.DataContext);
         }
 
         public static void CreateAlgorithmRun(int solutionLength, int fitnessFunction, int fosFunction, 
@@ -106,6 +116,44 @@ namespace LLEAVTest
 
 
             PressButton("Ok", newAlgorithmWindow);
+        }
+
+        public static void NextIteration()
+        {
+            var w = GlobalManager.Instance.MainWindow;
+
+            PressButton("ForwardButton", w);
+        }
+
+        public static void ChangeAnimationModus(int modus)
+        {
+            var w = GlobalManager.Instance.MainWindow;
+
+            var combobox = w.Find<ComboBox>("AnimationModus");
+            combobox.SelectedIndex = modus;
+
+            Assert.Equal(modus, combobox.SelectedIndex);
+        }
+
+        public static int GetAnimationModus()
+        {
+            var w = GlobalManager.Instance.MainWindow;
+
+            var combobox = w.Find<ComboBox>("AnimationModus");
+            return combobox.SelectedIndex;
+        }
+
+
+        public static void CloseAllExceptMain()
+        {
+            var app = AvaloniaApp.GetApp();
+            app.Windows.ToList().ForEach(w => { if (!w.GetType().Equals(typeof(MainWindow))) { w.Close(); } });
+        }
+
+        public static async void CloseWindow<T>() where T : Window
+        {
+            var app = AvaloniaApp.GetApp();
+            app.Windows.ToList().ForEach(w => { if (w.GetType().Equals(typeof(T))) { w.Close(); } });
         }
     }
 }

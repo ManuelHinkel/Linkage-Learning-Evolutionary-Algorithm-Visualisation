@@ -72,15 +72,30 @@
 			</ItemsControl>
 		</ScrollViewer>
 
+		<!--Animation Area-->
 		<Border HorizontalAlignment="Center"
 				VerticalAlignment="Top"
 				Grid.Column="1"
 				Grid.Row="1"
 				Classes="panel">
 			<Grid ColumnDefinitions="200,130,200"
-				  RowDefinitions="200,40"
+				  RowDefinitions="Auto,200,40"
 				  Margin="20">
+
+				<TextBlock Text="Solution"
+						   Grid.Column="0"
+						   Grid.Row="0"
+						   HorizontalAlignment="Left"
+						    Margin="20,0,0,10"/>
+
+				<TextBlock Text="Donor"
+						   Grid.Column="2"
+						   Grid.Row="0"
+						   HorizontalAlignment="Right"
+						   Margin="0,0,20,10"/>
+				
 				<Panel Grid.Column="0"
+					   Grid.Row="1"
 				       HorizontalAlignment="Left"
 					   VerticalAlignment="Top"
 					   ZIndex="1"
@@ -89,6 +104,7 @@
 					<controls:SolutionView  DataContext="{Binding CurrentSolution}"/>
 				</Panel>
 				<Panel Grid.Column="2"
+					   Grid.Row="1"
 					   HorizontalAlignment="Right"
 					   VerticalAlignment="Top"
 					   ZIndex="1"
@@ -97,7 +113,7 @@
 					<controls:SolutionView DataContext="{Binding CurrentDonor}"/>
 				</Panel>
 				<Panel Grid.Column="1"
-					   Grid.Row="1"
+					   Grid.Row="2"
 					   Width="130"
 					   VerticalAlignment="Top"
 					   ZIndex="1"
@@ -109,7 +125,7 @@
 
 				<!--Animation Panel Left-->
 				<StackPanel Grid.Column="0"
-							Grid.Row="0"
+							Grid.Row="1"
 							Orientation="Horizontal"
 							IsVisible="{Binding IsMerging}">
 					<Panel Classes.horizontal="{Binding IsMerging}"/>
@@ -125,7 +141,7 @@
 
 				<!--Animation Panel Right-->
 				<StackPanel Grid.Column="2"
-							Grid.Row="0"
+							Grid.Row="1"
 							Orientation="Horizontal"
 							IsVisible="{Binding IsMerging}">
 					<StackPanel.RenderTransform>
@@ -146,7 +162,7 @@
 
 				<!--Animation Panel Left Apply Merge-->
 				<StackPanel Grid.Column="0"
-							Grid.Row="0"
+							Grid.Row="1"
 							Orientation="Horizontal"
 							IsVisible="{Binding IsApplyingCrossover}">
 					<Panel Classes.horizontalRevert="{Binding IsApplyingCrossover}"/>

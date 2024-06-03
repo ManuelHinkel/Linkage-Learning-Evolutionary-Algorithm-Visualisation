@@ -5,7 +5,6 @@ using LLEAV.ViewModels;
 using Avalonia.Interactivity;
 using System.Xml.Linq;
 using Avalonia.Threading;
-using Xunit.Extensions.Ordering;
 using LLEAV.ViewModels.Controls.IterationDepictions;
 using System.Diagnostics;
 using Xunit.Abstractions;
@@ -16,6 +15,8 @@ using LLEAV.Views.Controls.PopulationDepictions;
 using LLEAV.Models.FitnessFunction;
 using LLEAV.Util;
 using LLEAV.Models;
+using System.Collections;
+using Xunit.Extensions.Ordering;
 
 namespace LLEAVTest
 {
@@ -61,7 +62,7 @@ namespace LLEAVTest
             var p = newAlgorithmWindow.FindControl<NumericUpDown>("PopulationSize");
             Assert.False(p.IsVisible);
 
-            await Task.Delay(500);
+            Thread.Sleep(500);
 
             Helpers.PressButton("Cancel", newAlgorithmWindow);
 
@@ -71,7 +72,7 @@ namespace LLEAVTest
         [Fact, Order(2)]
         public async void TestCreateAlgorithmRun()
         {
-            await Task.Delay(100);
+            Thread.Sleep(100);
             var w = GlobalManager.Instance.MainWindow;
             var b = w.FindControl<Button>("PlayButton");
 
@@ -84,13 +85,12 @@ namespace LLEAVTest
 
             Helpers.WaitFor(() => i.IsVisible);
 
-            Assert.True(((IterationDetailWindowViewModel)i.DataContext).ContentViewModel is MIPIterationViewModel);
+            Assert.Equal(typeof(MIPIterationViewModel), i.Content.GetType());
         }
-
         [Fact, Order(3)]
         public async void TestCreateAlgorithmRun2()
         {
-            await Task.Delay(100);
+            Thread.Sleep(100);
 
             var w = GlobalManager.Instance.MainWindow;
             var b = w.FindControl<Button>("PlayButton");
@@ -105,13 +105,12 @@ namespace LLEAVTest
 
             Helpers.WaitFor(() => i.IsVisible);
 
-            Assert.True(((IterationDetailWindowViewModel)i.DataContext).ContentViewModel is ROMIterationViewModel);
+            Assert.Equal(typeof(ROMIterationViewModel), i.Content.GetType());
         }
-
         [Fact, Order(4)]
         public async void TestPopulationDepiction()
         {
-            await Task.Delay(1000);
+            Thread.Sleep(1000);
 
             var w = GlobalManager.Instance.MainWindow;
 
@@ -132,25 +131,54 @@ namespace LLEAVTest
             }
             if (!foundPopulationBlock)
             {
-                Assert.Fail("Should only show a Population Block");
+                Assert.Fail("Should show a Population Block");
             }
 
-            /*HIFF h = new HIFF();
-            Solution s = new Solution();
-
-
-            BitList b = new BitList(8);
-
-            b.Set(2);
-            b.Set(3);
-
-            b.Set(4);
-            b.Set(5);
-            b.Set(6);
-            b.Set(7);
-
-            s.Bits = b;
-            _out.WriteLine(h.Fitness(s).ToString());*/
         }
+        [Fact, Order(5)]
+        public async void TestNextIteration()
+        {
+            _out.WriteLine("Next Iteration");
+            Thread.Sleep(2000);
+
+            Helpers.ChangeAnimationModus(1);
+
+            Helpers.NextIteration();
+
+            Helpers.CloseAllExceptMain();
+
+            var app = AvaloniaApp.GetApp();
+            Helpers.WaitFor(() => app.Windows.Count == 1, 500);
+        }
+        [Fact, Order(6)]
+        public async void TestOtherAlgorithms()
+        {
+            _out.WriteLine("Other Algorithms");
+
+            Thread.Sleep(1000);
+
+            Helpers.ChangeAnimationModus(0);
+
+            Helpers.WaitFor(() => Helpers.GetAnimationModus() == 0);
+
+            Helpers.CreateAlgorithmRun(14, 2, 1, 0, "10", 1, 0);
+
+            var i = Helpers.Find<IterationDetailWindow>();
+
+            Helpers.WaitFor(() => i.IsVisible);
+            Assert.Equal(typeof(MIPIterationViewModel),i.Content.GetType());
+
+            Thread.Sleep(1000);
+
+            Helpers.CreateAlgorithmRun(16, 3, 0, 0, "10", 3, populationSize: 10);
+
+            Thread.Sleep(1000);
+
+            i = Helpers.Find<IterationDetailWindow>();
+
+            Assert.Equal(typeof(GOMIterationViewModel), i.Content.GetType());
+        }
+
+      
     }
 }

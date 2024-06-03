@@ -100,6 +100,14 @@ namespace LLEAV.ViewModels.Windows
             }
         }
 
+        public bool IsScreenSaveEnabled
+        {
+            get
+            {
+                return RunData != null;
+            }
+        }
+
         [Reactive]
         public int TickSpacing { get; private set; } = 1;
 
@@ -122,6 +130,10 @@ namespace LLEAV.ViewModels.Windows
         private bool _excludeRecalculationInNextIterationChange;
 
         private IterationData _shownIterationData;
+
+        [Reactive]
+        public string Message { get; private set; }
+
         public MainWindowViewModel()
         {
             Thread playThread = new Thread(new ThreadStart(async () => {
@@ -161,6 +173,7 @@ namespace LLEAV.ViewModels.Windows
             if (_shownIterationData.LastIteration)
             {
                 Running = false;
+                Message = RunData.TerminationCriteria.GetTerminationString();
                 RaiseButtonsChanged();
             }
 
@@ -172,6 +185,7 @@ namespace LLEAV.ViewModels.Windows
 
         public void ChangeCurrentIteration()
         {
+            Message = "";
             GlobalManager.Instance.CurrentIteration = Iteration;
 
             // If iteration should be visualized (Globalmanager calls UpdatePopulations())
@@ -207,7 +221,10 @@ namespace LLEAV.ViewModels.Windows
             GlobalManager.Instance.NotifyFinishedIteration();
 
             if (Iteration < RunData.Iterations.Count
-                && RunData.Iterations.ElementAt(Iteration).LastIteration) return;
+                && RunData.Iterations.ElementAt(Iteration).LastIteration)
+            {
+                return;
+            }
             if (Iteration == MaxIteration)
             {
                  var result = RunData.Algorithm.CalculateIteration(RunData.Iterations[Iteration], RunData);
@@ -313,6 +330,7 @@ namespace LLEAV.ViewModels.Windows
             }
             Iteration = 0;
             RaiseButtonsChanged();
+            this.RaisePropertyChanged(nameof(IsScreenSaveEnabled));
         }
 
         private void RaiseButtonsChanged()

@@ -410,6 +410,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
                 } else if (property.Contains("Current")) {
                     this.RaisePropertyChanged(property + "Animated");
+                } else if (property.Equals("NextIterationAdded"))
+                {
+                    NextIteration.Add(_visualisationData.NextIteration.Last());
                 }
 
                 this.RaisePropertyChanged(property);

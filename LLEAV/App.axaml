@@ -65,9 +65,9 @@
 		<Style Selector="Window">
 			<Setter Property="Background" Value="{DynamicResource BackgroundColor}"/>
 			<Setter Property="MinWidth" Value="750"/>
-			<Setter Property="MinHeight" Value="500"/>
+			<Setter Property="MinHeight" Value="550"/>
 			<Setter Property="Width" Value="750"/>
-			<Setter Property="Height" Value="500"/>
+			<Setter Property="Height" Value="550"/>
 		</Style>
 		
 		<Style Selector="StackPanel">

@@ -36,6 +36,8 @@ namespace LLEAV.ViewModels
         public const string SECONDARY_COLOR = "#f9b178";
         public const string TERTIARY_COLOR = "#f7bd45";
 
+        public const string GRAY = "#444444";
+
         public const string CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE = "#84fc03";
         public const string CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE = "#03f8fc";
 

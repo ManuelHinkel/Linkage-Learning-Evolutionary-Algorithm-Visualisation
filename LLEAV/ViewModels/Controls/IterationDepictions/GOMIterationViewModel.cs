@@ -38,11 +38,11 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
         private bool _stopAddSolution;
         private bool _addSolutionRunning;
-        public ObservableCollection<SolutionWrapper> Solutions { get; } = new ObservableCollection<SolutionWrapper>();
+        public ObservableCollection<SolutionWrapper> Solutions { get; } = [];
 
         private bool _stopAddNextIteration;
         private bool _addNextIterationRunning;
-        public ObservableCollection<SolutionWrapper> NextIteration { get; } = [];
+        public ObservableCollection<SolutionWrapper> NextIteration { get; private set; } = [];
 
         public SolutionWrapper? CurrentSolution
         {
@@ -314,6 +314,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 else if (property.Equals(nameof(CurrentDonor)) || property.Equals(nameof(CurrentSolution)))
                 {
                     this.RaisePropertyChanged(property + "Animated");
+                } else if (property.Equals("NextIterationAdded"))
+                {
+                    NextIteration.Add(_visualisationData.NextIteration.Last());
                 }
 
                 this.RaisePropertyChanged(property);

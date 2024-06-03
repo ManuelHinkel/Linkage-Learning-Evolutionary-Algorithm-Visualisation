@@ -9,7 +9,6 @@ namespace LLEAV.Models.LocalSearchFunction
 {
     public interface ILocalSearchFunction
     {
-        public Solution Execute(Solution solution, IFitnessFunction fitnessFunction);
         public Solution Execute(Solution solution, IFitnessFunction fitnessFunction, Random random);
     }
 }

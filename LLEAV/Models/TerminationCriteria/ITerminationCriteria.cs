@@ -14,5 +14,7 @@ namespace LLEAV.Models.TerminationCriteria
         public abstract bool CreateArgumentFromString(string arg);
         public abstract byte[] ConvertArgumentToBytes();
         public abstract bool CreateArgumentFromBytes(byte[] bytes);
+
+        public abstract string GetTerminationString();
     }
 }

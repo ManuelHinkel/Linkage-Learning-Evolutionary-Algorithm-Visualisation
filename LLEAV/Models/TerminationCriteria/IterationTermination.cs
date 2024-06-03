@@ -43,6 +43,11 @@ namespace LLEAV.Models.TerminationCriteria
             return typeof(int);
         }
 
+        public string GetTerminationString()
+        {
+            return "Iteration " + _iteration + " reached.";
+        }
+
         public bool ShouldTerminate(IterationData iteration)
         {
             return iteration.Iteration >= _iteration;

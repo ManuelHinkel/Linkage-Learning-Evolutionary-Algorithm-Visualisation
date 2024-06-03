@@ -40,7 +40,7 @@
 						<Border CornerRadius="10"
 								Width="{Binding Population.Solutions.Count,
 								Converter={StaticResource populationSizeToBlockWidthConverter}}"
-								Height="100"
+								Height="120"
 								Classes="blockContainer"
 								Classes.clicked="{Binding Selected}">
 							<Grid Margin="10"

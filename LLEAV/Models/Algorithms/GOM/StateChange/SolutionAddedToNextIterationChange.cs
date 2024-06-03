@@ -20,8 +20,8 @@ namespace LLEAV.Models.Algorithms.GOM.StateChange
 
             visualisationData.NextIteration.Add(new SolutionWrapper(_solution));
 
-            return new Tuple<IList<string>, Message>([], 
-                new Message("Added solution to the next iteration.", MessagePriority.INTERESTING));
+            return new Tuple<IList<string>, Message>(["NextIterationAdded"], 
+                new Message("Added solution to the next iteration.", MessagePriority.IMPORTANT));
         }
     }
 }

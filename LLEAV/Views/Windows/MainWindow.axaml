@@ -56,7 +56,8 @@
 				<ComboBoxItem>BoxPlot</ComboBoxItem>
 			</ComboBox>
 
-			<ComboBox SelectedIndex="{Binding ModusIndex}">
+			<ComboBox SelectedIndex="{Binding ModusIndex}"
+					  x:Name="AnimationModus">
 				<ComboBoxItem>Full</ComboBoxItem>
 				<ComboBoxItem>FOS</ComboBoxItem>
 				<ComboBoxItem>None</ComboBoxItem>
@@ -100,7 +101,8 @@
 					<Image Source="/Assets/play.png"
 						   Height="25"/>
 				</Button>
-				<Button Grid.Column="0"
+				<Button x:Name="BackButton" 
+						Grid.Column="0"
 						Command="{Binding StepBackward}"
 						HorizontalAlignment="Center"
 						IsEnabled="{Binding LeftButtonEnabled}">
@@ -113,7 +115,8 @@
 						</Image.RenderTransform>
 					</Image>
 				</Button>
-				<Button Grid.Column="2"
+				<Button x:Name="ForwardButton"
+						Grid.Column="2"
 						Command="{Binding StepForward}"
 						HorizontalAlignment="Center"
 						IsEnabled="{Binding RightButtonEnabled}">
@@ -124,7 +127,19 @@
 			</Grid>
 		</StackPanel>
 
-
+		<Border  DockPanel.Dock="Top"
+			 HorizontalAlignment="Stretch"
+			 Margin="20"
+			 Classes="panel"
+			 CornerRadius="5"
+			 Padding="5"
+			 IsVisible="{Binding Message,
+					 Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+			<TextBlock HorizontalAlignment="Center"
+					TextWrapping="Wrap"
+						Text="{Binding Message}"/>
+		</Border>
+		
 		<Panel DockPanel.Dock="Top" 
 			   VerticalAlignment="Stretch"
 			   Margin="10">
@@ -134,7 +149,8 @@
 						VerticalAlignment="Top"
 						Margin="5"
 						Click="Save_Clicked"
-						ZIndex="1">
+						ZIndex="1"
+					IsVisible="{Binding IsScreenSaveEnabled}">
 				<Image Source="/Assets/save.png"
 					 Height="25"/>
 			</Button>

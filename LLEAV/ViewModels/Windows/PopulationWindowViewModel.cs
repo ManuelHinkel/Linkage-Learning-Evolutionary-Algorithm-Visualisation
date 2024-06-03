@@ -98,7 +98,7 @@ namespace LLEAV.ViewModels.Windows
         private void LoadSolutions(Population population)
         {
             _threadRunning = true;
-            _wrappers = population.Solutions.Select(s => new SolutionWrapper(s, GlobalManager.DEFAULT_WHITE, GlobalManager.TEXT_COLOR)).ToList();
+            _wrappers = population.Solutions.Select(s => new SolutionWrapper(s, GlobalManager.DEFAULT_WHITE, GlobalManager.GRAY)).ToList();
             Dispatcher.UIThread.InvokeAsync(() => {
                 Solutions.Clear();
             });

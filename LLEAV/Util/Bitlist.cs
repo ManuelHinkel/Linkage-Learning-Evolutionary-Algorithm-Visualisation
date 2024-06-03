@@ -47,6 +47,7 @@ namespace LLEAV.Util
             int slotIndex = index % 64;
             long mask = 1L << slotIndex;
             return (bitArray[slot] & mask) > 0;
+
         }
 
         public BitList Get(int startIndex, int endIndex)

@@ -45,9 +45,5 @@ namespace LLEAV.Models.LocalSearchFunction
             return copy;
         }
 
-        public Solution Execute(Solution solution, IFitnessFunction fitnessFunction)
-        {
-            return Execute(solution, fitnessFunction, new Random());
-        }
     }
 }
