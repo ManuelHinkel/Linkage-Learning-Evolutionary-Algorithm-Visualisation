@@ -73,9 +73,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
         {
             get
             {
-                if (_visualisationData.CurrentSolution1 != null)
+                if (_visualisationData.CurrentSolution2 != null)
                 {
-                    var wrapper = new SolutionWrapper(_visualisationData.CurrentSolution1);
+                    var wrapper = new SolutionWrapper(_visualisationData.CurrentSolution2);
                     if (_visualisationData.ActiveCluster != null)
                     {
                         if (GlobalManager.Instance.IsBarCodeDepiction)
@@ -123,9 +123,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
         {
             get
             {
-                if (_visualisationData.CurrentDonor1 != null)
+                if (_visualisationData.CurrentDonor2 != null)
                 {
-                    var wrapper = new SolutionWrapper(_visualisationData.CurrentDonor1);
+                    var wrapper = new SolutionWrapper(_visualisationData.CurrentDonor2);
                     if (_visualisationData.ActiveCluster != null)
                     {
                         if (GlobalManager.Instance.IsBarCodeDepiction)
@@ -174,9 +174,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
         {
             get
             {
-                if (_visualisationData.CurrentSolution1 != null)
+                if (_visualisationData.CurrentSolution2 != null)
                 {
-                    var wrapper = new SolutionWrapper(_visualisationData.CurrentSolution1);
+                    var wrapper = new SolutionWrapper(_visualisationData.CurrentSolution2);
                     if (_visualisationData.ActiveCluster != null)
                     {
                         if (GlobalManager.Instance.IsBarCodeDepiction)
@@ -226,9 +226,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
         {
             get
             {
-                if (_visualisationData.CurrentDonor1 != null)
+                if (_visualisationData.CurrentDonor2 != null)
                 {
-                    var wrapper = new SolutionWrapper(_visualisationData.CurrentDonor1);
+                    var wrapper = new SolutionWrapper(_visualisationData.CurrentDonor2);
                     if (_visualisationData.ActiveCluster != null)
                     {
                         if (GlobalManager.Instance.IsBarCodeDepiction)
@@ -278,7 +278,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             WorkingData = workingData.Clone();
             MaxStateChange = _stateChanges.Count - 1;
 
-            _checkpoints = new Tuple<IterationData, ROMVisualisationData, IList<Message>>[(int)Math.Ceiling(MaxStateChange / (float)CHECKPOINT_SPACING)];
+            _checkpoints = new Tuple<IterationData, ROMVisualisationData, IList<Message>>[MaxStateChange / CHECKPOINT_SPACING + 1];
 
 
             Thread calculationThread = new Thread(new ThreadStart(() => {
@@ -304,7 +304,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
             IList<Message> messages = new List<Message>();
 
-            for (int i = 0; i < MaxStateChange; i++)
+            for (int i = 0; i <= MaxStateChange; i++)
             {
                 var res = _stateChanges[i].Apply(workingIterationData, workingVisualisationData, true);
 

@@ -22,12 +22,17 @@ namespace LLEAV.ViewModels.Windows
 
         public static Type[] FitnessFunctions { get; private set; } = [
             typeof(OneMax),
-            typeof(TestFitness),
             typeof(DeceptiveTrap),
             typeof(HIFF),
+            typeof(MaxSat),
+            typeof(NKLandscape),
+            typeof(IsingModel),
             ];
         public static Type[] LocalSearchFunctions { get; private set; } = [typeof(HillClimber)];
-        public static Type[] TerminationCriterias { get; private set; } = [typeof(IterationTermination)];
+        public static Type[] TerminationCriterias { get; private set; } = [
+            typeof(IterationTermination),
+            typeof(FitnessTermination),
+        ];
         public static Type[] Algorithms { get; private set; } = [
             typeof(MIP),
             typeof(P3),
@@ -152,6 +157,8 @@ namespace LLEAV.ViewModels.Windows
                 newRunData.GrowthFunction = Activator.CreateInstance(GrowthFunctions[SelectedGrowthFunction]) as IGrowthFunction;
             }
 
+            Random r = new Random();
+            newRunData.RNGSeed = r.Next();
 
             GlobalManager.Instance.SetNewRunData(newRunData);
             CloseWindow();

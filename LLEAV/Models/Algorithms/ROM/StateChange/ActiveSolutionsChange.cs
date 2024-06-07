@@ -26,7 +26,7 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
             visualisationData.CurrentDonor2 = _p1;
 
             return new Tuple<IList<string>, Message>(["CurrentDonor1", "CurrentDonor2", "CurrentSolution1", "CurrentSolution2"],
-                new Message("Changed active solutions", MessagePriority.INTERESTING));
+                new Message("Changed active solutions.", MessagePriority.INTERESTING));
         }
     }
 }

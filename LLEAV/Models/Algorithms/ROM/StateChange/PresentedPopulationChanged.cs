@@ -28,7 +28,7 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
 
 
             return new Tuple<IList<string>, Message>(["Solutions"],
-                new Message("Changed the population currently viewed", MessagePriority.INTERESTING));
+                new Message("Changed the population currently viewed.", MessagePriority.INTERESTING));
         }
 
     }

@@ -5,17 +5,16 @@ using LLEAV.Models.FOSFunction;
 using LLEAV.Models.LocalSearchFunction;
 using LLEAV.Models.Persistence;
 using LLEAV.Models.TerminationCriteria;
+using LLEAV.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
-using Xunit.Extensions.Ordering;
 
 namespace LLEAVTest.Unit
 {
-    [Order(3)]
     public class PersistenceTest
     {
         private const string _directory = "TestDir";
@@ -27,7 +26,7 @@ namespace LLEAVTest.Unit
             _out = testOutputHelper;
         }
 
-        [Fact, Order(1)]
+        [Fact]
         public void TestSave()
         {
             Directory.CreateDirectory(_directory);
@@ -47,6 +46,19 @@ namespace LLEAVTest.Unit
             runData.LocalSearchFunction = new HillClimber();
             runData.Algorithm = new P3();
 
+            Population p = new Population(0);
+
+            Solution s = new Solution()
+            {
+                Bits = new BitList(39),
+            };
+
+            p.Add(s);
+
+            IterationData iteration = new IterationData(p, 13);
+
+            runData.Iterations.Add(iteration);
+
             string path = Path.Combine(_directory, "test.lleav");
 
             Saver.SaveData(runData, path);
@@ -65,6 +77,9 @@ namespace LLEAVTest.Unit
             Assert.IsType(typeof(HillClimber), loaded.LocalSearchFunction);
             Assert.IsType(typeof(P3), loaded.Algorithm);
             Assert.Null(loaded.GrowthFunction);
+
+            Assert.True(loaded.Iterations[0].RNGSeed == 13);
+            Assert.Equal(s.Bits, loaded.Iterations[0].Populations[0].Solutions[0].Bits);
         }
 
 

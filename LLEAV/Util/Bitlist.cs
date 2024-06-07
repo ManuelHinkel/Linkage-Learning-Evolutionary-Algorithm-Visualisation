@@ -24,7 +24,7 @@ namespace LLEAV.Util
 
         public void Set(int index, bool value = true)
         {
-            if (index >= NumberBits) { throw new ArgumentOutOfRangeException("index out of range"); }
+            Debug.Assert(index < NumberBits); 
 
             int slot = index / 64;
             int slotIndex = index % 64;
@@ -42,7 +42,7 @@ namespace LLEAV.Util
 
         public bool Get(int index)
         {
-            if (index >= NumberBits) { throw new ArgumentOutOfRangeException("index out of range"); }
+            Debug.Assert(index < NumberBits);
             int slot = index / 64;
             int slotIndex = index % 64;
             long mask = 1L << slotIndex;
@@ -68,7 +68,7 @@ namespace LLEAV.Util
 
         public void Flip(int index)
         {
-            if (index >= NumberBits) { throw new ArgumentOutOfRangeException("index out of range"); }
+            Debug.Assert(index < NumberBits);
             int slot = index / 64;
             int slotIndex = index % 64;
             long mask = 1L << slotIndex;
@@ -98,14 +98,8 @@ namespace LLEAV.Util
 
         public static BitList operator &(BitList a, BitList b)
         {
-            if (a == null || b == null)
-            {
-                throw new ArgumentException("argument is null");
-            }
-            if (a.NumberBits != b.NumberBits)
-            {
-                throw new ArgumentException("length of arguments differ");
-            }
+            Debug.Assert(a != null && b != null);
+            Debug.Assert(a.NumberBits == b.NumberBits);
             BitList newBit = new BitList(a.NumberBits);
 
             for (int i = 0; i < newBit.bitArray.Length; i++)
@@ -118,14 +112,8 @@ namespace LLEAV.Util
 
         public static BitList operator |(BitList a, BitList b)
         {
-            if (a == null || b == null)
-            {
-                throw new ArgumentException("argument is null");
-            }
-            if (a.NumberBits != b.NumberBits)
-            {
-                throw new ArgumentException("length of arguments differ");
-            }
+            Debug.Assert(a != null && b != null);
+            Debug.Assert(a.NumberBits == b.NumberBits);
             BitList newBit = new BitList(a.NumberBits);
 
             for (int i = 0; i < newBit.bitArray.Length; i++)
@@ -138,10 +126,7 @@ namespace LLEAV.Util
 
         public static BitList operator !(BitList a)
         {
-            if (a == null)
-            {
-                throw new ArgumentException("argument is null");
-            }
+            Debug.Assert(a != null);
 
             BitList newBit = new BitList(a.NumberBits);
 

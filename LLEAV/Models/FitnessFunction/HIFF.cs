@@ -31,9 +31,9 @@ namespace LLEAV.Models.FitnessFunction
             return (solutionLength != 0) && ((solutionLength & (solutionLength - 1)) == 0);
         }
 
-        private double F(BitList bits)
+        private int F(BitList bits)
         {
-            if (bits.NumberBits == 2)
+            /*if (bits.NumberBits == 2)
             {
                 if (bits.Get(0) == bits.Get(1))
                 {
@@ -54,6 +54,31 @@ namespace LLEAV.Models.FitnessFunction
                 }
 
                 return 0;
+            }*/
+            if (bits.NumberBits == 1)
+            {
+                _sum += 1;
+                if (bits.Get(0))
+                {
+                    return 1;
+                }
+                else
+                {
+                    return -1;
+                }
+            } else
+            {
+                int left = F(bits.Get(0, bits.NumberBits / 2));
+                int right = F(bits.Get(bits.NumberBits / 2, bits.NumberBits));
+
+                if (left == right)
+                {
+                    _sum += 2 * Math.Abs(left);
+                    return 2 * left;
+                } else
+                {
+                    return 0;
+                }
             }
         }
     }

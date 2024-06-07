@@ -196,7 +196,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             WorkingData = workingData.Clone();
             MaxStateChange = _stateChanges.Count - 1;
 
-            _checkpoints = new Tuple<IterationData, MIPVisualisationData, IList<Message>>[(int)Math.Ceiling(MaxStateChange / (float)CHECKPOINT_SPACING)];
+            _checkpoints = new Tuple<IterationData, MIPVisualisationData, IList<Message>>[MaxStateChange / CHECKPOINT_SPACING + 1];
 
 
             Thread calculationThread = new Thread(new ThreadStart(() => {
@@ -222,7 +222,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
             IList<Message> messages = new List<Message>();
 
-            for (int i = 0; i < MaxStateChange; i++)
+            for (int i = 0; i <= MaxStateChange; i++)
             {
                 var res = _stateChanges[i].Apply(workingIterationData, workingVisualisationData, true);
 

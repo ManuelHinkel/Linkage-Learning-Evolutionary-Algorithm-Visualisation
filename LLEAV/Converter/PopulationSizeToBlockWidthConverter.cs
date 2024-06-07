@@ -16,7 +16,7 @@ namespace LLEAV.Converter
             
             int valueAsInt = (int)value;
 
-            return 300 + (valueAsInt > 0 ? 20 * Math.Log((int) value) : 0);
+            return (int)(300 + (valueAsInt > 0 ? 20 * Math.Log2((int) value) : 0));
         }
 
         public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

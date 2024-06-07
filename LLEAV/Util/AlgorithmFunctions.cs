@@ -54,7 +54,7 @@ namespace LLEAV.Util
         public static double MDLDecrease(Population population, Cluster c1, Cluster c2, int numberBits)
         {
             Cluster union = c1.Union(c2);
-            return numberBits * (H(population, c1) + H(population, c1) - H(population, union))
+            return numberBits * (H(population, c1) + H(population, c2) - H(population, union))
                 + ((1 << c1.Count()) + (1 << c2.Count()) - (1 << union.Count()) - 1);
         }
 
@@ -112,7 +112,7 @@ namespace LLEAV.Util
                 double p = P(population, cluster, possibleString);
                 if (p != 0)
                 {
-                    h += p * Math.Log(p);
+                    h += p * Math.Log10(p);
                 }
             }
 

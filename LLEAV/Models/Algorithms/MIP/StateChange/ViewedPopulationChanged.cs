@@ -27,7 +27,7 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
             visualisationData.ViewedPopulation = _population;
 
             return new Tuple<IList<string>, Message>([],
-                new Message("Changed the population currently viewed", MessagePriority.INTERESTING));
+                new Message("Changed the population currently viewed.", MessagePriority.INTERESTING));
         }
 
     }

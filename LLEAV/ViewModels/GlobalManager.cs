@@ -14,13 +14,6 @@ using System.Threading;
 
 namespace LLEAV.ViewModels
 {
-    public enum PopulationDepiction
-    {
-        BLOCK,
-        GRAPH,
-        BARS
-    }
-
     public enum AnimationModus
     {
         FULL,
@@ -101,8 +94,6 @@ namespace LLEAV.ViewModels
                 }
             }
         }
-
-        public PopulationDepiction PopulationDepiction { get; set; }
 
         public int CurrentIteration { get; set; }
         public bool IsAnimatingDetails { get; private set; }
@@ -284,7 +275,7 @@ namespace LLEAV.ViewModels
         {
             Random rng = new Random(_runData.RNGSeed);
 
-            return new IterationData(_runData.Algorithm.InitialPopulation(_runData, rng), /*rng.Next()*/ 0);
+            return new IterationData(_runData.Algorithm.InitialPopulation(_runData, rng), rng.Next());
         }
     }
 }

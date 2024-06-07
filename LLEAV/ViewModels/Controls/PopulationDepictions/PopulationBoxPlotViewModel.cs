@@ -29,14 +29,14 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
                     Values = populations.Select(p => CalculateBoxValuesForPopulation(p)),
                 },
             };
+            int start = Math.Max(0, iteration + 1 - Math.Min(windowSize, populations.Count));
+
             XAxis = [
                new Axis()
                {
                    Labels = Enumerable.Range(
-                       Math.Max(0, iteration + 1 - Math.Min(
-                           windowSize,
-                           populations.Count)),
-                       iteration + 1).Select(i => i.ToString()).ToList(),
+                        Math.Max(0, start),
+                        Math.Min(windowSize, iteration + 1 - start)).Select(i => i.ToString()).ToList(),
                    ForceStepToMin = true,
                    MinStep = 1,
                },

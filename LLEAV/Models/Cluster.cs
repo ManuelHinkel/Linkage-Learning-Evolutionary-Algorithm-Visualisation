@@ -34,10 +34,7 @@ namespace LLEAV.Models
 
         public Cluster Union(Cluster other)
         {
-            if (NumberOfBits != other.NumberOfBits)
-            {
-                throw new ArgumentException("number of bits of arguments differ");
-            }
+            Debug.Assert(NumberOfBits == other.NumberOfBits);
 
             List<int> bits = this.bits.ToList();
             bits.AddRange(other.bits);
@@ -47,10 +44,7 @@ namespace LLEAV.Models
 
         public bool Contains(Cluster other)
         {
-            if (NumberOfBits != other.NumberOfBits)
-            {
-                throw new ArgumentException("number of bits of arguments differ");
-            }
+            Debug.Assert(NumberOfBits == other.NumberOfBits);
 
             return (Mask & other.Mask).Equals(other.Mask);
         }
@@ -113,10 +107,7 @@ namespace LLEAV.Models
 
         public static Cluster operator !(Cluster a)
         {
-            if (a == null)
-            {
-                throw new ArgumentException("argument is null");
-            }
+            Debug.Assert(a != null);
 
             List<int> bits = Enumerable.Range(0, a.NumberOfBits).ToList();
 

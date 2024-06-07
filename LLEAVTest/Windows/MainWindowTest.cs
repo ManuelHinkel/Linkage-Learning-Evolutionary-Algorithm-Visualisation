@@ -16,21 +16,27 @@ using LLEAV.Models.FitnessFunction;
 using LLEAV.Util;
 using LLEAV.Models;
 using System.Collections;
-using Xunit.Extensions.Ordering;
 
-namespace LLEAVTest
+namespace LLEAVTest.Windows
 {
-    [Order(1)]
-    public class MainWindowTest
+    public class MainWindowTest: TestClass
     {
         private readonly ITestOutputHelper _out;
         public MainWindowTest(ITestOutputHelper testOutputHelper)
         {
             _out = testOutputHelper;
+
+            tests = [
+                TestNewAlgorithmCancelWindow,
+                TestCreateAlgorithmRun,
+                TestCreateAlgorithmRun2,
+                TestPopulationDepiction,
+                TestNextIteration,
+                TestOtherAlgorithms
+            ];
         }
 
 
-        [Fact, Order(1)]
         public async void TestNewAlgorithmCancelWindow()
         {
             var app = AvaloniaApp.GetApp();
@@ -38,7 +44,7 @@ namespace LLEAVTest
             var w = GlobalManager.Instance.MainWindow;
             var b = w.FindControl<Button>("PlayButton");
 
-            Assert.False(b.IsEnabled);
+            Helpers.WaitFor(() => !b.IsEnabled);
 
             var f = w.FindControl<MenuItem>("File");
 
@@ -69,7 +75,6 @@ namespace LLEAVTest
             Helpers.WaitFor(() => newAlgorithmWindow.IsVisible);
         }
 
-        [Fact, Order(2)]
         public async void TestCreateAlgorithmRun()
         {
             Thread.Sleep(100);
@@ -77,7 +82,7 @@ namespace LLEAVTest
             var b = w.FindControl<Button>("PlayButton");
 
             Helpers.WaitFor(() => b.IsEnabled);
-            Helpers.CreateAlgorithmRun(20, 1, 2, 0, "10", 0);
+            Helpers.CreateAlgorithmRun(20, 0, 2, 0, "10", 0);
 
             Helpers.WaitFor(() => b.IsEnabled);
 
@@ -87,7 +92,7 @@ namespace LLEAVTest
 
             Assert.Equal(typeof(MIPIterationViewModel), i.Content.GetType());
         }
-        [Fact, Order(3)]
+ 
         public async void TestCreateAlgorithmRun2()
         {
             Thread.Sleep(100);
@@ -97,7 +102,7 @@ namespace LLEAVTest
 
             Helpers.WaitFor(() => b.IsEnabled);
 
-            Helpers.CreateAlgorithmRun(20, 1, 2, 0, "10", 2);
+            Helpers.CreateAlgorithmRun(20, 0, 2, 0, "10", 2);
 
             Helpers.WaitFor(() => b.IsEnabled);
 
@@ -107,7 +112,7 @@ namespace LLEAVTest
 
             Assert.Equal(typeof(ROMIterationViewModel), i.Content.GetType());
         }
-        [Fact, Order(4)]
+
         public async void TestPopulationDepiction()
         {
             Thread.Sleep(1000);
@@ -135,10 +140,9 @@ namespace LLEAVTest
             }
 
         }
-        [Fact, Order(5)]
+ 
         public async void TestNextIteration()
         {
-            _out.WriteLine("Next Iteration");
             Thread.Sleep(2000);
 
             Helpers.ChangeAnimationModus(1);
@@ -150,18 +154,16 @@ namespace LLEAVTest
             var app = AvaloniaApp.GetApp();
             Helpers.WaitFor(() => app.Windows.Count == 1, 500);
         }
-        [Fact, Order(6)]
+ 
         public async void TestOtherAlgorithms()
         {
-            _out.WriteLine("Other Algorithms");
-
             Thread.Sleep(1000);
 
             Helpers.ChangeAnimationModus(0);
 
             Helpers.WaitFor(() => Helpers.GetAnimationModus() == 0);
 
-            Helpers.CreateAlgorithmRun(14, 2, 1, 0, "10", 1, 0);
+            Helpers.CreateAlgorithmRun(14, 1, 1, 0, "10", 1, 0);
 
             var i = Helpers.Find<IterationDetailWindow>();
 
@@ -170,7 +172,7 @@ namespace LLEAVTest
 
             Thread.Sleep(1000);
 
-            Helpers.CreateAlgorithmRun(16, 3, 0, 0, "10", 3, populationSize: 10);
+            Helpers.CreateAlgorithmRun(16, 2, 0, 0, "10", 3, populationSize: 10);
 
             Thread.Sleep(1000);
 

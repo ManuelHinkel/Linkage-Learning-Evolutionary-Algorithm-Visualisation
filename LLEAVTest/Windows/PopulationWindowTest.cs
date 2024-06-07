@@ -10,28 +10,35 @@ using Xunit.Abstractions;
 using Avalonia.LogicalTree;
 using LLEAV.Views.Windows;
 using LLEAV.Models.Tree;
-using Xunit.Extensions.Ordering;
+using LLEAV.ViewModels.Windows;
 
 namespace LLEAVTest.Windows
 {
-    [Order(2)]
-    public class PopulationWindowTest
+ 
+    public class PopulationWindowTest: TestClass
     {
         private readonly ITestOutputHelper _out;
         public PopulationWindowTest(ITestOutputHelper testOutputHelper)
         {
             _out = testOutputHelper;
+
+            tests = [
+                TestOpenPopulationWindow,
+                TestTreeChange
+            ];
+            
         }
 
-        [Fact, Order(1)]
+   
         public async void TestOpenPopulationWindow()
         {
-            _out.WriteLine("Open Population");
             Thread.Sleep(1000);
 
             Helpers.ChangeAnimationModus(1);
 
-            Helpers.CreateAlgorithmRun(14, 1, 2, 0, "10", 0, 0, 0);
+            Helpers.CreateAlgorithmRun(16, 2, 2, 0, "10", 0, 0, 0);
+
+            await Task.Delay(500);
 
             Helpers.CloseWindow<IterationDetailWindow>();
 
@@ -67,10 +74,10 @@ namespace LLEAVTest.Windows
             Helpers.WaitFor(() => p.IsVisible);
         }
 
-        [Fact, Order(2)]
+
         public async void TestTreeChange()
         {
-            await Task.Delay(5000);
+            Thread.Sleep(1000);
 
             var p = Helpers.Find<PopulationWindow>();
 
@@ -97,12 +104,10 @@ namespace LLEAVTest.Windows
 
             Helpers.NextIteration();
 
-            await Task.Delay(1000);
-
+            Thread.Sleep(500);
 
             foreach (var c in p.GetLogicalDescendants().OfType<Control>())
             {
-
                 if (c.DataContext != null && c.DataContext.GetType().Equals(typeof(Node)))
                 {
                     Node n = c.DataContext as Node;

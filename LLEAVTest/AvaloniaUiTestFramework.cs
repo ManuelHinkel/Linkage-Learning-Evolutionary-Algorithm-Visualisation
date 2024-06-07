@@ -144,3 +144,40 @@ public static class AvaloniaApp
                 .WithInterFont()
                 .UseReactiveUI();
 }
+
+public class TestClass
+{
+    protected IList<Action> tests;
+
+    public void Execute()
+    {
+        foreach(Action a in tests)
+        {
+            a.Invoke();
+        }
+    }
+}
+
+public class TestUI
+{
+    private readonly ITestOutputHelper _out;
+    private TestClass[] testClasses;
+    public TestUI(ITestOutputHelper testOutputHelper)
+    {
+        _out = testOutputHelper;
+
+        testClasses = [
+                new MainWindowTest(_out),
+                new PopulationWindowTest(_out),
+                new IterationDetailsWindowTest(_out),
+            ];
+    }
+    [Fact]
+    public void Test()
+    {
+        foreach (TestClass t in testClasses)
+        {
+            t.Execute();
+        }
+    }
+}

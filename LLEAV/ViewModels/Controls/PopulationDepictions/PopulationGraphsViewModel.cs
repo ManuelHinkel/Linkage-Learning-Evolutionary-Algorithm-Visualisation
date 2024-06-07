@@ -72,14 +72,15 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
                     IsVisible = flags[3],
                 },
             };
+
+            int start = Math.Max(0, iteration + 1 - Math.Min(windowSize, populations.Count));
+
             XAxis = [
                 new Axis()
                 {
                     Labels = Enumerable.Range(
-                        Math.Max(0, iteration + 1 - Math.Min(
-                            windowSize,
-                            populations.Count)),
-                        iteration + 1).Select(i => i.ToString()).ToList(),
+                        Math.Max(0, start),
+                        Math.Min(windowSize, iteration + 1 - start)).Select(i => i.ToString()).ToList(),
                     ForceStepToMin = true,
                     MinStep = 1,
                 },
