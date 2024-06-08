@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.FOSFunction
 {
-    public class MarginalProductFOS : IFOSFunction
+    public class MarginalProductFOS : AFOSFunction
     {
-        public FOS CalculateFOS(Population population, int numberOfBits)
+        public override string Depiction { get; } = "Marginal Product Structure";
+        public override FOS CalculateFOS(Population population, int numberOfBits)
         {
             List<Cluster> output = new List<Cluster>();
             for (int i = 0; i < numberOfBits; i++)

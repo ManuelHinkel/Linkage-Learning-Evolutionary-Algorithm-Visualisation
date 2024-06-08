@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.GrowthFunction
 {
-    public interface IGrowthFunction
+    public abstract class AGrowthFunction
     {
-        public int GetNumberOfNewSolutions(int iteration);
+        public abstract string Depiction { get; }
+        public abstract int GetNumberOfNewSolutions(int iteration);
     }
 }

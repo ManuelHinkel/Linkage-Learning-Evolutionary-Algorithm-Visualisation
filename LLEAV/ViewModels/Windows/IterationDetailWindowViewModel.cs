@@ -29,7 +29,7 @@ namespace LLEAV.ViewModels.Windows
             {
                 running = ContentViewModel.Running;
             }
-            switch (runData.Algorithm.GetAlgorithmType())
+            switch (runData.Algorithm.AlgorithmType)
             {
                 case AlgorithmType.MIP:
                     ContentViewModel = new MIPIterationViewModel(stateChanges.Cast<IMIPStateChange>().ToList(), workingCopy);

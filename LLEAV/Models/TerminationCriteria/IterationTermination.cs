@@ -10,24 +10,26 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.TerminationCriteria
 {
-    public class IterationTermination : ITerminationCriteria
+    public class IterationTermination : ATerminationCriteria
     {
+        public override string Depiction { get; } = "Iteration Termination";
+        public override Type ArgumentType { get; } = typeof(int);
         private int _iteration;
 
-        public byte[] ConvertArgumentToBytes()
+        public override byte[] ConvertArgumentToBytes()
         {
             byte[] bytes = new byte[4];
             ByteUtil.WriteIntToBuffer(_iteration, bytes, 0);
             return bytes;
         }
 
-        public bool CreateArgumentFromBytes(byte[] bytes)
+        public override bool CreateArgumentFromBytes(byte[] bytes)
         {
             _iteration = BitConverter.ToInt32(bytes, 0);
             return true;
         }
 
-        public bool CreateArgumentFromString(string arg)
+        public override bool CreateArgumentFromString(string arg)
         {
             TypeConverter converter = TypeDescriptor.GetConverter(typeof(int));
             if (converter.IsValid(arg))
@@ -38,17 +40,13 @@ namespace LLEAV.Models.TerminationCriteria
             return false;
         }
 
-        public Type GetArgumentType()
-        {
-            return typeof(int);
-        }
 
-        public string GetTerminationString()
+        public override string GetTerminationString()
         {
             return "Iteration " + _iteration + " reached.";
         }
 
-        public bool ShouldTerminate(IterationData iteration)
+        public override bool ShouldTerminate(IterationData iteration)
         {
             return iteration.Iteration >= _iteration;
         }

@@ -10,25 +10,29 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.TerminationCriteria
 {
-    public class FitnessTermination: ITerminationCriteria
+    public class FitnessTermination : ATerminationCriteria
     {
+        public override string Depiction { get; } = "Fitness Termination";
+
+        public override Type ArgumentType { get; } = typeof(double);
+
         private double _fitness;
         private Solution? _reached;
 
-        public byte[] ConvertArgumentToBytes()
+        public override byte[] ConvertArgumentToBytes()
         {
             byte[] bytes = new byte[4];
             ByteUtil.WriteDoubleToBuffer(_fitness, bytes, 0);
             return bytes;
         }
 
-        public bool CreateArgumentFromBytes(byte[] bytes)
+        public override bool CreateArgumentFromBytes(byte[] bytes)
         {
             _fitness = BitConverter.ToDouble(bytes, 0);
             return true;
         }
 
-        public bool CreateArgumentFromString(string arg)
+        public override bool CreateArgumentFromString(string arg)
         {
             TypeConverter converter = TypeDescriptor.GetConverter(typeof(double));
             if (converter.IsValid(arg))
@@ -39,17 +43,12 @@ namespace LLEAV.Models.TerminationCriteria
             return false;
         }
 
-        public Type GetArgumentType()
-        {
-            return typeof(double);
-        }
-
-        public string GetTerminationString()
+        public override string GetTerminationString()
         {
             return "Fitness " + _fitness + " reached with Solution: " + _reached;
         }
 
-        public bool ShouldTerminate(IterationData iteration)
+        public override bool ShouldTerminate(IterationData iteration)
         {
             foreach(Population p in iteration.Populations)
             {

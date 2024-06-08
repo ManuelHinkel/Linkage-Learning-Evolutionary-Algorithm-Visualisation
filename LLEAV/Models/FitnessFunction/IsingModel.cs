@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.FitnessFunction
 {
-    public class IsingModel : IFitnessFunction
+    public class IsingModel : AFitnessFunction
     {
+        public override string Depiction { get; } = "Ising Model";
+
         private const double J = 0;
         private double[] _h;
         private const double MUE = 0;
-        public double Fitness(Solution solution)
+        public override double Fitness(Solution solution)
         {
             BitList bits = solution.Bits;
             double fitness = 0;
@@ -39,14 +41,15 @@ namespace LLEAV.Models.FitnessFunction
             return -J * si * sj - _h[i] * si;
         }
 
-        public string GetValidationErrorMessage(int solutionLength)
+        public override string GetValidationErrorMessage(int solutionLength)
         {
             return "Solution need to be at least " + 2 + " bits long.";
         }
 
-        public bool ValidateSolutionLength(int solutionLength)
+        public override bool ValidateSolutionLength(int solutionLength)
         {
             return solutionLength > 1;
         }
+
     }
 }

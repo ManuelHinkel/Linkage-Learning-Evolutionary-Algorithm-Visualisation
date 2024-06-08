@@ -14,5 +14,7 @@
 		Classes="bigWindow"
 		MinWidth="1200"
 		Width="1200"
+		MinHeight="550"
+		Height="550"
 		Content="{CompiledBinding ContentViewModel}">	
 </Window>

@@ -7,11 +7,18 @@ using System.Collections.Generic;
 
 namespace LLEAV.Models.Algorithms.MIP
 {
-    public class MIP : ILinkageLearningAlgorithm
+    public class MIP : ALinkageLearningAlgorithm
     {
+        public override string Depiction { get; } = "MIP";
+
+        public override AlgorithmType AlgorithmType { get; } = AlgorithmType.MIP;
+        public override bool ShowLocalSearchFunction { get; } = true;
+        public override bool ShowGrowthFunction { get; } = true;
+        public override bool ShowPopulationSize { get; }
+
         private MIPHistoryTracker? _tracker;
 
-        public Tuple<IterationData, IList<IStateChange>> CalculateIteration(IterationData currentIteration, RunData runData)
+        public override Tuple<IterationData, IList<IStateChange>> CalculateIteration(IterationData currentIteration, RunData runData)
         {
             _tracker = new MIPHistoryTracker();
             Random random = new Random(currentIteration.RNGSeed);
@@ -129,18 +136,13 @@ namespace LLEAV.Models.Algorithms.MIP
             return new Tuple<IterationData, IList<IStateChange>>(iterationData, _tracker.StateChangeHistory);
         }
 
-        public AlgorithmType GetAlgorithmType()
-        {
-            return AlgorithmType.MIP;
-        }
-
-        public Population InitialPopulation(RunData runData, Random random)
+        public override Population InitialPopulation(RunData runData, Random random)
         {
             return new Population(0);
         }
 
         private Solution Crossover(Population population, FOS fos,
-          IFitnessFunction fitnessFunction, Solution x, Random random)
+          AFitnessFunction fitnessFunction, Solution x, Random random)
         {
             foreach (Cluster c in fos)
             {

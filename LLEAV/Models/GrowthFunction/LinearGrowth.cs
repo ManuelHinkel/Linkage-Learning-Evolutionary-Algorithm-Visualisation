@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.GrowthFunction
 {
-    public class LinearGrowth : IGrowthFunction
+    public class LinearGrowth : AGrowthFunction
     {
-        public int GetNumberOfNewSolutions(int iteration)
+        public override string Depiction { get; } = "Linear Growth";
+        public override int GetNumberOfNewSolutions(int iteration)
         {
             return iteration > 0 ? iteration : 1;
         }

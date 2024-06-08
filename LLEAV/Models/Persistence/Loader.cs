@@ -87,15 +87,15 @@ namespace LLEAV.Models.Persistence
                 index = result.Item2;
             }
 
-            ITerminationCriteria terminationCriteria = Activator.CreateInstance(NAWVM.TerminationCriterias[terminationCriteriaIndex])
-                   as ITerminationCriteria;
+            ATerminationCriteria terminationCriteria = Activator.CreateInstance(NAWVM.TerminationCriterias[terminationCriteriaIndex])
+                   as ATerminationCriteria;
             terminationCriteria.CreateArgumentFromBytes(terminationArg);
 
             RunData newRunData = new RunData
             {
-                Algorithm = Activator.CreateInstance(NAWVM.Algorithms[algorithm]) as ILinkageLearningAlgorithm,
-                FOSFunction = Activator.CreateInstance(NAWVM.FOSFunctions[fosFunction]) as IFOSFunction,
-                FitnessFunction = Activator.CreateInstance(NAWVM.FitnessFunctions[fitnessFunction]) as IFitnessFunction,
+                Algorithm = Activator.CreateInstance(NAWVM.Algorithms[algorithm]) as ALinkageLearningAlgorithm,
+                FOSFunction = Activator.CreateInstance(NAWVM.FOSFunctions[fosFunction]) as AFOSFunction,
+                FitnessFunction = Activator.CreateInstance(NAWVM.FitnessFunctions[fitnessFunction]) as AFitnessFunction,
                 TerminationCriteria = terminationCriteria,
                 NumberOfBits = numberOfBits,
                 NumberOfSolutions = numberOfSolutions,
@@ -104,12 +104,12 @@ namespace LLEAV.Models.Persistence
 
             if (algorithm == 0 || algorithm == 1)
             {
-                newRunData.LocalSearchFunction = Activator.CreateInstance(NAWVM.LocalSearchFunctions[localSearchFunction]) as ILocalSearchFunction;
+                newRunData.LocalSearchFunction = Activator.CreateInstance(NAWVM.LocalSearchFunctions[localSearchFunction]) as ALocalSearchFunction;
             }
 
             if (algorithm == 0)
             {
-                newRunData.GrowthFunction = Activator.CreateInstance(NAWVM.GrowthFunctions[growthFunction]) as IGrowthFunction;
+                newRunData.GrowthFunction = Activator.CreateInstance(NAWVM.GrowthFunctions[growthFunction]) as AGrowthFunction;
             }
 
             newRunData.Iterations = iterationData;

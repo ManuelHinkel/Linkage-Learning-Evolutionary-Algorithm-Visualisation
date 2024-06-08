@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.LocalSearchFunction
 {
-    public interface ILocalSearchFunction
+    public abstract class ALocalSearchFunction
     {
-        public Solution Execute(Solution solution, IFitnessFunction fitnessFunction, Random random);
+        public abstract string Depiction { get; }
+        public abstract Solution Execute(Solution solution, AFitnessFunction fitnessFunction, Random random);
     }
 }

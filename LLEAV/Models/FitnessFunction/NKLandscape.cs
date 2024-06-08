@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.FitnessFunction
 {
-    public class NKLandscape : IFitnessFunction
+    public class NKLandscape : AFitnessFunction
     {
+        public override string Depiction { get; } = "NK Landscape (K = 2)";
+
         private const int K = 2;
 
         private static double[] VALUES = [
@@ -34,7 +36,7 @@ namespace LLEAV.Models.FitnessFunction
             }*/
         }
 
-        public double Fitness(Solution solution)
+        public override double Fitness(Solution solution)
         {
             BitList bits = solution.Bits;
             double fitness = 0;
@@ -64,14 +66,15 @@ namespace LLEAV.Models.FitnessFunction
             return VALUES[index];
         }
 
-        public string GetValidationErrorMessage(int solutionLength)
+        public override string GetValidationErrorMessage(int solutionLength)
         {
             return "Solution need to be at least " + (K + 1) + " bits long.";
         }
 
-        public bool ValidateSolutionLength(int solutionLength)
+        public override bool ValidateSolutionLength(int solutionLength)
         {
             return solutionLength > K;
         }
+
     }
 }

@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.FitnessFunction
 {
-    public class DeceptiveTrap : IFitnessFunction
+    public class DeceptiveTrap : AFitnessFunction
     {
+        public override string Depiction { get; } = "Deceptive Trap (K = 7)";
         private const int K = 7;
 
-        public double Fitness(Solution solution)
+        public override double Fitness(Solution solution)
         {
             int blocks = (int)Math.Ceiling((double)solution.Bits.NumberBits / K);
             double fitness = 0;
@@ -50,12 +51,12 @@ namespace LLEAV.Models.FitnessFunction
             return numberOfOnes;
         }
 
-        public bool ValidateSolutionLength(int solutionLength)
+        public override bool ValidateSolutionLength(int solutionLength)
         {
             return solutionLength % K == 0;
         }
 
-        public string GetValidationErrorMessage(int solutionLength)
+        public override string GetValidationErrorMessage(int solutionLength)
         {
             return "Solution length must be a multiple of: " + K + "\nMaybe you ment: " + (solutionLength + (K - (solutionLength % K)));
         }

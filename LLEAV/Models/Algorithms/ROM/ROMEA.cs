@@ -9,11 +9,19 @@ using System.Diagnostics;
 
 namespace LLEAV.Models.Algorithms.ROM
 {
-    public class ROMEA : ILinkageLearningAlgorithm
-    { 
+    public class ROMEA : ALinkageLearningAlgorithm
+    {
+        public override string Depiction { get; } = "ROMEA";
+
+        public override AlgorithmType AlgorithmType { get; } = AlgorithmType.ROM;
+
+        public override bool ShowLocalSearchFunction { get; }
+        public override bool ShowGrowthFunction { get; }
+        public override bool ShowPopulationSize { get; } = true;
+
         private ROMEAHistoryTracker? _tracker;
 
-        public Tuple<IterationData, IList<IStateChange>> CalculateIteration(IterationData currentIteration, RunData runData)
+        public override Tuple<IterationData, IList<IStateChange>> CalculateIteration(IterationData currentIteration, RunData runData)
         {
             _tracker = new ROMEAHistoryTracker();
             Random random = new Random(currentIteration.RNGSeed);
@@ -56,7 +64,7 @@ namespace LLEAV.Models.Algorithms.ROM
 
 
 
-        private Solution ROM(Solution toMix, Population population, FOS fos, IFitnessFunction fitnessFunction, Random random)
+        private Solution ROM(Solution toMix, Population population, FOS fos, AFitnessFunction fitnessFunction, Random random)
         {
             Solution o0 = toMix.Clone();
             Solution p0 = toMix.Clone();
@@ -102,12 +110,7 @@ namespace LLEAV.Models.Algorithms.ROM
             return o0;
         }
 
-        public AlgorithmType GetAlgorithmType()
-        {
-            return AlgorithmType.ROM;
-        }
-
-        public Population InitialPopulation(RunData runData, Random random)
+        public override Population InitialPopulation(RunData runData, Random random)
         {
             Population initial = new Population(0);
 

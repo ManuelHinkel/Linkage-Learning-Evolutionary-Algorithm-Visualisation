@@ -49,7 +49,7 @@ namespace LLEAV.Models.FitnessFunction
         }
     }
 
-    public class MaxSat : IFitnessFunction
+    public class MaxSat : AFitnessFunction
     {
         private List<OrTerm> _terms;
 
@@ -128,7 +128,9 @@ namespace LLEAV.Models.FitnessFunction
             ];
         }
 
-        public double Fitness(Solution solution)
+        public override string Depiction { get; } = "Max Sat";
+
+        public override double Fitness(Solution solution)
         {
             double sum = 0;
 
@@ -143,12 +145,12 @@ namespace LLEAV.Models.FitnessFunction
             return sum;
         }
 
-        public string GetValidationErrorMessage(int solutionLength)
+        public override string GetValidationErrorMessage(int solutionLength)
         {
             return "Solutions need to be 10 bits long.";
         }
 
-        public bool ValidateSolutionLength(int solutionLength)
+        public override bool ValidateSolutionLength(int solutionLength)
         {
             return solutionLength == 10;
         }

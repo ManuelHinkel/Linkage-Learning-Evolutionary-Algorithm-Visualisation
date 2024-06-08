@@ -42,13 +42,13 @@ namespace LLEAV.Models
     public class RunData
     {
         public IList<IterationData> Iterations { get; set; } = new List<IterationData>();
-        public ILinkageLearningAlgorithm Algorithm { get; set; }
-        public IFitnessFunction FitnessFunction { get; set; }
-        public ILocalSearchFunction LocalSearchFunction { get; set; }
-        public IFOSFunction FOSFunction { get; set; }
+        public ALinkageLearningAlgorithm Algorithm { get; set; }
+        public AFitnessFunction FitnessFunction { get; set; }
+        public ALocalSearchFunction LocalSearchFunction { get; set; }
+        public AFOSFunction FOSFunction { get; set; }
 
-        public ITerminationCriteria TerminationCriteria { get; set; } 
-        public IGrowthFunction GrowthFunction { get; set; }
+        public ATerminationCriteria TerminationCriteria { get; set; } 
+        public AGrowthFunction GrowthFunction { get; set; }
         public int NumberOfBits { get; set; }
         public int NumberOfSolutions { get; set; }
 

@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.LocalSearchFunction
 {
-    public class HillClimber : ILocalSearchFunction
+    public class HillClimber : ALocalSearchFunction
     {
-        public Solution Execute(Solution solution, IFitnessFunction fitnessFunction, Random random)
+        public override string Depiction { get; } = "Hill Climber";
+        public override Solution Execute(Solution solution, AFitnessFunction fitnessFunction, Random random)
         {
             IEnumerable<int> options = Enumerable.Range(0, solution.Bits.NumberBits);
             HashSet<int> tried = new HashSet<int>();

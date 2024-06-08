@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.FOSFunction
 {
-    public class UnivariateFOS : IFOSFunction
+    public class UnivariateFOS : AFOSFunction
     {
-        public FOS CalculateFOS(Population population, int numberOfBits)
+        public override string Depiction { get; } = "Univariate Structure";
+        public override FOS CalculateFOS(Population population, int numberOfBits)
         {
             IList<Cluster> clusters = new List<Cluster>();
 

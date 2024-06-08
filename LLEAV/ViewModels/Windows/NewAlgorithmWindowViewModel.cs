@@ -109,27 +109,28 @@ namespace LLEAV.ViewModels.Windows
                 return;
             }
 
+            ALinkageLearningAlgorithm algorithm = Activator.CreateInstance(Algorithms[SelectedAlgorithm]) as ALinkageLearningAlgorithm;
+            
             // Population size validation
             int populationSize;
             isInt = int.TryParse(PopulationSize, out populationSize);
-            if (ShowPopulationSize && (!isInt || populationSize < 2))
+            if (algorithm.ShowPopulationSize && (!isInt || populationSize < 2))
             {
                 ErrorMessage = "Population Size is not valid.\nMust be greater than 1!";
                 return;
             }
 
-
             // Termination Criteria validation
-            ITerminationCriteria terminationCriteria = Activator.CreateInstance(TerminationCriterias[SelectedTerminationCriteria])
-                   as ITerminationCriteria;
+            ATerminationCriteria terminationCriteria = Activator.CreateInstance(TerminationCriterias[SelectedTerminationCriteria])
+                   as ATerminationCriteria;
 
             if (!terminationCriteria.CreateArgumentFromString(TerminationArgument))
             {
-                ErrorMessage = "Can't parse the termination argument.\n Must be of type: " + terminationCriteria.GetArgumentType().Name;
+                ErrorMessage = "Can't parse the termination argument.\n Must be of type: " + terminationCriteria.ArgumentType.Name;
                 return;
             }
 
-            var f = Activator.CreateInstance(FitnessFunctions[SelectedFitnessFuntion]) as IFitnessFunction;
+            var f = Activator.CreateInstance(FitnessFunctions[SelectedFitnessFuntion]) as AFitnessFunction;
 
             if (!f.ValidateSolutionLength(numberOfBits))
             {
@@ -139,22 +140,22 @@ namespace LLEAV.ViewModels.Windows
 
             RunData newRunData = new RunData
             {
-                Algorithm = Activator.CreateInstance(Algorithms[SelectedAlgorithm]) as ILinkageLearningAlgorithm,
-                FOSFunction = Activator.CreateInstance(FOSFunctions[SelectedFOSFunction]) as IFOSFunction,
+                Algorithm = algorithm,
+                FOSFunction = Activator.CreateInstance(FOSFunctions[SelectedFOSFunction]) as AFOSFunction,
                 FitnessFunction = f,
                 TerminationCriteria = terminationCriteria,
                 NumberOfBits = numberOfBits,
                 NumberOfSolutions = populationSize,
             };
 
-            if (ShowLocalSearchFunction)
+            if (algorithm.ShowLocalSearchFunction)
             {
-                newRunData.LocalSearchFunction = Activator.CreateInstance(LocalSearchFunctions[SelectedLocalSearchFunction]) as ILocalSearchFunction;
+                newRunData.LocalSearchFunction = Activator.CreateInstance(LocalSearchFunctions[SelectedLocalSearchFunction]) as ALocalSearchFunction;
             }
 
-            if (ShowGrowthFunction)
+            if (algorithm.ShowGrowthFunction)
             {
-                newRunData.GrowthFunction = Activator.CreateInstance(GrowthFunctions[SelectedGrowthFunction]) as IGrowthFunction;
+                newRunData.GrowthFunction = Activator.CreateInstance(GrowthFunctions[SelectedGrowthFunction]) as AGrowthFunction;
             }
 
             Random r = new Random();

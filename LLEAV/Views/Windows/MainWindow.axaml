@@ -10,7 +10,11 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="LLEAV"
-		Classes="bigWindow">
+		Classes="bigWindow"
+		MinWidth="800"
+		Width="800"
+		MinHeight="700"
+		Height="700">
 
 	<Window.Resources>
 		<converter:IntEqualsConverter x:Key="intEqualsConverter" />
@@ -18,6 +22,7 @@
 
 	<DockPanel VerticalAlignment="Stretch">
 
+		<!--Controls-->
 		<StackPanel Margin="5" 
 					Orientation="Horizontal" 
 					DockPanel.Dock="Top"
@@ -69,6 +74,7 @@
 			</ComboBox>
 		</StackPanel>
 		
+		<!--Timeline-->
 		<StackPanel Margin="20,0,20,20" DockPanel.Dock="Bottom">
 			<TextBlock Text="{Binding Iteration}"
 					   HorizontalAlignment="Center"/>
@@ -127,6 +133,7 @@
 			</Grid>
 		</StackPanel>
 
+		<!--Message-->
 		<Border  DockPanel.Dock="Top"
 			 HorizontalAlignment="Stretch"
 			 Margin="20"
@@ -139,8 +146,99 @@
 					TextWrapping="Wrap"
 						Text="{Binding Message}"/>
 		</Border>
-		
-		<Panel DockPanel.Dock="Top" 
+
+		<!--Run configuration info-->
+		<StackPanel DockPanel.Dock="Left"
+					Margin="10"
+					VerticalAlignment="Center"
+					IsVisible="{Binding RunData,
+					Converter={x:Static ObjectConverters.IsNotNull}}">
+			<TextBlock Text="Solution Length:"
+				   HorizontalAlignment="Left"
+				   VerticalAlignment="Center"/>
+			<TextBlock x:Name="SolutionLength"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Stretch"
+						   Text="{Binding RunData.NumberOfBits}"/>
+
+			<Panel Height="10"/>
+			
+			<TextBlock Text="Fitness Function:"
+					   HorizontalAlignment="Left"
+					   VerticalAlignment="Center"/>
+			<TextBlock x:Name="FitnessFunction"
+					   HorizontalAlignment="Stretch"
+					   VerticalAlignment="Center"
+					   Text="{Binding RunData.FitnessFunction.Depiction}"/>
+			
+			<Panel Height="10"/>
+			<TextBlock Text="FOS:"
+					   HorizontalAlignment="Left"
+					   VerticalAlignment="Center"/>
+			<TextBlock x:Name="FOS"
+					   HorizontalAlignment="Stretch"
+					   VerticalAlignment="Center"
+					   Text="{Binding RunData.FOSFunction.Depiction}"/>
+
+			<Panel Height="10"/>
+			<TextBlock Text="Termination Criteria:"
+					   HorizontalAlignment="Left"
+					   VerticalAlignment="Center"/>
+			<TextBlock x:Name="TerminationCriteria"
+					  HorizontalAlignment="Stretch"
+					   VerticalAlignment="Center"
+					   Text="{Binding RunData.TerminationCriteria.Depiction}"/>
+
+			<Panel Height="10"/>
+			<TextBlock Text="Algorithm:"
+				   HorizontalAlignment="Left"
+				   VerticalAlignment="Center"
+				   Grid.Column="0"
+				   Grid.Row="5"/>
+			<TextBlock x:Name="Algorithm"
+					  HorizontalAlignment="Stretch"
+					   VerticalAlignment="Center"
+					   Text="{Binding RunData.Algorithm.Depiction}"/>
+
+			<Panel Height="10"
+				   IsVisible="{Binding RunData.Algorithm.ShowLocalSearchFunction}"/>
+			<TextBlock Text="Local Search Function:"
+					   HorizontalAlignment="Left"
+					   VerticalAlignment="Center"
+					   IsVisible="{Binding RunData.Algorithm.ShowLocalSearchFunction}"/>
+			<TextBlock x:Name="LocalSearchFunction"
+					  HorizontalAlignment="Stretch"
+					   VerticalAlignment="Center"
+					   Text="{Binding RunData.LocalSearchFunction.Depiction}"
+					   IsVisible="{Binding RunData.Algorithm.ShowLocalSearchFunction}"/>
+
+			<Panel Height="10"
+				    IsVisible="{Binding RunData.Algorithm.ShowPopulationSize}"/>
+			<TextBlock Text="Population Size:"
+					   HorizontalAlignment="Left"
+					   VerticalAlignment="Center"
+					   IsVisible="{Binding RunData.Algorithm.ShowPopulationSize}"/>
+			<TextBlock x:Name="PopulationSize"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Stretch"
+						   Text="{Binding RunData.NumberOfSolutions}"
+						   IsVisible="{Binding RunData.Algorithm.ShowPopulationSize}"/>
+
+			<Panel Height="10"
+				   IsVisible="{Binding RunData.Algorithm.ShowGrowthFunction}"/>
+			<TextBlock Text="Growth Function:"
+					   HorizontalAlignment="Left"
+					   VerticalAlignment="Center"
+					   IsVisible="{Binding RunData.Algorithm.ShowGrowthFunction}"/>
+			<TextBlock x:Name="GrowthFunction"
+					  HorizontalAlignment="Stretch"
+					   VerticalAlignment="Center"
+					   Text="{Binding RunData.GrowthFunction.Depiction}"
+					   IsVisible="{Binding RunData.Algorithm.ShowGrowthFunction}"/>
+		</StackPanel>
+
+		<!--Population Depiction-->
+		<Panel DockPanel.Dock="Left" 
 			   VerticalAlignment="Stretch"
 			   Margin="10">
 			

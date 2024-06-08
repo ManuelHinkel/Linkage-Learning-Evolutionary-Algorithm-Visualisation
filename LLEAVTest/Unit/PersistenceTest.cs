@@ -37,7 +37,7 @@ namespace LLEAVTest.Unit
             runData.FitnessFunction = new OneMax();
             runData.FOSFunction = new LinkageTreeFOS();
 
-            ITerminationCriteria criteria = new IterationTermination();
+            ATerminationCriteria criteria = new IterationTermination();
             criteria.CreateArgumentFromString("42");
 
             runData.TerminationCriteria = criteria;
@@ -69,7 +69,7 @@ namespace LLEAVTest.Unit
             Assert.Equal(39, loaded.NumberOfBits);
          
 
-            Assert.Equal(typeof(Int32), loaded.TerminationCriteria.GetArgumentType());
+            Assert.Equal(typeof(Int32), loaded.TerminationCriteria.ArgumentType);
             Assert.IsType(typeof(IterationTermination), loaded.TerminationCriteria);
             Assert.IsType(typeof(OneMax), loaded.FitnessFunction);
             Assert.IsType(typeof(LinkageTreeFOS), loaded.FOSFunction);

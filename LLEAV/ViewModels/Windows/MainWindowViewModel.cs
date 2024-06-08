@@ -134,6 +134,15 @@ namespace LLEAV.ViewModels.Windows
         [Reactive]
         public string Message { get; private set; }
 
+        [Reactive]
+        public bool ShowLocalSearchFunction { get; private set; }
+
+        [Reactive]
+        public bool ShowPopulationSize { get; private set; }
+
+        [Reactive]
+        public bool ShowGrowthFunction { get; private set; }
+
         public MainWindowViewModel()
         {
             Thread playThread = new Thread(new ThreadStart(async () => {

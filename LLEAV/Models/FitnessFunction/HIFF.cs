@@ -9,24 +9,26 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.FitnessFunction
 {
-    public class HIFF : IFitnessFunction
+    public class HIFF : AFitnessFunction
     {
 
         private double _sum;
 
-        public double Fitness(Solution solution)
+        public override string Depiction { get; } = "HIFF";
+
+        public override double Fitness(Solution solution)
         {
             _sum = 0;
             F(solution.Bits);
             return _sum;
         }
 
-        public string GetValidationErrorMessage(int solutionLength)
+        public override string GetValidationErrorMessage(int solutionLength)
         {
             return "Solution length mus be a power of two.";
         }
 
-        public bool ValidateSolutionLength(int solutionLength)
+        public override bool ValidateSolutionLength(int solutionLength)
         {
             return (solutionLength != 0) && ((solutionLength & (solutionLength - 1)) == 0);
         }

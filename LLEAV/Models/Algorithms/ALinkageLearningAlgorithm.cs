@@ -11,9 +11,17 @@ namespace LLEAV.Models.Algorithms
         MIP
     }
 
-    public interface ILinkageLearningAlgorithm
+    public abstract class ALinkageLearningAlgorithm
     {
-        public Tuple<IterationData, IList<IStateChange>> CalculateIteration(
+        public abstract string Depiction { get; }
+        public abstract AlgorithmType AlgorithmType { get; }
+
+        public abstract bool ShowLocalSearchFunction { get; }
+        public abstract bool ShowGrowthFunction { get; }
+        public abstract bool ShowPopulationSize { get; }
+
+
+        public abstract Tuple<IterationData, IList<IStateChange>> CalculateIteration(
             IterationData currentIteration,
             RunData runData);
 
@@ -24,8 +32,7 @@ namespace LLEAV.Models.Algorithms
             return CalculateIteration(currentIteration, runData).Item2;
         }
 
-        public AlgorithmType GetAlgorithmType();
 
-        public Population InitialPopulation(RunData runData, Random random);
+        public abstract Population InitialPopulation(RunData runData, Random random);
     }
 }

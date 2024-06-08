@@ -6,9 +6,10 @@ using System.Linq;
 
 namespace LLEAV.Models.FOSFunction
 {
-    public class LinkageTreeFOS : IFOSFunction
+    public class LinkageTreeFOS : AFOSFunction
     {
-        public FOS CalculateFOS(Population population, int numberOfBits)
+        public override string Depiction { get; } = "Linkage Tree";
+        public override FOS CalculateFOS(Population population, int numberOfBits)
         {
             if (population.Count() == 0) throw new Exception("Population can't be empty");
 

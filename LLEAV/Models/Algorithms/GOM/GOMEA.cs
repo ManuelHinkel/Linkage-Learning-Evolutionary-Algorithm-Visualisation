@@ -11,11 +11,18 @@ using LLEAV.ViewModels;
 
 namespace LLEAV.Models.Algorithms.GOM
 {
-    public class GOMEA : ILinkageLearningAlgorithm
+    public class GOMEA : ALinkageLearningAlgorithm
     {
+        public override string Depiction { get; } = "GOMEA";
+
+        public override AlgorithmType AlgorithmType { get; } = AlgorithmType.GOM;
+        public override bool ShowLocalSearchFunction { get; }
+        public override bool ShowGrowthFunction { get; }
+        public override bool ShowPopulationSize { get; } = true;
+
         private GOMEAHistoryTracker? _tracker;
 
-        public Tuple<IterationData, IList<IStateChange>> CalculateIteration(IterationData currentIteration, RunData runData)
+        public override Tuple<IterationData, IList<IStateChange>> CalculateIteration(IterationData currentIteration, RunData runData)
         {
             _tracker = new GOMEAHistoryTracker();
             Random random = new Random(currentIteration.RNGSeed);
@@ -56,7 +63,7 @@ namespace LLEAV.Models.Algorithms.GOM
 
         
        
-        private Solution GOM(Solution toMix, Population population, FOS fos, IFitnessFunction fitnessFunction, Random random)
+        private Solution GOM(Solution toMix, Population population, FOS fos, AFitnessFunction fitnessFunction, Random random)
         {
             Solution o = toMix.Clone();
 
@@ -81,12 +88,7 @@ namespace LLEAV.Models.Algorithms.GOM
             return o;
         }
 
-        public AlgorithmType GetAlgorithmType()
-        {
-            return AlgorithmType.GOM;
-        }
-
-        public Population InitialPopulation(RunData runData, Random random)
+        public override Population InitialPopulation(RunData runData, Random random)
         {
             Population initial = new Population(0);
 
