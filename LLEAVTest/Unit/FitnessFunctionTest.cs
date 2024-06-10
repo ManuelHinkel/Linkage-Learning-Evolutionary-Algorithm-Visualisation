@@ -1,16 +1,27 @@
-﻿using LLEAV.Models;
+﻿using HarfBuzzSharp;
+using LLEAV.Models;
 using LLEAV.Models.FitnessFunction;
 using LLEAV.Util;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit.Abstractions;
 
 namespace LLEAVTest.Unit
 {
     public class FitnessFunctionTest
     {
+
+        private readonly ITestOutputHelper _out;
+        public FitnessFunctionTest(ITestOutputHelper testOutputHelper)
+        {
+            _out = testOutputHelper;
+        }
+
         [Fact]
         public void TestOneMax()
         {
@@ -23,7 +34,7 @@ namespace LLEAVTest.Unit
                 Bits = b,
             };
 
-            OneMax oneMax = new OneMax();
+            LeadingOnes oneMax = new LeadingOnes();
 
             Assert.Equal(2.0, oneMax.Fitness(s));
 
@@ -136,6 +147,8 @@ namespace LLEAVTest.Unit
 
             MaxSat maxSat = new MaxSat();
 
+            Assert.True(maxSat.CreateArgumentFromString("(0 | 1) & (!0 | !1) & (2) & (!3) & (4 | 5 | !6) & (7 | 8 | 9) & (7 | 8 | !9) & (7 | !8 | 9) & (7 | !8 | !9) & (!7 | 8 | 9) & (!7 | 8 | !9) & (!7 | !8 | 9)"));
+        
             Assert.Equal(9, maxSat.Fitness(s));
 
             b.Set(1);

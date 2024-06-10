@@ -1,6 +1,10 @@
-﻿using LLEAV.Util;
+﻿using Avalonia.Controls.Shapes;
+using LLEAV.Util;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +14,20 @@ namespace LLEAV.Models.FitnessFunction
     public class Variable
     {
         protected int bitStringIndex;
+
+
+
+        public Variable(string bitStringIndex)
+        {
+            TypeConverter converter = TypeDescriptor.GetConverter(typeof(int));
+            if (converter.IsValid(bitStringIndex))
+            {
+                this.bitStringIndex = int.Parse(bitStringIndex, CultureInfo.InvariantCulture);
+            } else
+            {
+                throw new ArgumentException();
+            }
+        }
 
         public Variable(int bitStringIndex) 
         { 
@@ -28,6 +46,10 @@ namespace LLEAV.Models.FitnessFunction
         {
         }
 
+        public NegatedVariable(string bitStringIndex) : base(bitStringIndex)
+        {
+        }
+
         public override bool Evaluate(BitList bitList)
         {
             return !bitList.Get(bitStringIndex);
@@ -37,6 +59,27 @@ namespace LLEAV.Models.FitnessFunction
     public class OrTerm
     {
         public List<Variable> Variables = new List<Variable>();
+
+        public OrTerm(string term)
+        {
+            if (!(term.StartsWith("(") && term.EndsWith(")"))) {
+                throw new ArgumentException();
+            }
+            term = term.Substring(1, term.Length - 2);
+            string[] variables = term.Split("|");
+
+            foreach (string variable in variables)
+            {
+                if (variable.StartsWith("!"))
+                {
+                    Variables.Add(new NegatedVariable(variable.Substring(1)));
+                }
+                else
+                {
+                    Variables.Add(new Variable(variable));
+                }
+            }
+        }
 
         public bool Evaluate(BitList bitList)
         {
@@ -51,84 +94,52 @@ namespace LLEAV.Models.FitnessFunction
 
     public class MaxSat : AFitnessFunction
     {
-        private List<OrTerm> _terms;
+        public override string Depiction { get => "Max Sat"; }
+        public override bool EnableArg => true;
 
+        private List<OrTerm> _terms { get; set; }
+
+        private string _arg;
+        private int _maxPosition;
+
+    
         public MaxSat()
+        {}
+
+        public override byte[] ConvertArgumentToBytes()
         {
-            // 01 or 10 in positions 0 and 1 for both terms
-            OrTerm t1 = new OrTerm();
-            t1.Variables.Add(new Variable(0));
-            t1.Variables.Add(new Variable(1));
-            OrTerm t2 = new OrTerm();
-            t2.Variables.Add(new NegatedVariable(0));
-            t2.Variables.Add(new NegatedVariable(1));
-
-
-            OrTerm t3 = new OrTerm();
-            t3.Variables.Add(new Variable(2));
-
-            OrTerm t4 = new OrTerm();
-            t4.Variables.Add(new NegatedVariable(3));
-
-            // x_4 | x_5 | !x_6
-            OrTerm t5 = new OrTerm();
-            t5.Variables.Add(new Variable(4));
-            t5.Variables.Add(new Variable(5));
-            t5.Variables.Add(new NegatedVariable(6));
-
-            
-            OrTerm t6 = new OrTerm();
-            t6.Variables.Add(new Variable(7));
-            t6.Variables.Add(new Variable(8));
-            t6.Variables.Add(new Variable(9));
-
-            OrTerm t7 = new OrTerm();
-            t7.Variables.Add(new Variable(7));
-            t7.Variables.Add(new Variable(8));
-            t7.Variables.Add(new NegatedVariable(9));
-
-            OrTerm t8 = new OrTerm();
-            t8.Variables.Add(new Variable(7));
-            t8.Variables.Add(new NegatedVariable(8));
-            t8.Variables.Add(new Variable(9));
-
-            OrTerm t9 = new OrTerm();
-            t9.Variables.Add(new Variable(7));
-            t9.Variables.Add(new NegatedVariable(8));
-            t9.Variables.Add(new NegatedVariable(9));
-
-            OrTerm t10 = new OrTerm();
-            t10.Variables.Add(new NegatedVariable(7));
-            t10.Variables.Add(new Variable(8));
-            t10.Variables.Add(new Variable(9));
-
-            OrTerm t11 = new OrTerm();
-            t11.Variables.Add(new NegatedVariable(7));
-            t11.Variables.Add(new Variable(8));
-            t11.Variables.Add(new NegatedVariable(9));
-
-            OrTerm t12 = new OrTerm();
-            t12.Variables.Add(new NegatedVariable(7));
-            t12.Variables.Add(new NegatedVariable(8));
-            t12.Variables.Add(new Variable(9));
-
-            _terms = [
-                t1,
-                t2,
-                t3,
-                t4,
-                t5,
-                t6,
-                t7,
-                t8,
-                t9,
-                t10,
-                t11,
-                t12,
-            ];
+            return Encoding.ASCII.GetBytes(_arg);
         }
 
-        public override string Depiction { get; } = "Max Sat";
+        public override bool CreateArgumentFromBytes(byte[] bytes)
+        {
+            _arg = Encoding.ASCII.GetString(bytes);
+            return CreateArgumentFromString(_arg);
+        }
+
+        public override bool CreateArgumentFromString(string arg)
+        {
+            _terms = new List<OrTerm>();
+            _arg = String.Concat(arg.Where(c => !Char.IsWhiteSpace(c)));
+            string[] orTerms = _arg.Split('&');
+
+            foreach(string orTerm in orTerms)
+            {
+                try
+                {
+                    _terms.Add(new OrTerm(orTerm));
+                } catch (Exception e)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public override string GetArgValidationErrorMessage(string arg)
+        {
+            return "Input must be of form (0 | !1 | 4 | ...) & (!2 | 3 | ...) & ...";
+        }
 
         public override double Fitness(Solution solution)
         {
@@ -145,14 +156,14 @@ namespace LLEAV.Models.FitnessFunction
             return sum;
         }
 
-        public override string GetValidationErrorMessage(int solutionLength)
+        public override string GetSolutionLengthValidationErrorMessage(int solutionLength)
         {
-            return "Solutions need to be 10 bits long.";
+            return "Solutions need to be at least " + _maxPosition + " bits long.";
         }
 
         public override bool ValidateSolutionLength(int solutionLength)
         {
-            return solutionLength == 10;
+            return solutionLength >= _maxPosition;
         }
     }
 }

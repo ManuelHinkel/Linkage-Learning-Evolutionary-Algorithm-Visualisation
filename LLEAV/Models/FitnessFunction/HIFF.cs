@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.FitnessFunction
 {
-    public class HIFF : AFitnessFunction
+    public class HIFF : AFitnessFunctionNoArg
     {
 
         private double _sum;
@@ -23,7 +23,7 @@ namespace LLEAV.Models.FitnessFunction
             return _sum;
         }
 
-        public override string GetValidationErrorMessage(int solutionLength)
+        public override string GetSolutionLengthValidationErrorMessage(int solutionLength)
         {
             return "Solution length mus be a power of two.";
         }

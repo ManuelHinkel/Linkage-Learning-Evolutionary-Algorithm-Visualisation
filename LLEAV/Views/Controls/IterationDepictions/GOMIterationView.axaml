@@ -20,7 +20,7 @@
 		<TextBlock Grid.Column="0"
 				   Grid.Row="0"
 				   Margin="5"
-				   Text="Solutions:"
+				   Text="Solutions/Donor:"
 				   HorizontalAlignment="Center"/>
 
 		<TextBlock Grid.Column="2"
@@ -42,10 +42,10 @@
 			<ScrollViewer Grid.Row="0"
 						  Margin="0,0,0,5">
 				<ItemsControl ItemsSource="{Binding Solutions}"
-							  HorizontalAlignment="Center">
+							  HorizontalAlignment="Stretch">
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
-							<controls:SolutionView HorizontalAlignment="Stretch"/>
+							<controls:SolutionView HorizontalAlignment="Center"/>
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
@@ -63,10 +63,11 @@
 					  Grid.RowSpan="2"
 					  Margin="0,5,0,5">
 			<ItemsControl ItemsSource="{Binding NextIteration}"
-					  Margin="5,0,5,0">
+						  Margin="5,0,5,0"
+						  HorizontalAlignment="Stretch">
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
-						<controls:SolutionView/>
+						<controls:SolutionView HorizontalAlignment="Center"/>
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
@@ -78,7 +79,7 @@
 				Grid.Column="1"
 				Grid.Row="1"
 				Classes="panel">
-			<Grid ColumnDefinitions="200,130,200"
+			<Grid ColumnDefinitions="200,200,200"
 				  RowDefinitions="Auto,200,40"
 				  Margin="20">
 
@@ -99,7 +100,7 @@
 				       HorizontalAlignment="Left"
 					   VerticalAlignment="Top"
 					   ZIndex="1"
-					   Width="130"
+					   Width="200"
 					   IsVisible="{CompiledBinding CurrentSolution, Converter={x:Static ObjectConverters.IsNotNull}}">
 					<controls:SolutionView  DataContext="{Binding CurrentSolution}"/>
 				</Panel>
@@ -108,13 +109,13 @@
 					   HorizontalAlignment="Right"
 					   VerticalAlignment="Top"
 					   ZIndex="1"
-					   Width="130"
+					   Width="200"
 					   IsVisible="{CompiledBinding CurrentDonor, Converter={x:Static ObjectConverters.IsNotNull}}">
 					<controls:SolutionView DataContext="{Binding CurrentDonor}"/>
 				</Panel>
 				<Panel Grid.Column="1"
 					   Grid.Row="2"
-					   Width="130"
+					   Width="200"
 					   VerticalAlignment="Top"
 					   ZIndex="1"
 					   IsVisible="{CompiledBinding Merged, Converter={x:Static ObjectConverters.IsNotNull}}">
@@ -132,7 +133,8 @@
 
 					<StackPanel>
 						<Panel Classes.vertical="{Binding IsMerging}"/>
-						<controls:SolutionView DataContext="{Binding CurrentSolutionAnimated}" Width="130"/>
+						<controls:SolutionView DataContext="{Binding CurrentSolutionAnimated}" 
+											   Width="200"/>
 					</StackPanel>
 
 
@@ -151,7 +153,8 @@
 
 					<StackPanel>
 						<Panel Classes.vertical="{Binding IsMerging}"/>
-						<controls:SolutionView DataContext="{Binding CurrentDonorAnimated}" Width="130"> 
+						<controls:SolutionView DataContext="{Binding CurrentDonorAnimated}" 
+											   Width="200"> 
 							<controls:SolutionView.RenderTransform>
 								<ScaleTransform ScaleX="-1"/>
 							</controls:SolutionView.RenderTransform>
@@ -169,7 +172,8 @@
 
 					<StackPanel>
 						<Panel Classes.verticalRevert="{Binding IsApplyingCrossover}"/>
-						<controls:SolutionView DataContext="{Binding CurrentSolution}" Width="130"/>
+						<controls:SolutionView DataContext="{Binding CurrentSolution}" 
+											   Width="200"/>
 					</StackPanel>
 				</StackPanel>
 			</Grid>

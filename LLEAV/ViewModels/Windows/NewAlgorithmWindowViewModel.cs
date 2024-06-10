@@ -21,12 +21,12 @@ namespace LLEAV.ViewModels.Windows
     {
 
         public static Type[] FitnessFunctions { get; private set; } = [
-            typeof(OneMax),
+            typeof(LeadingOnes),
             typeof(DeceptiveTrap),
             typeof(HIFF),
             typeof(MaxSat),
             typeof(NKLandscape),
-            typeof(IsingModel),
+            typeof(IsingRing),
             ];
         public static Type[] LocalSearchFunctions { get; private set; } = [typeof(HillClimber)];
         public static Type[] TerminationCriterias { get; private set; } = [
@@ -38,7 +38,9 @@ namespace LLEAV.ViewModels.Windows
             typeof(P3),
             typeof(ROMEA), 
             typeof(GOMEA),
-            ];
+            typeof(LocalSearchROMEA),
+            typeof(LocalSearchGOMEA),
+        ];
 
         public static Type[] GrowthFunctions { get; private set; } = [
             typeof(ConstantGrowth),
@@ -53,11 +55,21 @@ namespace LLEAV.ViewModels.Windows
 
         public string NumberOfBits { get; set; } = "10";
 
-
-        public int SelectedFitnessFuntion { get; set; }
+        private int _fitnessFuntion;
+        public int SelectedFitnessFuntion
+        {
+            get => _fitnessFuntion;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _fitnessFuntion, value);
+                FitnessArgument = "";
+                EnableFitnessArg = ((AFitnessFunction)Activator.CreateInstance(FitnessFunctions[value])).EnableArg;
+            }
+        }
         public int SelectedFOSFunction { get; set; }
         public int SelectedTerminationCriteria { get; set; }
         public string TerminationArgument { get; set; }
+        public string FitnessArgument { get; set; }
 
         private int _algorithm;
         public int SelectedAlgorithm
@@ -66,9 +78,10 @@ namespace LLEAV.ViewModels.Windows
             set
             {
                 this.RaiseAndSetIfChanged(ref _algorithm, value);
-                ShowGrowthFunction = value == 0;
-                ShowLocalSearchFunction = value == 0 || value == 1;
-                ShowPopulationSize = value == 2 || value == 3;
+                var a = Activator.CreateInstance(Algorithms[value]) as ALinkageLearningAlgorithm;
+                ShowGrowthFunction = a.ShowGrowthFunction;
+                ShowLocalSearchFunction = a.ShowLocalSearchFunction;
+                ShowPopulationSize = a.ShowPopulationSize;
             }
         }
 
@@ -85,6 +98,9 @@ namespace LLEAV.ViewModels.Windows
 
         [Reactive]
         public bool ShowPopulationSize { get; set; }
+
+        [Reactive]
+        public bool EnableFitnessArg { get; set; }
 
         [Reactive]
         public string ErrorMessage { get; set; }
@@ -130,14 +146,22 @@ namespace LLEAV.ViewModels.Windows
                 return;
             }
 
-            var f = Activator.CreateInstance(FitnessFunctions[SelectedFitnessFuntion]) as AFitnessFunction;
 
+            // Fitness function validation
+            var f = Activator.CreateInstance(FitnessFunctions[SelectedFitnessFuntion]) as AFitnessFunction;
+            if (!f.CreateArgumentFromString(FitnessArgument))
+            {
+                ErrorMessage = f.GetArgValidationErrorMessage(FitnessArgument);
+                return;
+            }
             if (!f.ValidateSolutionLength(numberOfBits))
             {
-                ErrorMessage = f.GetValidationErrorMessage(numberOfBits);
+                ErrorMessage = f.GetSolutionLengthValidationErrorMessage(numberOfBits);
                 return;
             }
 
+
+            // Creating run data
             RunData newRunData = new RunData
             {
                 Algorithm = algorithm,

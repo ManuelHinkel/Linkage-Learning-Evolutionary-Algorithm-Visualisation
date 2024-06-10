@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.FitnessFunction
 {
-    public class OneMax : AFitnessFunction
+    public class LeadingOnes : AFitnessFunctionNoArg
     {
-        public override string Depiction { get; } = "One Max";
+        public override string Depiction { get; } = "Leading Ones";
 
         public override double Fitness(Solution solution)
         {
@@ -27,7 +27,7 @@ namespace LLEAV.Models.FitnessFunction
             return leadingOnes;
         }
 
-        public override string GetValidationErrorMessage(int solutionLength)
+        public override string GetSolutionLengthValidationErrorMessage(int solutionLength)
         {
             return "Solution length must be at least one.";
         }

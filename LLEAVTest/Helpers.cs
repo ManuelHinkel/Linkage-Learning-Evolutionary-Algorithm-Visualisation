@@ -55,7 +55,7 @@ namespace LLEAVTest
             b.Command.Execute(b.DataContext);
         }
 
-        public static void CreateAlgorithmRun(int solutionLength, int fitnessFunction, int fosFunction, 
+        public static async void CreateAlgorithmRun(int solutionLength, int fitnessFunction, int fosFunction, 
             int terminationCriteria, 
             string terminationArg,
             int algorithm,
@@ -113,9 +113,8 @@ namespace LLEAVTest
                 var p = newAlgorithmWindow.FindControl<NumericUpDown>("PopulationSize");
                 p.Text = populationSize.ToString();
             }
-
-
             PressButton("Ok", newAlgorithmWindow);
+
         }
 
         public static void NextIteration()

@@ -36,20 +36,24 @@ namespace LLEAV.Models.Persistence
             int numberOfBits = BitConverter.ToInt32(bytes, index);
             index += 4;
 
-            int fitnessFunction = BitConverter.ToInt32(bytes, index);
+            // Fitness function
+            int fitnessFunctionIndex = BitConverter.ToInt32(bytes, index);
             index += 4;
+            int fitnessArgLength = BitConverter.ToInt32(bytes, index);
+            index += 4;
+            byte[] fitnessArg = bytes.Skip(index).Take(fitnessArgLength).ToArray();
+            index += fitnessArgLength;
 
             int fosFunction = BitConverter.ToInt32(bytes, index);
             index += 4;
 
+            // Termination criteria
             int terminationCriteriaIndex = BitConverter.ToInt32(bytes, index);
             index += 4;
-
-            int terminationCriteriaArgLenth = BitConverter.ToInt32(bytes, index);
+            int terminationCriteriaArgLength = BitConverter.ToInt32(bytes, index);
             index += 4;
-
-            byte[] terminationArg = bytes.Skip(index).Take(terminationCriteriaArgLenth).ToArray();
-            index += terminationCriteriaArgLenth;
+            byte[] terminationArg = bytes.Skip(index).Take(terminationCriteriaArgLength).ToArray();
+            index += terminationCriteriaArgLength;
 
             int algorithm = BitConverter.ToInt32(bytes, index);
             index += 4;
@@ -91,11 +95,15 @@ namespace LLEAV.Models.Persistence
                    as ATerminationCriteria;
             terminationCriteria.CreateArgumentFromBytes(terminationArg);
 
+            AFitnessFunction fitnessFunction = Activator.CreateInstance(NAWVM.FitnessFunctions[fitnessFunctionIndex])
+                   as AFitnessFunction;
+            fitnessFunction.CreateArgumentFromBytes(fitnessArg);
+
             RunData newRunData = new RunData
             {
                 Algorithm = Activator.CreateInstance(NAWVM.Algorithms[algorithm]) as ALinkageLearningAlgorithm,
                 FOSFunction = Activator.CreateInstance(NAWVM.FOSFunctions[fosFunction]) as AFOSFunction,
-                FitnessFunction = Activator.CreateInstance(NAWVM.FitnessFunctions[fitnessFunction]) as AFitnessFunction,
+                FitnessFunction = fitnessFunction,
                 TerminationCriteria = terminationCriteria,
                 NumberOfBits = numberOfBits,
                 NumberOfSolutions = numberOfSolutions,

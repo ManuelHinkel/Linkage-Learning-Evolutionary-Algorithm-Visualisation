@@ -1,6 +1,7 @@
 ﻿using LLEAV.Util;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,12 +10,14 @@ namespace LLEAV.Models.FitnessFunction
 {
     public class DeceptiveTrap : AFitnessFunction
     {
-        public override string Depiction { get; } = "Deceptive Trap (K = 7)";
-        private const int K = 7;
+        public override string Depiction { get => "Deceptive Trap (K = " + _k + ")"; }
+        public override bool EnableArg => true;
+
+        private int _k = 7;
 
         public override double Fitness(Solution solution)
         {
-            int blocks = (int)Math.Ceiling((double)solution.Bits.NumberBits / K);
+            int blocks = (int)Math.Ceiling((double)solution.Bits.NumberBits / _k);
             double fitness = 0;
             for (int i = 0; i < blocks; i++)
             {
@@ -25,12 +28,12 @@ namespace LLEAV.Models.FitnessFunction
 
         private double Trap(int t)
         {
-            if (t == K)
+            if (t == _k)
             {
-                return K;
+                return _k;
             } else
             {
-                return K - 1 - t;
+                return _k - 1 - t;
             }
         }
 
@@ -38,8 +41,8 @@ namespace LLEAV.Models.FitnessFunction
         {
             int numberOfOnes = 0;
 
-            int start = block * K;
-            int end = start + K;
+            int start = block * _k;
+            int end = start + _k;
 
             for(int i = start; i < Math.Min(end, bits.NumberBits); i++)
             {
@@ -53,12 +56,41 @@ namespace LLEAV.Models.FitnessFunction
 
         public override bool ValidateSolutionLength(int solutionLength)
         {
-            return solutionLength % K == 0;
+            return solutionLength % _k == 0;
         }
 
-        public override string GetValidationErrorMessage(int solutionLength)
+        public override string GetSolutionLengthValidationErrorMessage(int solutionLength)
         {
-            return "Solution length must be a multiple of: " + K + "\nMaybe you ment: " + (solutionLength + (K - (solutionLength % K)));
+            return "Solution length must be a multiple of: " + _k + "\nMaybe you ment: " + (solutionLength + (_k - (solutionLength % _k)));
+        }
+
+        public override bool CreateArgumentFromString(string arg)
+        {
+            TypeConverter converter = TypeDescriptor.GetConverter(typeof(int));
+            if (converter.IsValid(arg))
+            {
+                _k = (int)converter.ConvertTo(arg, typeof(int));
+                return _k > 0;
+            }
+            return false;
+        }
+
+        public override string GetArgValidationErrorMessage(string arg)
+        {
+            return "Blocksize must be a number greater 0.";
+        }
+
+        public override byte[] ConvertArgumentToBytes()
+        {
+            byte[] bytes = new byte[4];
+            ByteUtil.WriteIntToBuffer(_k, bytes, 0);
+            return bytes;
+        }
+
+        public override bool CreateArgumentFromBytes(byte[] bytes)
+        {
+            _k = BitConverter.ToInt32(bytes, 0);
+            return true;
         }
     }
 }

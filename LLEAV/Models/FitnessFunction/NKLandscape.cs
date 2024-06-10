@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LLEAV.Models.FitnessFunction
 {
-    public class NKLandscape : AFitnessFunction
+    public class NKLandscape : AFitnessFunctionNoArg
     {
         public override string Depiction { get; } = "NK Landscape (K = 2)";
 
@@ -66,7 +66,7 @@ namespace LLEAV.Models.FitnessFunction
             return VALUES[index];
         }
 
-        public override string GetValidationErrorMessage(int solutionLength)
+        public override string GetSolutionLengthValidationErrorMessage(int solutionLength)
         {
             return "Solution need to be at least " + (K + 1) + " bits long.";
         }

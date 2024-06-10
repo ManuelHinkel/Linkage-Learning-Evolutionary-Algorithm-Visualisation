@@ -1,6 +1,7 @@
 ﻿using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Kernel;
+using LiveChartsCore.Defaults;
 using LLEAV.Models;
 using LLEAV.Models.Tree;
 using LLEAV.Util;
@@ -187,7 +188,9 @@ namespace LLEAV.ViewModels.Windows
                         }
                         else
                         {
-                            wrapper.MarkCluster(current.Color, current.Color.Replace('f', '9'), current.Cluster);
+                            string dark = String.Concat(current.Color.Substring(1).Select(c => (Convert.ToInt32(c.ToString(), 16) / 2).ToString()));
+                            dark = "#" + dark;
+                            wrapper.MarkCluster(current.Color, dark, current.Cluster);
                         }
                     }
                 }

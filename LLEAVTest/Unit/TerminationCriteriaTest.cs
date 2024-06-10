@@ -52,7 +52,7 @@ namespace LLEAVTest.Unit
 
             IterationData iteration = new IterationData(p, 0);
 
-            OneMax oneMax = new OneMax();
+            LeadingOnes oneMax = new LeadingOnes();
 
             s.Fitness = oneMax.Fitness(s);
 

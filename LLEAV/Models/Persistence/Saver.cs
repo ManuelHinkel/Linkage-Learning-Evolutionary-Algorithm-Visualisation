@@ -42,8 +42,9 @@ namespace LLEAV.Models.Persistence
             }
 
             byte[] terminationArgBytes = data.TerminationCriteria.ConvertArgumentToBytes();
+            byte[] fitnessArgBytes = data.FitnessFunction.ConvertArgumentToBytes();
 
-            byte[] bytes = new byte[45 + terminationArgBytes.Length + iterationByteRepresentations.Sum(a => a.Length)];
+            byte[] bytes = new byte[49 + terminationArgBytes.Length + fitnessArgBytes.Length + iterationByteRepresentations.Sum(a => a.Length)];
 
             bytes[0] = (byte)(appending ? 1 : 0);
 
@@ -52,20 +53,25 @@ namespace LLEAV.Models.Persistence
             ByteUtil.WriteIntToBuffer(data.NumberOfBits, bytes, index);
             index += 4;
 
+            // Fitness function
             ByteUtil.WriteIntToBuffer(NAWVM.FitnessFunctions.IndexOf(data.FitnessFunction.GetType()), bytes, index);
             index += 4;
+            ByteUtil.WriteIntToBuffer(fitnessArgBytes.Length, bytes, index);
+            index += 4;
+            ByteUtil.WriteByteArrayToBuffer(fitnessArgBytes, bytes, index);
+            index += fitnessArgBytes.Length;
 
             ByteUtil.WriteIntToBuffer(NAWVM.FOSFunctions.IndexOf(data.FOSFunction.GetType()), bytes, index);
             index += 4;
 
+            // Termination criteria
             ByteUtil.WriteIntToBuffer(NAWVM.TerminationCriterias.IndexOf(data.TerminationCriteria.GetType()), bytes, index);
             index += 4;
-
             ByteUtil.WriteIntToBuffer(terminationArgBytes.Length, bytes, index);
             index += 4;
-
             ByteUtil.WriteByteArrayToBuffer(terminationArgBytes, bytes, index);
             index += terminationArgBytes.Length;
+
 
             ByteUtil.WriteIntToBuffer(NAWVM.Algorithms.IndexOf(data.Algorithm.GetType()), bytes, index);
             index += 4;
