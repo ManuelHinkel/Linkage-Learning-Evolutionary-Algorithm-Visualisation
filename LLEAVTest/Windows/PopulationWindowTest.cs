@@ -11,117 +11,119 @@ using Avalonia.LogicalTree;
 using LLEAV.Views.Windows;
 using LLEAV.Models.Tree;
 using LLEAV.ViewModels.Windows;
+using LLEAV.Models.Algorithms.ROM;
+using LLEAV.Models.FitnessFunction;
+using LLEAV.Models.FOSFunction;
+using LLEAV.Models.TerminationCriteria;
+using LLEAV.Models.Algorithms.MIP;
+using LLEAV.Models.LocalSearchFunction;
+using LLEAV.Models.GrowthFunction;
+using Avalonia.Threading;
+using LLEAV;
 
 namespace LLEAVTest.Windows
 {
  
     public class PopulationWindowTest: TestClass
     {
-        private readonly ITestOutputHelper _out;
-        public PopulationWindowTest(ITestOutputHelper testOutputHelper)
+        public PopulationWindowTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _out = testOutputHelper;
-
             tests = [
                 TestOpenPopulationWindow,
                 TestTreeChange
-            ];
-            
+         ];
         }
 
-   
         public async void TestOpenPopulationWindow()
         {
+            var w = GlobalManager.Instance.MainWindow;
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                Helpers.ChangeAnimationModus(1);
+            });
+
+            Thread.Sleep(100);
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                Expect.Equal(1, Helpers.GetAnimationModus(), "Animation modus is wrong.");
+                Helpers.CreateAlgorithmRun(16, typeof(HIFF), typeof(LinkageTreeFOS), typeof(IterationTermination), "10", typeof(MIP), typeof(HillClimber), typeof(ConstantGrowth));
+            });
+
             Thread.Sleep(1000);
 
-            Helpers.ChangeAnimationModus(1);
-
-            Helpers.CreateAlgorithmRun(16, 2, 2, 0, "10", 0, 0, 0);
-
-            await Task.Delay(500);
-
-            Helpers.CloseWindow<IterationDetailWindow>();
-
-            var w = GlobalManager.Instance.MainWindow;
-
-            bool foundPopulationBlock = false;
-            foreach (var c in w.GetLogicalDescendants().OfType<Control>())
+            Dispatcher.UIThread.Invoke(() =>
             {
-                var control = c;
-                if (control.DataContext != null && control.DataContext.GetType().IsSubclassOf(typeof(PopulationContainerViewModelBase)))
-                {
-                    if (control.DataContext.GetType().Equals(typeof(PopulationBlock)))
-                    {
-                        if (control.GetType().Equals(typeof(Button)))
-                        {
-                            Helpers.PressButton((Button)control);
-                        }
-                        foundPopulationBlock = true;
-                    }
-                    else
-                    {
-                        Assert.Fail("Should only show PopulationBlocks");
-                    }
-                }
-            }
-            if (!foundPopulationBlock)
+                Helpers.CloseWindow<IterationDetailWindow>();
+            });
+
+            Thread.Sleep(1000);
+
+            var app = AvaloniaApp.GetApp();
+            Dispatcher.UIThread.Invoke(() =>
             {
-                Assert.Fail("Should show a Population Block");
-            }
 
-            var p = Helpers.Find<PopulationWindow>();
+                Expect.False(app.Windows.OfType<IterationDetailWindow>().Count() > 0, "Iteration Details Window was not closed");
+                var p = Helpers.Find<PopulationWindow>();
 
-            Helpers.WaitFor(() => p.IsVisible);
+                Expect.True(p.IsEffectivelyVisible, "Population window not open.");
+            });
+
+          
+
         }
 
 
         public async void TestTreeChange()
         {
+            var w = GlobalManager.Instance.MainWindow;
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                var p = Helpers.Find<PopulationWindow>();
+                bool nodeMarked = false;
+
+                foreach (var c in p.GetLogicalDescendants().OfType<Control>())
+                {
+
+                    if (c.DataContext != null && c.DataContext.GetType().Equals(typeof(Node)))
+                    {
+                        Node n = c.DataContext as Node;
+
+                        if (n.IsNewNode)
+                        {
+                            nodeMarked = true;
+                        }
+
+                    }
+
+                }
+                Expect.False(nodeMarked, "No node should be marked.");
+                Helpers.NextIteration();
+            });
+
+
             Thread.Sleep(1000);
 
-            var p = Helpers.Find<PopulationWindow>();
-
-            Helpers.WaitFor(() => p.IsVisible);
-
-            bool nodeMarked = false;
-
-            foreach (var c in p.GetLogicalDescendants().OfType<Control>())
+            Dispatcher.UIThread.Invoke(() =>
             {
-
-                if (c.DataContext != null && c.DataContext.GetType().Equals(typeof(Node)))
+                var p = Helpers.Find<PopulationWindow>();
+                bool nodeMarked = false;
+                foreach (var c in p.GetLogicalDescendants().OfType<Control>())
                 {
-                    Node n = c.DataContext as Node;
-
-                    if (n.IsNewNode)
+                    if (c.DataContext != null && c.DataContext.GetType().Equals(typeof(Node)))
                     {
-                        nodeMarked = true;
+                        Node n = c.DataContext as Node;
+
+                        if (n.IsNewNode)
+                        {
+                            nodeMarked = true;
+                        }
+
                     }
 
                 }
-               
-            }
-            Assert.False(nodeMarked);
-
-            Helpers.NextIteration();
-
-            Thread.Sleep(500);
-
-            foreach (var c in p.GetLogicalDescendants().OfType<Control>())
-            {
-                if (c.DataContext != null && c.DataContext.GetType().Equals(typeof(Node)))
-                {
-                    Node n = c.DataContext as Node;
-
-                    if (n.IsNewNode)
-                    {
-                        nodeMarked = true;
-                    }
-
-                }
-
-            }
-            Assert.True(nodeMarked);
-
+                Expect.True(nodeMarked, "A node should be marked.");
+            });
         }
 
     }

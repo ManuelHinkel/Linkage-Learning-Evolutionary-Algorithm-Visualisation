@@ -1,6 +1,17 @@
-﻿using LLEAV.Models;
+﻿using Avalonia.Controls;
+using Avalonia.Threading;
+using LLEAV.Models;
+using LLEAV.Models.Algorithms.GOM;
+using LLEAV.Models.Algorithms.MIP;
 using LLEAV.Models.Algorithms.MIP.StateChange;
+using LLEAV.Models.Algorithms.ROM;
 using LLEAV.Models.Algorithms.ROM.StateChange;
+using LLEAV.Models.FitnessFunction;
+using LLEAV.Models.FOSFunction;
+using LLEAV.Models.GrowthFunction;
+using LLEAV.Models.LocalSearchFunction;
+using LLEAV.Models.TerminationCriteria;
+using LLEAV.ViewModels;
 using LLEAV.ViewModels.Controls;
 using LLEAV.ViewModels.Controls.IterationDepictions;
 using LLEAV.Views.Windows;
@@ -15,116 +26,148 @@ namespace LLEAVTest.Windows
 {
     public class IterationDetailsWindowTest: TestClass
     {
-        private readonly ITestOutputHelper _out;
-        public IterationDetailsWindowTest(ITestOutputHelper testOutputHelper)
+        public IterationDetailsWindowTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _out = testOutputHelper;
             tests = [
-                TestMIP,
                 TestROM,
                 TestGOM,
+                TestMIP,
                 TestGlobalStep
-            ];
-        }
-
-        public void TestMIP()
-        {
-            Thread.Sleep(500);
-            Helpers.ChangeAnimationModus(0);
-            Helpers.CreateAlgorithmRun(16, 2, 0, 0, "10", 0, 0, 1);
-
-            var i = Helpers.Find<IterationDetailWindow>();
-
-            Helpers.WaitFor(() => i.IsVisible);
-
-            Assert.Equal(typeof(MIPIterationViewModel), i.Content.GetType());
-
-            var content = i.Content as MIPIterationViewModel;
-
-            content.CurrentStateChange = content.MaxStateChange;
-
-            
-            var message = content.MessageBox.Messages.First(m => m.Content.StartsWith("Merged the parents resulting in:"));
-            Assert.Equal(message.Content.Split("\n")[1], content.Merged.Solution.Bits.ToString());
-
-            Assert.Equal("Changed the population currently viewed.", content.MessageBox.Messages.Last().Content);
-            Assert.Equal("Termination criteria was not met.", content.MessageBox.Messages[0].Content);
-
+          ];
         }
 
         public void TestROM()
         {
-            Thread.Sleep(500);
-            Helpers.CreateAlgorithmRun(16, 2, 0, 0, "0", 2, populationSize: 30);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                Helpers.ChangeAnimationModus(0);
+            });
 
-            var i = Helpers.Find<IterationDetailWindow>();
+            Thread.Sleep(100);
 
-            Helpers.WaitFor(() => i.IsVisible);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                Expect.Equal(0, Helpers.GetAnimationModus(), "Animation modus is wrong.");
+                Helpers.CreateAlgorithmRun(16, typeof(HIFF), typeof(UnivariateFOS), typeof(IterationTermination), "0", typeof(ROMEA), populationSize: 30);
+            });
 
-            Assert.Equal(typeof(ROMIterationViewModel), i.Content.GetType());
 
-            var content = i.Content as ROMIterationViewModel;
+            Thread.Sleep(1000);
 
-            content.CurrentStateChange = content.MaxStateChange;
-            Thread.Sleep(500);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                var i = Helpers.Find<IterationDetailWindow>();
+                Expect.True(i.IsEffectivelyVisible, "Iteration details not visible.");
+                Expect.Equal(typeof(ROMIterationViewModel), i.Content.GetType(), "Iteration Details has wrong type. (1)");
+                var content = i.Content as ROMIterationViewModel;
 
-            Assert.Equal("Changed the population currently viewed.", content.MessageBox.Messages.Last().Content);
-            Assert.Equal("Termination criteria was met.", content.MessageBox.Messages[0].Content);
+                content.CurrentStateChange = content.MaxStateChange;
 
-            var message = content.MessageBox.Messages.First(m => m.Content.Contains("and:"));
+                Expect.Equal("Changed the population currently viewed.", content.MessageBox.Messages.Last().Content, "Wrong first message. (1)");
+                Expect.Equal("Termination criteria was met.", content.MessageBox.Messages[0].Content, "Wrong last message. (1)");
 
-            Assert.True(message.Content.Contains(content.CurrentSolution1.Solution.Bits.ToString()));
-            Assert.True(message.Content.Contains(content.CurrentSolution2.Solution.Bits.ToString()));
+                var message = content.MessageBox.Messages.First(m => m.Content.Contains("and:"));
+
+                Expect.True(message.Content.Contains(content.CurrentSolution1.Solution.Bits.ToString()));
+                Expect.True(message.Content.Contains(content.CurrentSolution2.Solution.Bits.ToString()));
+            });
         }
 
         public void TestGOM()
         {
-            Thread.Sleep(500);
-            Helpers.CreateAlgorithmRun(16, 2, 0, 1, "16.0", 3, populationSize: 30);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                Helpers.CreateAlgorithmRun(16, typeof(HIFF), typeof(UnivariateFOS), typeof(FitnessTermination), "16.0", typeof(GOMEA), populationSize: 30);
+            });
 
-            var i = Helpers.Find<IterationDetailWindow>();
+            Thread.Sleep(1000);
 
-            Helpers.WaitFor(() => i.IsVisible);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                var i = Helpers.Find<IterationDetailWindow>();
+                Expect.True(i.IsEffectivelyVisible, "Iteration details not visible.");
+                Expect.Equal(typeof(GOMIterationViewModel), i.Content.GetType(), "Iteration Details has wrong type. (2)");
+                var content = i.Content as GOMIterationViewModel;
 
-            Assert.Equal(typeof(GOMIterationViewModel), i.Content.GetType());
+                content.CurrentStateChange = content.MaxStateChange;
 
-            var content = i.Content as GOMIterationViewModel;
-
-            content.CurrentStateChange = content.MaxStateChange;
-            Thread.Sleep(500);
-
-            Assert.Equal("Changed the population currently viewed.", content.MessageBox.Messages.Last().Content);
-            Assert.True(content.MessageBox.Messages[content.MessageBox.Messages.Count()-2].Content.Contains("Changed active solution to:"));
-            Assert.Equal("Termination criteria was met.", content.MessageBox.Messages[0].Content);
+                Expect.Equal("Changed the population currently viewed.", content.MessageBox.Messages.Last().Content, "Wrong first message. (2)");
+                Expect.True(content.MessageBox.Messages[content.MessageBox.Messages.Count() - 2].Content.Contains("Changed active solution to:"));
+                output.WriteLine(content.MessageBox.Messages[0].Content);
+                Expect.Equal("Termination criteria was met.", content.MessageBox.Messages[0].Content, "Wrong last message. (2)");
 
 
-            var message = content.MessageBox.Messages.First(m => m.Content.StartsWith("Changed the donor to:"));
+                var message = content.MessageBox.Messages.First(m => m.Content.StartsWith("Changed the donor to:"));
 
-            Assert.True(message.Content.Contains(content.CurrentDonor.Solution.Bits.ToString()));
+                Expect.True(message.Content.Contains(content.CurrentDonor.Solution.Bits.ToString()), "Message does not contain curren donor.");
+            });
+        }
+
+        public void TestMIP()
+        {
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                Expect.Equal(0, Helpers.GetAnimationModus(), "Animation modus is wrong.");
+                Helpers.CreateAlgorithmRun(16, typeof(HIFF), typeof(UnivariateFOS), typeof(IterationTermination), "10", typeof(MIP), typeof(HillClimber), typeof(LinearGrowth));
+            });
+
+
+            Thread.Sleep(1000);
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                var i = Helpers.Find<IterationDetailWindow>();
+                Expect.True(i.IsEffectivelyVisible, "Iteration details not visible.");
+                Expect.Equal(typeof(MIPIterationViewModel), i.Content.GetType(), "Iteration Details has wrong type. (3)");
+                var content = i.Content as MIPIterationViewModel;
+
+                content.CurrentStateChange = content.MaxStateChange;
+
+
+                var message = content.MessageBox.Messages.First(m => m.Content.StartsWith("Merged the parents resulting in:"));
+                Expect.Equal(message.Content.Split("\n")[1], content.Merged.Solution.Bits.ToString(), "Message contained wrong content. (3)");
+
+                Expect.Equal("Changed the population currently viewed.", content.MessageBox.Messages.Last().Content, "Wrong first message. (3)");
+                Expect.Equal("Termination criteria was not met.", content.MessageBox.Messages[0].Content, "Wrong last message. (3)");
+            });
         }
 
         public void TestGlobalStep()
         {
-            Thread.Sleep(500);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                var i = Helpers.Find<IterationDetailWindow>();
+                Expect.True(i.IsEffectivelyVisible, "Iteration details not visible.");
+                Expect.Equal(typeof(MIPIterationViewModel), i.Content.GetType(), "Iteration Details has wrong type. (4)");
 
-            var i = Helpers.Find<IterationDetailWindow>();
+                var content = i.Content as MIPIterationViewModel;
+                Expect.True(content.ForwardButtonEnabled, "Forward not enabled");
+                content.GlobalStepForward();
+            });
 
-            var content = i.Content as GOMIterationViewModel;
+            Thread.Sleep(1000);
 
-            Helpers.WaitFor(() => content.ForwardButtonEnabled);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                var i = Helpers.Find<IterationDetailWindow>();
+                var content = i.Content as MIPIterationViewModel;
 
-            content.GlobalStepForward();
+                Expect.False(content.ForwardButtonEnabled, "Forward enabled");
+                Expect.True(content.BackwardButtonEnabled, "Backward not enabled");
+                content.GlobalStepBackward();
+            });
 
-            Helpers.WaitFor(() => !content.ForwardButtonEnabled);
-            Helpers.WaitFor(() => content.BackwardButtonEnabled);
+            Thread.Sleep(1000);
 
-            content.GlobalStepBackward();
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                var i = Helpers.Find<IterationDetailWindow>();
+                var content = i.Content as MIPIterationViewModel;
 
-            Helpers.WaitFor(() => !content.ForwardButtonEnabled);
-            Helpers.WaitFor(() => !content.BackwardButtonEnabled);
-
-
-
+                Expect.False(content.ForwardButtonEnabled, "Forward enabled");
+                Expect.False(content.BackwardButtonEnabled, "Backward enabled");
+                content.GlobalStepBackward();
+            });
         }
     }
 }

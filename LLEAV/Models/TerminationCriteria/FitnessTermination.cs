@@ -55,7 +55,7 @@ namespace LLEAV.Models.TerminationCriteria
                 foreach(Solution s in p)
                 {
                     Debug.WriteLine(_fitness);
-                    if (s.Fitness >= _fitness - 0.0001)
+                    if (s.Fitness >= _fitness - 0.001)
                     {
                         _reached = s;
                         return true;

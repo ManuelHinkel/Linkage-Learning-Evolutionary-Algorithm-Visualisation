@@ -1,20 +1,14 @@
 ﻿using Avalonia.Threading;
-using DynamicData;
-using DynamicData.Kernel;
-using LiveChartsCore.Defaults;
 using LLEAV.Models;
 using LLEAV.Models.Tree;
 using LLEAV.Util;
 using LLEAV.ViewModels.Controls;
-using LLEAV.ViewModels.Controls.PopulationDepictions;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace LLEAV.ViewModels.Windows
 {
@@ -70,7 +64,7 @@ namespace LLEAV.ViewModels.Windows
 
             if (_currentlyShownPopulation != null && _currentlyShownPopulation.Equals(population.Previous)) 
             {
-                layouter.UpdateTree(population.FOS, Tree!);
+                Tree = layouter.UpdateTree(population.FOS, Tree!);
 
                 // Reset _reserved colors and reserve, when already marked in tree
                 _reservedColors = new bool[_colors.Length];
@@ -124,7 +118,6 @@ namespace LLEAV.ViewModels.Windows
         public void ToggleCluster(Node node)
         {
             if (node.Cluster == null) return;
-
             SetMarkedStatus(node, string.IsNullOrEmpty(node.Color));
             ColorSolutions();
         }

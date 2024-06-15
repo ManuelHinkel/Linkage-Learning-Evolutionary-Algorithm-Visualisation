@@ -89,6 +89,26 @@
 							  VerticalScrollBarVisibility="Visible"
 							  DataContext="{Binding Tree}">
 						<Panel x:Name="Tree">
+							<ItemsControl ItemsSource="{Binding Edges}">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<Canvas HorizontalAlignment="Left"
+												VerticalAlignment="Top"
+												Width="{Binding $parent[ScrollViewer].DataContext.Width}"
+												Height="{Binding $parent[ScrollViewer].DataContext.Height}"/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+
+								<ItemsControl.DataTemplates>
+									<DataTemplate x:DataType="data:Edge">
+										<Line StartPoint="{Binding Start}"
+											  EndPoint="{Binding End}"
+											  Classes.appearing="{CompiledBinding Appearing}"
+											  Classes.disappearing="{CompiledBinding Disappering}"/>
+									</DataTemplate>
+								</ItemsControl.DataTemplates>
+							</ItemsControl>
+							
 							<ItemsControl ItemsSource="{Binding Nodes}">
 								<ItemsControl.ItemsPanel>
 									<ItemsPanelTemplate>
@@ -139,26 +159,6 @@
 															IsHitTestVisible="False"/>
 											</Panel>
 										</Button>
-									</DataTemplate>
-								</ItemsControl.DataTemplates>
-							</ItemsControl>
-
-							<ItemsControl ItemsSource="{Binding Edges}">
-								<ItemsControl.ItemsPanel>
-									<ItemsPanelTemplate>
-										<Canvas HorizontalAlignment="Left"
-												VerticalAlignment="Top"
-												Width="{Binding $parent[ScrollViewer].DataContext.Width}"
-												Height="{Binding $parent[ScrollViewer].DataContext.Height}"/>
-									</ItemsPanelTemplate>
-								</ItemsControl.ItemsPanel>
-
-								<ItemsControl.DataTemplates>
-									<DataTemplate x:DataType="data:Edge">
-										<Line StartPoint="{Binding Start}"
-											  EndPoint="{Binding End}"
-											  Classes.appearing="{CompiledBinding Appearing}"
-											  Classes.disappearing="{CompiledBinding Disappering}"/>
 									</DataTemplate>
 								</ItemsControl.DataTemplates>
 							</ItemsControl>

@@ -1,4 +1,5 @@
-﻿using LLEAV.Models;
+﻿using DynamicData;
+using LLEAV.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -81,73 +82,37 @@ namespace LLEAV.Models.Tree
             return t;
         }
 
-        public void UpdateTree(FOS currentFOS, Tree tree, bool revert = true)
+        public Tree UpdateTree(FOS currentFOS, Tree tree, bool revert = true)
         {
             Tree currentTree = CalculateTree(currentFOS);
-            
-            IList<Node> currentNodes = currentTree.Nodes;
 
-            // Copy because new nodes could be added to tree
-            IList<Node> pastNodes = new List<Node>(tree.Nodes);
-
-            foreach (Node pastNode in pastNodes)
+            foreach (Node current in currentTree.Nodes)
             {
-                pastNode.IsNewNode = false;
-
-                int index = currentNodes.IndexOf(pastNode);
-                if (index >= 0)
-                {
-                    pastNode.X = currentNodes[index].X;
-                    pastNode.Y = currentNodes[index].Y;
-                }
-                else
-                {
-                    tree.Nodes.Remove(pastNode);
-                }
-            }
-
-            foreach(Node current in currentNodes) 
-            {
-                if (!pastNodes.Contains(current))
+                if (!tree.Nodes.Contains(current))
                 {
                     current.IsNewNode = true;
-                    tree.Nodes.Add(current);
                 }
             }
 
-            IList<Edge> currentEdges = currentTree.Edges;
-
-            // Copy because new edges could be added to tree
-            IList<Edge> pastEdges = new List<Edge>(tree.Edges);
-
-
-            foreach (Edge pastEdge in pastEdges)
+            foreach (Edge currentEdge in currentTree.Edges)
             {
-                if (pastEdge.Disappering)
+                if (!tree.Edges.Contains(currentEdge))
                 {
-                    tree.Edges.Remove(pastEdge);
+                    currentEdge.Appearing = true;
                 }
-                else if (!currentEdges.Contains(pastEdge))
-                {
-                    pastEdge.Disappering = true;
-                }
-                else
+            }
+
+            foreach (Edge pastEdge in tree.Edges)
+            {
+                if (!pastEdge.Disappering && !currentTree.Edges.Contains(pastEdge))
                 {
                     pastEdge.Appearing = false;
-                    pastEdge.CalculatePoints(revert);
+                    pastEdge.Disappering = true;
+                    currentTree.Edges.Add(pastEdge);
                 }
             }
 
-            foreach (Edge current in currentEdges)
-            {
-                if (!pastEdges.Contains(current))
-                {
-                    current.Appearing = true;
-                    tree.Edges.Add(current);
-                }
-            }
-
-            tree.CalculateDimensions();
+            return currentTree;
         }
 
         private void CreateEdges()

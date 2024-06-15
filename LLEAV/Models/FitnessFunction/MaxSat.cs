@@ -13,16 +13,14 @@ namespace LLEAV.Models.FitnessFunction
 {
     public class Variable
     {
-        protected int bitStringIndex;
-
-
+        public int BitStringIndex { get; private set; }
 
         public Variable(string bitStringIndex)
         {
             TypeConverter converter = TypeDescriptor.GetConverter(typeof(int));
             if (converter.IsValid(bitStringIndex))
             {
-                this.bitStringIndex = int.Parse(bitStringIndex, CultureInfo.InvariantCulture);
+                this.BitStringIndex = int.Parse(bitStringIndex, CultureInfo.InvariantCulture);
             } else
             {
                 throw new ArgumentException();
@@ -31,12 +29,12 @@ namespace LLEAV.Models.FitnessFunction
 
         public Variable(int bitStringIndex) 
         { 
-            this.bitStringIndex = bitStringIndex;
+            this.BitStringIndex = bitStringIndex;
         }
 
         public virtual bool Evaluate(BitList bitList)
         {
-            return bitList.Get(bitStringIndex);
+            return bitList.Get(BitStringIndex);
         }
     }
 
@@ -52,7 +50,7 @@ namespace LLEAV.Models.FitnessFunction
 
         public override bool Evaluate(BitList bitList)
         {
-            return !bitList.Get(bitStringIndex);
+            return !bitList.Get(BitStringIndex);
         }
     }
 
@@ -133,6 +131,13 @@ namespace LLEAV.Models.FitnessFunction
                     return false;
                 }
             }
+            foreach (var orTerm in _terms)
+            {
+                foreach(var v in orTerm.Variables)
+                {
+                    _maxPosition = Math.Max(_maxPosition, v.BitStringIndex);
+                }
+            }
             return true;
         }
 
@@ -158,12 +163,12 @@ namespace LLEAV.Models.FitnessFunction
 
         public override string GetSolutionLengthValidationErrorMessage(int solutionLength)
         {
-            return "Solutions need to be at least " + _maxPosition + " bits long.";
+            return "Solutions need to be at least " + (_maxPosition + 1) + " bits long.";
         }
 
         public override bool ValidateSolutionLength(int solutionLength)
         {
-            return solutionLength >= _maxPosition;
+            return solutionLength > _maxPosition;
         }
     }
 }

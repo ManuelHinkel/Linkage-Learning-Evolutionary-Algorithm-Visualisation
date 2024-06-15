@@ -45,6 +45,7 @@
 								Classes.clicked="{Binding Selected}">
 							<Grid Margin="10"
 								  HorizontalAlignment="Stretch"
+								  MaxWidth="400"
 								  VerticalAlignment="Stretch"
 								  ColumnDefinitions="*,*"
 								  RowDefinitions="*,5,*,5,*,5,*">

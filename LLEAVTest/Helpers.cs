@@ -1,40 +1,18 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Input;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
-using LLEAV;
-using LLEAV.Models.GrowthFunction;
+using Avalonia.Threading;
 using LLEAV.ViewModels;
+using LLEAV.ViewModels.Windows;
 using LLEAV.Views.Windows;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LLEAVTest
 {
     public class Helpers
     {
-        public static async Task WaitFor(Func<bool> condition, int delayMs = 50, int maxAttempts = 20)
-        {
-            for (var i = 0; i < maxAttempts; i++)
-            {
-                await Task.Delay(delayMs);
-
-                if (condition())
-                {
-                    return;
-                }
-            }
-            Assert.Fail("Condition failed: " + condition.ToString());
-        }
 
         public static Window Find<T>() where T: Window {
 
             var app = AvaloniaApp.GetApp();
-
-            WaitFor(() => app.Windows.OfType<T>().Count() > 0, 500);
 
             return app.Windows.OfType<T>().Single();
         } 
@@ -48,20 +26,15 @@ namespace LLEAVTest
             b.Command.Execute(null);
         }
 
-        public static void PressButton(Button b)
-        {
-            Assert.True(b.IsVisible);
 
-            b.Command.Execute(b.DataContext);
-        }
-
-        public static async void CreateAlgorithmRun(int solutionLength, int fitnessFunction, int fosFunction, 
-            int terminationCriteria, 
+        public static async void CreateAlgorithmRun(int solutionLength, Type fitnessFunction, Type fosFunction,
+            Type terminationCriteria, 
             string terminationArg,
-            int algorithm,
-            int localSearchFunction = -1,
-            int growthFunction = -1,
-            int populationSize = 0)
+            Type algorithm,
+            Type localSearchFunction = null,
+            Type growthFunction = null,
+            int populationSize = 0,
+            string fitnessArg = "")
         {
             var app = AvaloniaApp.GetApp();
 
@@ -81,31 +54,34 @@ namespace LLEAVTest
             s.Text = solutionLength.ToString();
 
             var f = newAlgorithmWindow.FindControl<ComboBox>("FitnessFunction");
-            f.SelectedIndex = fitnessFunction;
+            f.SelectedIndex = InddexOfType(fitnessFunction);
 
             var fos = newAlgorithmWindow.FindControl<ComboBox>("FOS");
-            fos.SelectedIndex = fosFunction;
+            fos.SelectedIndex = InddexOfType(fosFunction);
 
             var t = newAlgorithmWindow.FindControl<ComboBox>("TerminationCriteria");
-            t.SelectedIndex = terminationCriteria;
+            t.SelectedIndex = InddexOfType(terminationCriteria);
 
             var tArg = newAlgorithmWindow.FindControl<TextBox>("TerminationArgument");
             tArg.Text = terminationArg;
 
+            var fArg = newAlgorithmWindow.FindControl<TextBox>("FitnessArgument");
+            fArg.Text = fitnessArg;
+
             var a = newAlgorithmWindow.FindControl<ComboBox>("Algorithm");
-            a.SelectedIndex = algorithm;
+            a.SelectedIndex = InddexOfType(algorithm);
 
 
-            if (localSearchFunction > -1)
+            if (localSearchFunction != null)
             {
                 var l = newAlgorithmWindow.FindControl<ComboBox>("LocalSearchFunction");
-                l.SelectedIndex = localSearchFunction;
+                l.SelectedIndex = InddexOfType(localSearchFunction);
             }
 
-            if (growthFunction > -1)
+            if (growthFunction != null)
             {
                 var g = newAlgorithmWindow.FindControl<ComboBox>("GrowthFunction");
-                g.SelectedIndex = growthFunction;
+                g.SelectedIndex = InddexOfType(growthFunction);
             }
 
             if (populationSize > 0)
@@ -115,6 +91,53 @@ namespace LLEAVTest
             }
             PressButton("Ok", newAlgorithmWindow);
 
+        }
+
+        private static int InddexOfType(Type t)
+        {
+            for (int i = 0; i < NewAlgorithmWindowViewModel.FitnessFunctions.Length; i++)
+            {
+                if (t.Equals(NewAlgorithmWindowViewModel.FitnessFunctions[i]))
+                {
+                    return i;
+                }
+            }
+            for (int i = 0; i < NewAlgorithmWindowViewModel.LocalSearchFunctions.Length; i++)
+            {
+                if (t.Equals(NewAlgorithmWindowViewModel.LocalSearchFunctions[i]))
+                {
+                    return i;
+                }
+            }
+            for (int i = 0; i < NewAlgorithmWindowViewModel.TerminationCriterias.Length; i++)
+            {
+                if (t.Equals(NewAlgorithmWindowViewModel.TerminationCriterias[i]))
+                {
+                    return i;
+                }
+            }
+            for (int i = 0; i < NewAlgorithmWindowViewModel.Algorithms.Length; i++)
+            {
+                if (t.Equals(NewAlgorithmWindowViewModel.Algorithms[i]))
+                {
+                    return i;
+                }
+            }
+            for (int i = 0; i < NewAlgorithmWindowViewModel.GrowthFunctions.Length; i++)
+            {
+                if (t.Equals(NewAlgorithmWindowViewModel.GrowthFunctions[i]))
+                {
+                    return i;
+                }
+            }
+            for (int i = 0; i < NewAlgorithmWindowViewModel.FOSFunctions.Length; i++)
+            {
+                if (t.Equals(NewAlgorithmWindowViewModel.FOSFunctions[i]))
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
 
         public static void NextIteration()

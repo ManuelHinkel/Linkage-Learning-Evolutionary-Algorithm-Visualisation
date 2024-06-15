@@ -15,110 +15,11 @@ using Avalonia.ReactiveUI;
 using System.Diagnostics;
 using LLEAVTest;
 using LLEAVTest.Windows;
+using LLEAV.ViewModels;
+using Newtonsoft.Json.Linq;
 
-
-
-[assembly: TestFramework("LLEAVTest.AvaloniaUiTestFramework", "LLEAVTest")]
-[assembly: TestCaseOrderer("Xunit.Extensions.Ordering.TestCaseOrderer", "Xunit.Extensions.Ordering")]
-[assembly: TestCollectionOrderer("Xunit.Extensions.Ordering.CollectionOrderer", "Xunit.Extensions.Ordering")]
-[assembly: CollectionBehavior(CollectionBehavior.CollectionPerAssembly, DisableTestParallelization = true)]
 
 namespace LLEAVTest;
-
-
-public class AvaloniaUiTestFramework : XunitTestFramework
-{
-    public AvaloniaUiTestFramework(IMessageSink messageSink)
-        : base(messageSink)
-    {
-
-    }
-
-    protected override ITestFrameworkExecutor CreateExecutor(AssemblyName assemblyName)
-        => new Executor(assemblyName, SourceInformationProvider, DiagnosticMessageSink);
-
-    private class Executor : XunitTestFrameworkExecutor
-    {
-        public Executor(
-            AssemblyName assemblyName,
-            ISourceInformationProvider sourceInformationProvider,
-            IMessageSink diagnosticMessageSink)
-            : base(
-                assemblyName,
-                sourceInformationProvider,
-                diagnosticMessageSink)
-        {
-
-        }
-
-        protected override async void RunTestCases(IEnumerable<IXunitTestCase> testCases,
-            IMessageSink executionMessageSink,
-            ITestFrameworkExecutionOptions executionOptions)
-        {
-            executionOptions.SetValue("xunit.execution.DisableParallelization", false);
-            using var assemblyRunner = new Runner(
-                TestAssembly, testCases, DiagnosticMessageSink, executionMessageSink,
-                executionOptions);
-
-            await assemblyRunner.RunAsync();
-        }
-    }
-
-    private class Runner : XunitTestAssemblyRunner
-    {
-        public Runner(
-            ITestAssembly testAssembly,
-            IEnumerable<IXunitTestCase> testCases,
-            IMessageSink diagnosticMessageSink,
-            IMessageSink executionMessageSink,
-            ITestFrameworkExecutionOptions executionOptions)
-            : base(
-                testAssembly,
-                testCases,
-                diagnosticMessageSink,
-                executionMessageSink,
-                executionOptions)
-        {
-
-        }
-
-        public override void Dispose()
-        {
-            AvaloniaApp.Stop();
-
-            base.Dispose();
-        }
-
-        protected override void SetupSyncContext(int maxParallelThreads)
-        {
-            var tcs = new TaskCompletionSource<SynchronizationContext>();
-            var thread = new Thread(() =>
-            {
-                try
-                {
-                    AvaloniaApp
-                        .BuildAvaloniaApp()
-                         .AfterSetup(_ =>
-                         {
-                             tcs.SetResult(SynchronizationContext.Current);
-                         })
-                        .StartWithClassicDesktopLifetime(new string[0]);
-                }
-                catch (Exception e)
-                {
-                    tcs.SetException(e);
-                }
-            })
-            {
-                IsBackground = true
-            };
-
-            thread.Start();
-
-            SynchronizationContext.SetSynchronizationContext(tcs.Task.Result);
-        }
-    }
-}
 
 
 public static class AvaloniaApp
@@ -148,10 +49,15 @@ public static class AvaloniaApp
 public class TestClass
 {
     protected IList<Action> tests;
+    protected readonly ITestOutputHelper output;
+
+    public TestClass(ITestOutputHelper testOutputHelper) {
+        output = testOutputHelper;
+    }
 
     public void Execute()
     {
-        foreach(Action a in tests)
+        foreach (Action a in tests)
         {
             a.Invoke();
         }
@@ -162,6 +68,9 @@ public class TestUI
 {
     private readonly ITestOutputHelper _out;
     private TestClass[] testClasses;
+
+    public static List<Exception> Exceptions = new List<Exception>();
+
     public TestUI(ITestOutputHelper testOutputHelper)
     {
         _out = testOutputHelper;
@@ -175,9 +84,72 @@ public class TestUI
     [Fact]
     public void Test()
     {
-        foreach (TestClass t in testClasses)
+        AvaloniaApp
+             .BuildAvaloniaApp()
+              .AfterSetup(_ =>
+              {
+                  TestExecution();
+              })
+             .StartWithClassicDesktopLifetime(new string[0]);
+        if (Exceptions.Count > 0)
         {
-            t.Execute();
+            Assert.Fail(Exceptions[0].Message);
+        }
+    }
+
+    private void TestExecution()
+    {
+        Thread t = new Thread(new ThreadStart(() => {
+            Thread.Sleep(1000);
+            foreach (TestClass t in testClasses)
+            {
+                t.Execute();
+                Thread.Sleep(1000);
+            }
+            Thread.Sleep(1000);
+            AvaloniaApp.Stop();
+        }));
+        t.Start();
+
+    }
+}
+
+public class Expect
+{
+    public static void Fail(string message)
+    {
+        TestUI.Exceptions.Add(new Exception(message));
+    }
+
+    public static void Equal(object expected, object actual, string message)
+    {
+        if (!expected.Equals(actual))
+        {
+            Fail(message);
+        }
+    }
+
+    public static void True(bool value, string message = "Expected True!")
+    {
+        if (!value)
+        {
+            Fail(message);
+        }
+    }
+
+    public static void False(bool value, string message = "Expected False!")
+    {
+        if (value)
+        {
+            Fail(message);
+        }
+    }
+
+    public static void Null(object obj, string message = "Expected Null!")
+    {
+        if (obj != null)
+        {
+            Fail(message);
         }
     }
 }

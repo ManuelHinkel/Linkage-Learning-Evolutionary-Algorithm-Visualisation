@@ -1,6 +1,7 @@
 ﻿using LLEAV.Util;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,32 +10,20 @@ namespace LLEAV.Models.FitnessFunction
 {
     public class NKLandscape : AFitnessFunctionNoArg
     {
-        public override string Depiction { get; } = "NK Landscape (K = 2)";
+        public override string Depiction { get => "NK Landscape (K = " + k + ")"; }
 
-        private const int K = 2;
+        protected int k { get; set; } = 3;
 
-        private static double[] VALUES = [
-            0,
-            2,
-            1,
-            0,
-            1,
-            2,
-            1,
-            0,
+        protected static double[] VALUES = [
+            4, // 000
+            3, // 001
+            3, // 010
+            -1,// 011
+            3, // 100
+            -1, // 101
+            -1, // 110
+            5, // 111
         ];
-
-        public NKLandscape()
-        {
-            /*int count = 1 << (K + 1);
-            VALUES = new double[count];
-
-            Random r = new Random();
-            for(int i = 0; i < count; i++)
-            {
-                VALUES[i] = r.NextDouble();
-            }*/
-        }
 
         public override double Fitness(Solution solution)
         {
@@ -43,9 +32,9 @@ namespace LLEAV.Models.FitnessFunction
 
             for (int i = 0; i < bits.NumberBits; i++)
             {
-                bool[] values = new bool[K+1];
+                bool[] values = new bool[k];
 
-                for(int j = 0; j <K+1; j++)
+                for(int j = 0; j < k; j++)
                 {
                     values[j] = bits.Get((i + j) % bits.NumberBits);
                 }
@@ -68,12 +57,12 @@ namespace LLEAV.Models.FitnessFunction
 
         public override string GetSolutionLengthValidationErrorMessage(int solutionLength)
         {
-            return "Solution need to be at least " + (K + 1) + " bits long.";
+            return "Solution need to be at least " + k + " bits long.";
         }
 
         public override bool ValidateSolutionLength(int solutionLength)
         {
-            return solutionLength > K;
+            return solutionLength >= k;
         }
 
     }

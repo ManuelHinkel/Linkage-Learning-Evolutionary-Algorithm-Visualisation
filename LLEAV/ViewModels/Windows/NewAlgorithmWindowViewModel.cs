@@ -21,12 +21,15 @@ namespace LLEAV.ViewModels.Windows
     {
 
         public static Type[] FitnessFunctions { get; private set; } = [
+            typeof(OneMax),
             typeof(LeadingOnes),
             typeof(DeceptiveTrap),
             typeof(HIFF),
-            typeof(MaxSat),
             typeof(NKLandscape),
+            typeof(NKLandscapeRandom),
             typeof(IsingRing),
+            typeof(IsingLattice),
+            typeof(MaxSat),
             ];
         public static Type[] LocalSearchFunctions { get; private set; } = [typeof(HillClimber)];
         public static Type[] TerminationCriterias { get; private set; } = [

@@ -25,10 +25,10 @@ namespace LLEAV.Models.Tree
         [Reactive]
         public int Height { get; private set; } 
 
-        public ObservableCollection<Node> Nodes { get; private set; }
-        public ObservableCollection<Edge> Edges { get; private set; }
+        public ObservableCollection<Node> Nodes { get; set; }
+        public ObservableCollection<Edge> Edges { get; set; }
 
-        public Node Root { get; private set; }
+        public Node Root { get;  set; }
 
         public Tree(IList<Node> nodes, IList<Edge> edges, Node root)
         {
@@ -76,7 +76,7 @@ namespace LLEAV.Models.Tree
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        public IList<Node> Children { get; private set; } = new List<Node>();
+        public IList<Node> Children { get; set; } = new List<Node>();
 
         public Cluster Cluster { get; private set; }
 
