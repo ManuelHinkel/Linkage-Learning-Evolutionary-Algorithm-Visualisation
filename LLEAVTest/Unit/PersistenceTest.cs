@@ -27,14 +27,14 @@ namespace LLEAVTest.Unit
         }
 
         [Fact]
-        public void TestSave()
+        public void TestSaveAndLoad()
         {
             Directory.CreateDirectory(_directory);
 
             RunData runData = new RunData();
 
             runData.NumberOfBits = 39;
-            runData.FitnessFunction = new LeadingOnes();
+            runData.FitnessFunction = new OneMax();
             runData.FOSFunction = new LinkageTreeFOS();
 
             ATerminationCriteria criteria = new IterationTermination();
@@ -71,7 +71,7 @@ namespace LLEAVTest.Unit
 
             Assert.Equal(typeof(Int32), loaded.TerminationCriteria.ArgumentType);
             Assert.IsType(typeof(IterationTermination), loaded.TerminationCriteria);
-            Assert.IsType(typeof(LeadingOnes), loaded.FitnessFunction);
+            Assert.IsType(typeof(OneMax), loaded.FitnessFunction);
             Assert.IsType(typeof(LinkageTreeFOS), loaded.FOSFunction);
 
             Assert.IsType(typeof(HillClimber), loaded.LocalSearchFunction);

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -66,6 +67,21 @@ namespace LLEAVTest.Unit
             b1.Flip(2);
 
             Assert.Equal("1100 0000 11", b1.ToString());
+        }
+
+        [Fact]
+        public void TestLongList()
+        {
+            BitList b1 = new BitList(128);
+            b1.Set(64);
+
+            Assert.Equal("0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000", b1.ToString());
+            b1.Set(127);
+            Assert.True(b1.Get(127));
+            b1.Set(63);
+            Assert.Equal("0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0001", b1.ToString());
+            b1.Flip(127);
+            Assert.Equal("0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000", b1.ToString());
         }
     }
 }

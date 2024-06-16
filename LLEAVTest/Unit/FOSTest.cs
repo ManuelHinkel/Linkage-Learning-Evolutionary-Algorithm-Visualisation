@@ -125,7 +125,7 @@ namespace LLEAVTest.Unit
         }
 
         [Fact]
-        public void TestMarginalProduct1()
+        public void TestMarginalProduct()
         {
             BitList b1 = new BitList(6);
             BitList b2 = new BitList(6);

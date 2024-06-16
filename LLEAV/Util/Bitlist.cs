@@ -7,18 +7,18 @@ namespace LLEAV.Util
     public class BitList
     {
         public int NumberBits { get; private set; }
-        private long[] bitArray;
+        private ulong[] bitArray;
 
         public BitList(int numberBits)
         {
             NumberBits = numberBits;
-            bitArray = new long[1 + numberBits / 64];
+            bitArray = new ulong[1 + numberBits / 64];
         }
 
         public BitList(int numberBits, byte[] bytes)
         {
             NumberBits = numberBits;
-            bitArray = new long[1 + numberBits / 64];
+            bitArray = new ulong[1 + numberBits / 64];
             FromByteArray(bytes);
         }
 
@@ -28,7 +28,7 @@ namespace LLEAV.Util
 
             int slot = index / 64;
             int slotIndex = index % 64;
-            long mask = 1L << slotIndex;
+            ulong mask = 1UL << slotIndex;
             if (value)
             {
                 bitArray[slot] = bitArray[slot] | mask;
@@ -45,7 +45,7 @@ namespace LLEAV.Util
             Debug.Assert(index < NumberBits);
             int slot = index / 64;
             int slotIndex = index % 64;
-            long mask = 1L << slotIndex;
+            ulong mask = 1UL << slotIndex;
             return (bitArray[slot] & mask) > 0;
 
         }
@@ -71,7 +71,7 @@ namespace LLEAV.Util
             Debug.Assert(index < NumberBits);
             int slot = index / 64;
             int slotIndex = index % 64;
-            long mask = 1L << slotIndex;
+            ulong mask = 1UL << slotIndex;
             bitArray[slot] = bitArray[slot] ^ mask;
         }
 
@@ -132,7 +132,7 @@ namespace LLEAV.Util
 
             for (int i = 0; i < newBit.bitArray.Length; i++)
             {
-                newBit.bitArray[i] = a.bitArray[i] ^ -1L;
+                newBit.bitArray[i] = a.bitArray[i] ^ ulong.MaxValue;
             }
 
             return newBit;
@@ -167,7 +167,7 @@ namespace LLEAV.Util
         {
             for (int i = 0; i < bytes.Length; i++)
             {
-                bitArray[i / 8] |= (long)bytes[i] << ((i % 8) * 8);
+                bitArray[i / 8] |= (ulong)bytes[i] << ((i % 8) * 8);
             }
         }
 

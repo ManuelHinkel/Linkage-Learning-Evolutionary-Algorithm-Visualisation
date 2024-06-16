@@ -24,7 +24,7 @@ namespace LLEAVTest.Windows
         {
             tests = [
                 TestNewAlgorithmCancelWindow,
-                TestCreateAlgorithmRun,
+                TestCreateAlgorithmRun1,
                 TestCreateAlgorithmRun2,
                 TestPopulationDepiction,
                 TestNextIteration,
@@ -80,14 +80,14 @@ namespace LLEAVTest.Windows
             });
         }
 
-        public void TestCreateAlgorithmRun()
+        public void TestCreateAlgorithmRun1()
         {
             var w = GlobalManager.Instance.MainWindow;
             Dispatcher.UIThread.Invoke(() =>
             {
                 var b = w.FindControl<Button>("PlayButton");
                 Expect.False(b.IsEffectivelyEnabled, "Play button was enabled.");
-                Helpers.CreateAlgorithmRun(20, typeof(LeadingOnes), typeof(LinkageTreeFOS), typeof(IterationTermination), "10", typeof(MIP));
+                Helpers.CreateAlgorithmRun(20, typeof(OneMax), typeof(LinkageTreeFOS), typeof(IterationTermination), "10", typeof(MIP));
             });
 
             Thread.Sleep(1000);
@@ -109,7 +109,7 @@ namespace LLEAVTest.Windows
             {
                 var b = w.FindControl<Button>("PlayButton");
                 Expect.True(b.IsEffectivelyEnabled, "Play button was not enabled. (2)");
-                Helpers.CreateAlgorithmRun(20, typeof(LeadingOnes), typeof(LinkageTreeFOS), typeof(IterationTermination), "10", typeof(ROMEA));
+                Helpers.CreateAlgorithmRun(20, typeof(OneMax), typeof(LinkageTreeFOS), typeof(IterationTermination), "10", typeof(ROMEA));
             });
 
             Thread.Sleep(1000);
