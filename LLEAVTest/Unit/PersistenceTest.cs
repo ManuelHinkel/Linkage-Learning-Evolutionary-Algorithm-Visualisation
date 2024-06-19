@@ -56,8 +56,22 @@ namespace LLEAVTest.Unit
             p.Add(s);
 
             IterationData iteration = new IterationData(p, 13);
+            iteration.Iteration = 0;
+            Population p2 = p.Clone();
+
+
+            Solution s2 = new Solution()
+            {
+                Bits = new BitList(39),
+            };
+            s2.Bits.Set(1);
+            p2.Add(s2);
+
+            IterationData iteration2 = new IterationData(p2, 33);
+            iteration2.Iteration = 1;
 
             runData.Iterations.Add(iteration);
+            runData.Iterations.Add(iteration2);
 
             string path = Path.Combine(_directory, "test.lleav");
 
@@ -79,7 +93,12 @@ namespace LLEAVTest.Unit
             Assert.Null(loaded.GrowthFunction);
 
             Assert.True(loaded.Iterations[0].RNGSeed == 13);
+            Assert.Equal(0, loaded.Iterations[0].Iteration);
             Assert.Equal(s.Bits, loaded.Iterations[0].Populations[0].Solutions[0].Bits);
+
+            Assert.True(loaded.Iterations[1].RNGSeed == 33);
+            Assert.Equal(1, loaded.Iterations[1].Iteration);
+            Assert.Equal(s2.Bits, loaded.Iterations[1].Populations[0].Solutions[1].Bits);
         }
 
 

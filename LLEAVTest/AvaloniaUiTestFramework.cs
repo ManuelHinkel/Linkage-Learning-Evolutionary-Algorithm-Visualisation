@@ -93,7 +93,7 @@ public class TestUI
              .StartWithClassicDesktopLifetime(new string[0]);
         if (Exceptions.Count > 0)
         {
-            Assert.Fail(Exceptions[0].Message);
+            throw Exceptions[0];
         }
     }
 
@@ -118,7 +118,13 @@ public class Expect
 {
     public static void Fail(string message)
     {
-        TestUI.Exceptions.Add(new Exception(message));
+        try
+        {
+            Assert.Fail(message);
+        } catch (Exception e)
+        {
+            TestUI.Exceptions.Add(e);
+        }
     }
 
     public static void Equal(object expected, object actual, string message)

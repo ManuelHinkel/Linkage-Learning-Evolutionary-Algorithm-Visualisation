@@ -68,7 +68,8 @@
 				<ComboBoxItem>None</ComboBoxItem>
 			</ComboBox>
 
-			<ComboBox SelectedIndex="{Binding BitDepictionIndex}">
+			<ComboBox SelectedIndex="{Binding BitDepictionIndex}"
+					  x:Name="BitDepictionModus">
 				<ComboBoxItem>Character</ComboBoxItem>
 				<ComboBoxItem>Barcode</ComboBoxItem>
 			</ComboBox>

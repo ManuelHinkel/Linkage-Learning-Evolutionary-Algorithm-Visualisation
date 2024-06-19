@@ -157,11 +157,47 @@ namespace LLEAVTest
             Assert.Equal(modus, combobox.SelectedIndex);
         }
 
+        public static void ChangeBitDepictionModus(int modus)
+        {
+            var w = GlobalManager.Instance.MainWindow;
+
+            var combobox = w.Find<ComboBox>("BitDepictionModus");
+            combobox.SelectedIndex = modus;
+
+            Assert.Equal(modus, combobox.SelectedIndex);
+        }
+
+        public static void ChangePopulationDepictionModus(int modus)
+        {
+            var w = GlobalManager.Instance.MainWindow;
+
+            var combobox = w.Find<ComboBox>("depictionBox");
+            combobox.SelectedIndex = modus;
+
+            Assert.Equal(modus, combobox.SelectedIndex);
+        }
+
         public static int GetAnimationModus()
         {
             var w = GlobalManager.Instance.MainWindow;
 
             var combobox = w.Find<ComboBox>("AnimationModus");
+            return combobox.SelectedIndex;
+        }
+
+        public static int GetBitDepictionModus()
+        {
+            var w = GlobalManager.Instance.MainWindow;
+
+            var combobox = w.Find<ComboBox>("BitDepictionModus");
+            return combobox.SelectedIndex;
+        }
+
+        public static int GetPopulationDepictionModus()
+        {
+            var w = GlobalManager.Instance.MainWindow;
+
+            var combobox = w.Find<ComboBox>("depictionBox");
             return combobox.SelectedIndex;
         }
 

@@ -1,30 +1,22 @@
 ﻿using Avalonia.Controls;
+using Avalonia.LogicalTree;
 using Avalonia.Threading;
-using LLEAV.Models;
 using LLEAV.Models.Algorithms.GOM;
 using LLEAV.Models.Algorithms.MIP;
-using LLEAV.Models.Algorithms.MIP.StateChange;
 using LLEAV.Models.Algorithms.ROM;
-using LLEAV.Models.Algorithms.ROM.StateChange;
 using LLEAV.Models.FitnessFunction;
 using LLEAV.Models.FOSFunction;
 using LLEAV.Models.GrowthFunction;
 using LLEAV.Models.LocalSearchFunction;
 using LLEAV.Models.TerminationCriteria;
-using LLEAV.ViewModels;
 using LLEAV.ViewModels.Controls;
 using LLEAV.ViewModels.Controls.IterationDepictions;
 using LLEAV.Views.Windows;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit.Abstractions;
 
 namespace LLEAVTest.Windows
 {
-    public class IterationDetailsWindowTest: TestClass
+    public class IterationDetailsWindowTest : TestClass
     {
         public IterationDetailsWindowTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
@@ -61,6 +53,28 @@ namespace LLEAVTest.Windows
                 Expect.Equal(typeof(ROMIterationViewModel), i.Content.GetType(), "Iteration Details has wrong type. (1)");
                 var content = i.Content as ROMIterationViewModel;
 
+                content.StepForward();
+            });
+
+            Thread.Sleep(1000);
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                var i = Helpers.Find<IterationDetailWindow>();
+                var content = i.Content as ROMIterationViewModel;
+
+                Expect.Equal("Changed active solutions.", content.MessageBox.Messages[0].Content, "Step forward didn't execute.(1)");
+                content.StepBackward();
+            });
+
+            Thread.Sleep(500);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                var i = Helpers.Find<IterationDetailWindow>();
+                var content = i.Content as ROMIterationViewModel;
+
+
+                Expect.Equal("Changed the population currently viewed.", content.MessageBox.Messages[0].Content, "Step back didn't clear message box.(1)");
                 content.CurrentStateChange = content.MaxStateChange;
 
                 Expect.Equal("Changed the population currently viewed.", content.MessageBox.Messages.Last().Content, "Wrong first message. (1)");
@@ -70,7 +84,27 @@ namespace LLEAVTest.Windows
 
                 Expect.True(message.Content.Contains(content.CurrentSolution1.Solution.Bits.ToString()));
                 Expect.True(message.Content.Contains(content.CurrentSolution2.Solution.Bits.ToString()));
+
+                Helpers.ChangeBitDepictionModus(1);
             });
+
+            Thread.Sleep(500);
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                bool hasBarcode = false;
+                foreach (var p in Helpers.Find<IterationDetailWindow>().GetLogicalDescendants().OfType<Panel>())
+                {
+                    var childpanels = p.GetLogicalDescendants().OfType<Panel>();
+                    if (childpanels.Count() == 1 && childpanels.ElementAt(0).IsVisible && p.DataContext.GetType().Equals(typeof(ColoredChar)))
+                    {
+                        hasBarcode = true;
+                    }
+                }
+                Expect.True(hasBarcode, "ROM wasn't set to barcode depiction.");
+                Helpers.ChangeBitDepictionModus(0);
+            });
+
         }
 
         public void TestGOM()
@@ -89,17 +123,58 @@ namespace LLEAVTest.Windows
                 Expect.Equal(typeof(GOMIterationViewModel), i.Content.GetType(), "Iteration Details has wrong type. (2)");
                 var content = i.Content as GOMIterationViewModel;
 
+                content.StepForward();
+            });
+
+            Thread.Sleep(1000);
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                var i = Helpers.Find<IterationDetailWindow>();
+                var content = i.Content as GOMIterationViewModel;
+                Expect.True(content.MessageBox.Messages[0].Content.Contains("Changed active solution to:"), "Step forward didn't execute.(2)");
+                content.StepBackward();
+            });
+
+            Thread.Sleep(1000);
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                var i = Helpers.Find<IterationDetailWindow>();
+                var content = i.Content as GOMIterationViewModel;
+
+                Expect.Equal("Changed the population currently viewed.", content.MessageBox.Messages[0].Content, "Step back didn't clear message box.(2)");
                 content.CurrentStateChange = content.MaxStateChange;
 
                 Expect.Equal("Changed the population currently viewed.", content.MessageBox.Messages.Last().Content, "Wrong first message. (2)");
                 Expect.True(content.MessageBox.Messages[content.MessageBox.Messages.Count() - 2].Content.Contains("Changed active solution to:"));
-                output.WriteLine(content.MessageBox.Messages[0].Content);
                 Expect.Equal("Termination criteria was met.", content.MessageBox.Messages[0].Content, "Wrong last message. (2)");
 
 
                 var message = content.MessageBox.Messages.First(m => m.Content.StartsWith("Changed the donor to:"));
 
                 Expect.True(message.Content.Contains(content.CurrentDonor.Solution.Bits.ToString()), "Message does not contain curren donor.");
+
+                Helpers.ChangeBitDepictionModus(1);
+            });
+
+
+            Thread.Sleep(500);
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                bool hasBarcode = false;
+                foreach (var p in Helpers.Find<IterationDetailWindow>().GetLogicalDescendants().OfType<Panel>())
+                {
+                    var childpanels = p.GetLogicalDescendants().OfType<Panel>();
+                    if (childpanels.Count() == 1 && childpanels.ElementAt(0).IsVisible && p.DataContext.GetType().Equals(typeof(ColoredChar)))
+                    {
+                        hasBarcode = true;
+                    }
+                }
+                Expect.True(hasBarcode, "GOM wasn't set to barcode depiction.");
+
+                Helpers.ChangeBitDepictionModus(0);
             });
         }
 
@@ -111,7 +186,6 @@ namespace LLEAVTest.Windows
                 Helpers.CreateAlgorithmRun(16, typeof(HIFF), typeof(UnivariateFOS), typeof(IterationTermination), "10", typeof(MIP), typeof(HillClimber), typeof(LinearGrowth));
             });
 
-
             Thread.Sleep(1000);
 
             Dispatcher.UIThread.Invoke(() =>
@@ -121,6 +195,28 @@ namespace LLEAVTest.Windows
                 Expect.Equal(typeof(MIPIterationViewModel), i.Content.GetType(), "Iteration Details has wrong type. (3)");
                 var content = i.Content as MIPIterationViewModel;
 
+                content.StepForward();
+            });
+
+            Thread.Sleep(500);
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                var i = Helpers.Find<IterationDetailWindow>(); 
+                var content = i.Content as MIPIterationViewModel;
+                Expect.Equal("Created new solutions.", content.MessageBox.Messages[0].Content, "Step forward didn't execute.(3)");
+                content.StepBackward();
+            });
+
+
+            Thread.Sleep(500);
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                var i = Helpers.Find<IterationDetailWindow>();
+                var content = i.Content as MIPIterationViewModel;
+
+                Expect.Equal("Changed the population currently viewed.", content.MessageBox.Messages[0].Content, "\"Step back didn't clear message box.(3)");
                 content.CurrentStateChange = content.MaxStateChange;
 
 
@@ -129,6 +225,26 @@ namespace LLEAVTest.Windows
 
                 Expect.Equal("Changed the population currently viewed.", content.MessageBox.Messages.Last().Content, "Wrong first message. (3)");
                 Expect.Equal("Termination criteria was not met.", content.MessageBox.Messages[0].Content, "Wrong last message. (3)");
+
+                Helpers.ChangeBitDepictionModus(1);
+            });
+
+
+            Thread.Sleep(500);
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                bool hasBarcode = false;
+                foreach (var p in Helpers.Find<IterationDetailWindow>().GetLogicalDescendants().OfType<Panel>())
+                {
+                    var childpanels = p.GetLogicalDescendants().OfType<Panel>();
+                    if (childpanels.Count() == 1 && childpanels.ElementAt(0).IsVisible && p.DataContext.GetType().Equals(typeof(ColoredChar)))
+                    {
+                        hasBarcode = true;
+                    }
+                }
+                Expect.True(hasBarcode, "MIP wasn't set to barcode depiction.");
+                Helpers.ChangeBitDepictionModus(0);
             });
         }
 

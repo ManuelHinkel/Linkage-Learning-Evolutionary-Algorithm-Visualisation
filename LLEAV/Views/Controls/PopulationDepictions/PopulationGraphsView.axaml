@@ -30,16 +30,20 @@
 
 				<Panel Height="10"/>
 
-				<CheckBox IsChecked="{Binding AverageScoreVisible}">
+				<CheckBox IsChecked="{Binding AverageScoreVisible}"
+						  x:Name="AverageCheck">
 					<TextBlock Text="Average Fitness"/>
 				</CheckBox>
-				<CheckBox IsChecked="{Binding MedianScoreVisible}">
+				<CheckBox IsChecked="{Binding MedianScoreVisible}"
+						  x:Name="MedianCheck">
 					<TextBlock Text="Median Fitness"/>
 				</CheckBox>
-				<CheckBox IsChecked="{Binding MaximumScoreVisible}">
+				<CheckBox IsChecked="{Binding MaximumScoreVisible}"
+						  x:Name="MaximumCheck">
 					<TextBlock Text="Maximum Fitness"/>
 				</CheckBox>
-				<CheckBox IsChecked="{Binding MinimumScoreVisible}">
+				<CheckBox IsChecked="{Binding MinimumScoreVisible}"
+						  x:Name="MinimumCheck">
 					<TextBlock Text="Minimum Fitness"/>
 				</CheckBox>
 			</StackPanel>

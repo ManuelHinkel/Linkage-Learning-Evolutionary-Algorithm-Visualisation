@@ -15,6 +15,11 @@ using LLEAV.Models.Algorithms.ROM;
 using LLEAV.Models.Algorithms.MIP;
 using LLEAV.Models.LocalSearchFunction;
 using LLEAV.Models.Algorithms.GOM;
+using LLEAV.ViewModels.Controls;
+using LLEAV.Views.Controls.PopulationDepictions;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Avalonia;
 
 namespace LLEAVTest.Windows
 {
@@ -28,7 +33,8 @@ namespace LLEAVTest.Windows
                 TestCreateAlgorithmRun2,
                 TestPopulationDepiction,
                 TestNextIteration,
-                TestOtherAlgorithms
+                TestOtherAlgorithms,
+                TestPopulationDepictions
             ];
         }
 
@@ -192,8 +198,8 @@ namespace LLEAVTest.Windows
                 Helpers.ChangeAnimationModus(0);
             });
 
+        
             Thread.Sleep(100);
-
             Dispatcher.UIThread.Invoke(() =>
             {
                 Expect.Equal(0, Helpers.GetAnimationModus(), "Animation modus is wrong.");
@@ -207,9 +213,8 @@ namespace LLEAVTest.Windows
                 var i = Helpers.Find<IterationDetailWindow>();
                 Expect.True(i.IsEffectivelyVisible, "Iteration details not visible. (2)");
                 Expect.Equal(typeof(MIPIterationViewModel), i.Content.GetType(), "Iteration Details has wrong type. (2)");
-                Helpers.CreateAlgorithmRun(16, typeof(HIFF), typeof(UnivariateFOS), typeof(IterationTermination), "10", typeof(GOMEA), populationSize: 10);
+                Helpers.CreateAlgorithmRun(16, typeof(HIFF), typeof(UnivariateFOS), typeof(IterationTermination), "10", typeof(LocalSearchGOMEA), typeof(HillClimber), populationSize: 10);
             });
-
 
             Thread.Sleep(500);
 
@@ -218,9 +223,192 @@ namespace LLEAVTest.Windows
                 var i = Helpers.Find<IterationDetailWindow>();
                 Expect.True(i.IsEffectivelyVisible, "Iteration details not visible. (3)");
                 Expect.Equal(typeof(GOMIterationViewModel), i.Content.GetType(), "Iteration Details has wrong type. (3)");
+                Helpers.CreateAlgorithmRun(16, typeof(OneMax), typeof(UnivariateFOS), typeof(IterationTermination), "10", typeof(LocalSearchROMEA), typeof(HillClimber), populationSize: 10);
+            });
+
+            Thread.Sleep(500);
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                var i = Helpers.Find<IterationDetailWindow>();
+                Expect.True(i.IsEffectivelyVisible, "Iteration details not visible. (4)");
+                Expect.Equal(typeof(ROMIterationViewModel), i.Content.GetType(), "Iteration Details has wrong type. (4)");
+                Helpers.CreateAlgorithmRun(16, typeof(HIFF), typeof(UnivariateFOS), typeof(IterationTermination), "10", typeof(GOMEA), populationSize: 10);
+            });
+
+
+
+            Thread.Sleep(500);
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                var i = Helpers.Find<IterationDetailWindow>();
+                Expect.True(i.IsEffectivelyVisible, "Iteration details not visible. (5)");
+                Expect.Equal(typeof(GOMIterationViewModel), i.Content.GetType(), "Iteration Details has wrong type. (5)");
+            });
+
+        }
+
+        public void TestPopulationDepictions()
+        {
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                foreach (var c in Helpers.Find<MainWindow>().GetLogicalDescendants().OfType<PopulationDepictionViewBase>())
+                {
+                    if (c.GetType().Equals(typeof(PopulationBlocksView))) {
+                        Expect.True(c.IsEffectivelyVisible);
+                    }
+                    else
+                    {
+                        Expect.False(c.IsEffectivelyVisible);
+                    }
+                }
+                Helpers.ChangePopulationDepictionModus(1);
+            });
+            Thread.Sleep(1000);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                CheckBox box = null;
+                foreach (var c in GlobalManager.Instance.MainWindow.GetLogicalDescendants().OfType<PopulationDepictionViewBase>())
+                {
+                    if (c.GetType().Equals(typeof(PopulationGraphsView)))
+                    {
+                        box = c.Find<CheckBox>("AverageCheck");
+                        Expect.True(c.IsEffectivelyVisible);
+                    }
+                    else
+                    {
+                        Expect.False(c.IsEffectivelyVisible);
+                    }
+                }
+
+                foreach (var c in Helpers.Find<MainWindow>().GetLogicalDescendants().OfType<CartesianChart>())
+                {
+                    Expect.True(((PopulationGraph)c.DataContext).Series[0].IsVisible);
+                    Expect.True(((PopulationGraph)c.DataContext).Series[1].IsVisible);
+                    Expect.True(((PopulationGraph)c.DataContext).Series[2].IsVisible);
+                    Expect.False(((PopulationGraph)c.DataContext).Series[3].IsVisible);
+                }
+
+                box.IsChecked = false;
+            });
+
+            Thread.Sleep(500);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                CheckBox box = null;
+                foreach (var c in GlobalManager.Instance.MainWindow.GetLogicalDescendants().OfType<PopulationDepictionViewBase>())
+                {
+                    if (c.GetType().Equals(typeof(PopulationGraphsView)))
+                    {
+                        box = c.Find<CheckBox>("MedianCheck");
+                    }
+                }
+
+                foreach (var c in Helpers.Find<MainWindow>().GetLogicalDescendants().OfType<CartesianChart>())
+                {
+                    Expect.False(((PopulationGraph)c.DataContext).Series[0].IsVisible);
+                    Expect.True(((PopulationGraph)c.DataContext).Series[1].IsVisible);
+                    Expect.True(((PopulationGraph)c.DataContext).Series[2].IsVisible);
+                    Expect.False(((PopulationGraph)c.DataContext).Series[3].IsVisible);
+                }
+
+                box.IsChecked = false;
+            });
+
+            Thread.Sleep(500);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                CheckBox box = null;
+                foreach (var c in GlobalManager.Instance.MainWindow.GetLogicalDescendants().OfType<PopulationDepictionViewBase>())
+                {
+                    if (c.GetType().Equals(typeof(PopulationGraphsView)))
+                    {
+                        box = c.Find<CheckBox>("MaximumCheck");
+                    }
+                }
+
+                foreach (var c in Helpers.Find<MainWindow>().GetLogicalDescendants().OfType<CartesianChart>())
+                {
+                    Expect.False(((PopulationGraph)c.DataContext).Series[0].IsVisible);
+                    Expect.False(((PopulationGraph)c.DataContext).Series[1].IsVisible);
+                    Expect.True(((PopulationGraph)c.DataContext).Series[2].IsVisible);
+                    Expect.False(((PopulationGraph)c.DataContext).Series[3].IsVisible);
+                }
+
+                box.IsChecked = false;
+            });
+
+            Thread.Sleep(500);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                CheckBox box = null;
+                foreach (var c in GlobalManager.Instance.MainWindow.GetLogicalDescendants().OfType<PopulationDepictionViewBase>())
+                {
+                    if (c.GetType().Equals(typeof(PopulationGraphsView)))
+                    {
+                        box = c.Find<CheckBox>("MinimumCheck");
+                    }
+                }
+
+                foreach (var c in Helpers.Find<MainWindow>().GetLogicalDescendants().OfType<CartesianChart>())
+                {
+                    Expect.False(((PopulationGraph)c.DataContext).Series[0].IsVisible);
+                    Expect.False(((PopulationGraph)c.DataContext).Series[1].IsVisible);
+                    Expect.False(((PopulationGraph)c.DataContext).Series[2].IsVisible);
+                    Expect.False(((PopulationGraph)c.DataContext).Series[3].IsVisible);
+                }
+
+                box.IsChecked = true;
+            });
+
+            Thread.Sleep(500);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                foreach (var c in Helpers.Find<MainWindow>().GetLogicalDescendants().OfType<CartesianChart>())
+                {
+                    Expect.False(((PopulationGraph)c.DataContext).Series[0].IsVisible);
+                    Expect.False(((PopulationGraph)c.DataContext).Series[1].IsVisible);
+                    Expect.False(((PopulationGraph)c.DataContext).Series[2].IsVisible);
+                    Expect.True(((PopulationGraph)c.DataContext).Series[3].IsVisible);
+                }
+                Helpers.ChangePopulationDepictionModus(2);
+            });
+            Thread.Sleep(1000);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                foreach (var c in Helpers.Find<MainWindow>().GetLogicalDescendants().OfType<PopulationDepictionViewBase>())
+                {
+                    if (c.GetType().Equals(typeof(PopulationBarsView)))
+                    {
+                        Expect.True(c.IsEffectivelyVisible);
+                    }
+                    else
+                    {
+                        Expect.False(c.IsEffectivelyVisible);
+                    }
+                }
+                Helpers.ChangePopulationDepictionModus(3);
+            });
+
+            Thread.Sleep(1000);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                foreach (var c in Helpers.Find<MainWindow>().GetLogicalDescendants().OfType<PopulationDepictionViewBase>())
+                {
+                    if (c.GetType().Equals(typeof(PopulationBoxPlotView)))
+                    {
+                        Expect.True(c.IsEffectivelyVisible);
+                    }
+                    else
+                    {
+                        Expect.False(c.IsEffectivelyVisible);
+                    }
+                }
+                Helpers.ChangePopulationDepictionModus(0);
             });
         }
 
-      
+
     }
 }
