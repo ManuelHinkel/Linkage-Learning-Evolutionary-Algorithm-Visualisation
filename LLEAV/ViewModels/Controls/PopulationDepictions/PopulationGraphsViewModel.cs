@@ -1,31 +1,44 @@
 ﻿using LiveChartsCore;
-using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using LLEAV.Models;
+using ReactiveUI;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LLEAV.Models;
-using System.Diagnostics;
-using Avalonia.Controls;
-using ReactiveUI;
 
 namespace LLEAV.ViewModels.Controls.PopulationDepictions
 {
-    public class PopulationGraph: PopulationContainerViewModelBase
+    /// <summary>
+    /// Represents the graph depiction of a population
+    /// </summary>
+    public class PopulationGraph : PopulationContainerViewModelBase
     {
+        /// <summary>
+        /// Gets or sets the X-axis configuration for the graph.
+        /// </summary>
         public Axis[] XAxis { get; set; }
+
+        /// <summary>
+        /// Gets or sets the lines representing data to display on the graph.
+        /// </summary>
         public ISeries[] Series { get; set; }
 
-        public PopulationGraph(IList<Population> populations, int iteration, bool[] flags, int windowSize) : base(populations.Count > 0 ? populations.Last(): null)
+        /// <summary>
+        /// Constructs a new instance of PopulationGraph.
+        /// </summary>
+        /// <param name="populations">List of populations to visualize.</param>
+        /// <param name="iteration">Current iteration index.</param>
+        /// <param name="flags">Flags indicating which series to display.</param>
+        /// <param name="windowSize">Size of the sliding window of iterations to display.</param>
+        public PopulationGraph(IList<Population> populations, int iteration, bool[] flags, int windowSize) : base(populations.Count > 0 ? populations.Last() : null)
         {
             Series = new ISeries[]
             {
                 new LineSeries<double>
                 {
-                     
+
                     Values = populations.Select(p => p.AverageFitness),
                     Fill = null,
                     LineSmoothness=0,
@@ -84,24 +97,36 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
                     ForceStepToMin = true,
                     MinStep = 1,
                 },
-                ];
+            ];
         }
 
+        /// <summary>
+        /// Sets the visibility of a line on the graph.
+        /// </summary>
+        /// <param name="index">Index of the line to modify.</param>
+        /// <param name="value">Visibility flag (true for visible, false for hidden).</param>
         public void SetVisible(int index, bool value)
         {
             Series[index].IsVisible = value;
         }
     }
 
+    /// <summary>
+    /// ViewModel for managing multiple population graphs based on provided run data.
+    /// </summary>
     public class PopulationGraphsViewModel : PopulationDepictionViewModelBase
     {
         private int _windowSize = 10;
-        public int WindowSize {
-            get => _windowSize; 
-            
-            set 
-            { 
-                this.RaiseAndSetIfChanged(ref _windowSize, value); 
+        /// <summary>
+        /// Gets or sets the window size of iterations to display on each graph.
+        /// </summary>
+        public int WindowSize
+        {
+            get => _windowSize;
+
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _windowSize, value);
                 if (_shownIteration != null)
                 {
                     Update(_shownIteration);
@@ -110,19 +135,25 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
         }
 
         private bool _averageScoreVisible = true;
+        /// <summary>
+        /// Gets or sets the visibility of the average score on all population graphs.
+        /// </summary>
         public bool AverageScoreVisible
         {
             get => _averageScoreVisible;
-            set 
-            { 
+            set
+            {
                 foreach (PopulationGraph g in Containers)
                 {
                     g.SetVisible(0, value);
                 }
                 _averageScoreVisible = value;
-            } 
+            }
         }
         private bool _medianScoreVisible = true;
+        /// <summary>
+        /// Gets or sets the visibility of the median score on all population graphs.
+        /// </summary>
         public bool MedianScoreVisible
         {
             get => _medianScoreVisible;
@@ -136,6 +167,9 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
             }
         }
         private bool _maximumScoreVisible = true;
+        /// <summary>
+        /// Gets or sets the visibility of the maximum score on all population graphs.
+        /// </summary>
         public bool MaximumScoreVisible
         {
             get => _maximumScoreVisible;
@@ -150,6 +184,9 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
         }
 
         private bool _minimumScoreVisible = false;
+        /// <summary>
+        /// Gets or sets the visibility of the minimum score on all population graphs.
+        /// </summary>
         public bool MinimumScoreVisible
         {
             get => _minimumScoreVisible;
@@ -167,24 +204,34 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
         private IterationData? _shownIteration;
 
         private RunData _runData;
+
+        /// <summary>
+        /// Constructs an instance of PopulationGraphsViewModel with the given run data.
+        /// </summary>
+        /// <param name="runData">Run data containing populations to visualize.</param>
         public PopulationGraphsViewModel(RunData runData)
         {
             _runData = runData;
         }
 
+        /// <summary>
+        /// Updates the ViewModel with data from a new iteration.
+        /// </summary>
+        /// <param name="iteration">Iteration data to visualize.</param>
         public override void Update(IterationData iteration)
         {
             _shownIteration = iteration;
             Containers.Clear();
 
-            for (int i = 0; i < iteration.Populations.Count; i++) 
+            for (int i = 0; i < iteration.Populations.Count; i++)
             {
                 List<Population> populations = new List<Population>();
-               
+
                 if (iteration.Iteration == -1)
                 {
                     populations.Add(iteration.Populations[0]);
-                } else
+                }
+                else
                 {
                     for (int j = 0; j < WindowSize; j++)
                     {

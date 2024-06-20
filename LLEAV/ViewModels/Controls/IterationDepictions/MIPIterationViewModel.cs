@@ -1,10 +1,7 @@
 ﻿using Avalonia.Threading;
-using LiveChartsCore.Kernel;
 using LLEAV.Models;
-using LLEAV.Models.Algorithms;
 using LLEAV.Models.Algorithms.MIP.StateChange;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,6 +12,9 @@ using System.Threading;
 
 namespace LLEAV.ViewModels.Controls.IterationDepictions
 {
+    /// <summary>
+    /// ViewModel for managing the depiction of iterations in a P3 or MIP visualization.
+    /// </summary>
     public class MIPIterationViewModel : IterationDepictionViewModelBase
     {
         private static readonly IList<string> VISUALISATION_PROPERTIES = [
@@ -37,12 +37,23 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
         private bool _stopAddSolution;
         private bool _addSolutionRunning;
-        public ObservableCollection<Tuple<SolutionWrapper,SolutionWrapper>> Solutions { get; } = new ObservableCollection<Tuple<SolutionWrapper, SolutionWrapper>>();
+
+        /// <summary>
+        /// Gets the list of all solutions before and after local search.
+        /// </summary>
+        public ObservableCollection<Tuple<SolutionWrapper, SolutionWrapper>> Solutions { get; } = new ObservableCollection<Tuple<SolutionWrapper, SolutionWrapper>>();
 
         private bool _stopAddDonor;
         private bool _addDonorRunning;
+
+        /// <summary>
+        /// Gets the list of all donors.
+        /// </summary>
         public ObservableCollection<SolutionWrapper> Donors { get; } = [];
 
+        /// <summary>
+        /// Gets the wrapper for the solution.
+        /// </summary>
         public SolutionWrapper? CurrentSolution
         {
             get
@@ -67,11 +78,13 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 return null;
             }
         }
-
+        /// <summary>
+        /// Gets the wrapper for the donor.
+        /// </summary>
         public SolutionWrapper? CurrentDonor
         {
-            get 
-            { 
+            get
+            {
                 if (_visualisationData.CurrentDonor != null)
                 {
                     var wrapper = new SolutionWrapper(_visualisationData.CurrentDonor);
@@ -89,13 +102,16 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     }
                     return wrapper;
                 }
-                return null; 
+                return null;
             }
         }
 
+        /// <summary>
+        /// Gets the wrapper for the merged solution.
+        /// </summary>
         public SolutionWrapper? Merged
         {
-            get 
+            get
             {
                 if (_visualisationData.Merged != null)
                 {
@@ -108,7 +124,8 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                                 _visualisationData.ActiveCluster);
                             wrapper.MarkCluster(GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE,
                                 !_visualisationData.ActiveCluster);
-                        }else
+                        }
+                        else
                         {
                             wrapper.MarkCluster(_visualisationData.ActiveCluster, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE);
                             wrapper.MarkCluster(!_visualisationData.ActiveCluster, GlobalManager.CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE);
@@ -120,6 +137,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
+        /// <summary>
+        /// Gets the wrapper for the animated solution.
+        /// </summary>
         public SolutionWrapper? CurrentSolutionAnimated
         {
             get
@@ -146,6 +166,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
+        /// <summary>
+        /// Gets the wrapper for the animated donor.
+        /// </summary>
         public SolutionWrapper? CurrentDonorAnimated
         {
             get
@@ -172,12 +195,17 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
-
+        /// <summary>
+        /// Gets a value indicating whether the merging animation is currently played.
+        /// </summary>
         public bool IsMerging
         {
             get { return _visualisationData.IsMerging; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the applying crossover animation is currently played.
+        /// </summary>
         public bool IsApplyingCrossover
         {
             get { return _visualisationData.IsApplyingCrossover; }
@@ -190,7 +218,12 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             get => IsMergingRunning || _isApplyingCrossoverRunning;
         }
 
-        public MIPIterationViewModel(IList<IMIPStateChange> stateChanges, IterationData workingData): base()
+        /// <summary>
+        /// Creates an instance of the MIP iteration view model
+        /// </summary>
+        /// <param name="stateChanges">The state changes to be visualised</param>
+        /// <param name="workingData">The data to visualise on</param>
+        public MIPIterationViewModel(IList<IMIPStateChange> stateChanges, IterationData workingData) : base()
         {
             _stateChanges = stateChanges;
             WorkingData = workingData.Clone();
@@ -199,7 +232,8 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             _checkpoints = new Tuple<IterationData, MIPVisualisationData, IList<Message>>[MaxStateChange / CHECKPOINT_SPACING + 1];
 
 
-            Thread calculationThread = new Thread(new ThreadStart(() => {
+            Thread calculationThread = new Thread(new ThreadStart(() =>
+            {
                 CalculateCheckpoints(workingData.Clone());
             }));
             calculationThread.Start();
@@ -246,9 +280,11 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 if (property.Equals(nameof(IsMerging)) && _visualisationData.IsMerging)
                 {
                     IsMergingRunning = true;
-                    Thread t = new Thread(new ThreadStart(() => {
+                    Thread t = new Thread(new ThreadStart(() =>
+                    {
                         Thread.Sleep(GlobalManager.ANIMATION_TIME);
-                        Dispatcher.UIThread.Invoke(() => {
+                        Dispatcher.UIThread.Invoke(() =>
+                        {
                             _visualisationData.IsMerging = false;
                             this.RaisePropertyChanged(nameof(IsMerging));
 
@@ -261,9 +297,11 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 else if (property.Equals(nameof(IsApplyingCrossover)) && _visualisationData.IsApplyingCrossover)
                 {
                     _isApplyingCrossoverRunning = true;
-                    Thread t = new Thread(new ThreadStart(() => {
+                    Thread t = new Thread(new ThreadStart(() =>
+                    {
                         Thread.Sleep(GlobalManager.ANIMATION_TIME);
-                        Dispatcher.UIThread.Invoke(() => {
+                        Dispatcher.UIThread.Invoke(() =>
+                        {
                             _visualisationData.IsApplyingCrossover = false;
                             this.RaisePropertyChanged(nameof(IsApplyingCrossover));
 
@@ -284,7 +322,8 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
                     Solutions.Clear();
 
-                    Thread t = new Thread(new ThreadStart(() => {
+                    Thread t = new Thread(new ThreadStart(() =>
+                    {
                         LoadWrappersAsync(Solutions,
                             // Clone for use in another thread
                             new List<Tuple<SolutionWrapper, SolutionWrapper>>(_visualisationData.Solutions),
@@ -305,7 +344,8 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
                     Donors.Clear();
 
-                    Thread t = new Thread(new ThreadStart(() => {
+                    Thread t = new Thread(new ThreadStart(() =>
+                    {
                         LoadWrappersAsync(Donors,
                             // Clone for use in another thread
                             new List<SolutionWrapper>(_visualisationData.Donors),
@@ -356,7 +396,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             int checkpointIndex = _currentStateChange / CHECKPOINT_SPACING;
             int targetCheckpointIndex = index / CHECKPOINT_SPACING;
 
-            if ((index != _currentStateChange + 1) &&  (checkpointIndex != targetCheckpointIndex || index < _currentStateChange))
+            if ((index != _currentStateChange + 1) && (checkpointIndex != targetCheckpointIndex || index < _currentStateChange))
             {
                 // Wait until checkpoint calculated
                 while (_checkpoints[targetCheckpointIndex] == null)
@@ -377,6 +417,10 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
             RaiseChanged(propertiesChanged.ToList());
         }
+
+        /// <summary>
+        /// Changes the solution depiction.
+        /// </summary>
         public override void ChangeSolutionDepiction()
         {
             foreach (var checkpoint in _checkpoints)

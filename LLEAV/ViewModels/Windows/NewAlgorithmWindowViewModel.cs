@@ -19,7 +19,9 @@ namespace LLEAV.ViewModels.Windows
 {
     public class NewAlgorithmWindowViewModel: ViewModelBase
     {
-
+        /// <summary>
+        /// Gets the list of all selecteable fitness functions.
+        /// </summary>
         public static Type[] FitnessFunctions { get; private set; } = [
             typeof(OneMax),
             typeof(LeadingOnes),
@@ -31,11 +33,23 @@ namespace LLEAV.ViewModels.Windows
             typeof(IsingLattice),
             typeof(MaxSat),
             ];
+
+        /// <summary>
+        /// Gets the list of all selecteable local search functions.
+        /// </summary>
         public static Type[] LocalSearchFunctions { get; private set; } = [typeof(HillClimber)];
+
+        /// <summary>
+        /// Gets the list of all selecteable termination criteria.
+        /// </summary>
         public static Type[] TerminationCriterias { get; private set; } = [
             typeof(IterationTermination),
             typeof(FitnessTermination),
         ];
+
+        /// <summary>
+        /// Gets the list of all selecteable algorithms.
+        /// </summary>
         public static Type[] Algorithms { get; private set; } = [
             typeof(MIP),
             typeof(P3),
@@ -45,20 +59,32 @@ namespace LLEAV.ViewModels.Windows
             typeof(LocalSearchGOMEA),
         ];
 
+        /// <summary>
+        /// Gets the list of all selecteable growth functions.
+        /// </summary>
         public static Type[] GrowthFunctions { get; private set; } = [
             typeof(ConstantGrowth),
             typeof(LinearGrowth)
             ];
+
+        /// <summary>
+        /// Gets the list of all selecteable FOS functions.
+        /// </summary>
         public static Type[] FOSFunctions { get; private set; } = [
             typeof(UnivariateFOS), 
             typeof(MarginalProductFOS),
             typeof(LinkageTreeFOS),
             ];
 
-
+        /// <summary>
+        /// Gets or sets the number of bits of a solution.
+        /// </summary>
         public string NumberOfBits { get; set; } = "10";
 
         private int _fitnessFuntion;
+        /// <summary>
+        /// Gets or sets the index of the selected fitness function.
+        /// </summary>
         public int SelectedFitnessFuntion
         {
             get => _fitnessFuntion;
@@ -69,12 +95,31 @@ namespace LLEAV.ViewModels.Windows
                 EnableFitnessArg = ((AFitnessFunction)Activator.CreateInstance(FitnessFunctions[value])).EnableArg;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the index of the selected fos function.
+        /// </summary>
         public int SelectedFOSFunction { get; set; }
+
+        /// <summary>
+        /// Gets or sets the index of the selected termination criteria.
+        /// </summary>
         public int SelectedTerminationCriteria { get; set; }
+
+        /// <summary>
+        /// Gets or sets the termination argument.
+        /// </summary>
         public string TerminationArgument { get; set; }
+
+        /// <summary>
+        /// Gets or sets the fitness argument.
+        /// </summary>
         public string FitnessArgument { get; set; }
 
         private int _algorithm;
+        /// <summary>
+        /// Gets or sets the index of the selected algorithm.
+        /// </summary>
         public int SelectedAlgorithm
         {
             get => _algorithm;
@@ -88,33 +133,65 @@ namespace LLEAV.ViewModels.Windows
             }
         }
 
+        /// <summary>
+        /// Gets or sets the index of the selected local search function.
+        /// </summary>
         public int SelectedLocalSearchFunction { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets the index of the selected growth function.
+        /// </summary>
         public int SelectedGrowthFunction { get; set; }
 
+        /// <summary>
+        /// Gets or sets the population size.
+        /// </summary>
         public string PopulationSize { get; set; } = "2";
 
+        /// <summary>
+        /// Gets or sets if the local search function selection should be shown.
+        /// </summary>
         [Reactive]
         public bool ShowLocalSearchFunction { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets if the growth function selection should be shown.
+        /// </summary>
         [Reactive]
         public bool ShowGrowthFunction { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets if the population size input should be shown.
+        /// </summary>
         [Reactive]
         public bool ShowPopulationSize { get; set; }
 
+        /// <summary>
+        /// Gets or sets if the fitness argument input should be shown.
+        /// </summary>
         [Reactive]
         public bool EnableFitnessArg { get; set; }
 
+        /// <summary>
+        /// Gets or sets the error message.
+        /// </summary>
         [Reactive]
         public string ErrorMessage { get; set; }
 
         private NewAlgorithmWindow _window;
 
+        /// <summary>
+        /// Creates a new instance of the view model with a window.
+        /// </summary>
+        /// <param name="window">The window assigned to the view model.</param>
         public NewAlgorithmWindowViewModel(NewAlgorithmWindow window) 
         {
             _window = window;
         }
 
+        /// <summary>
+        /// Creates a new simulation run.
+        /// </summary>
         public void Ok()
         {
             ErrorMessage = "";
@@ -191,7 +268,10 @@ namespace LLEAV.ViewModels.Windows
             GlobalManager.Instance.SetNewRunData(newRunData);
             CloseWindow();
         }
-
+        
+        /// <summary>
+        /// Forcefully closes the window.
+        /// </summary>
         public void CloseWindow()
         {
             _window.Close();

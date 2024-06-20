@@ -1,16 +1,17 @@
-﻿using Avalonia.Data.Converters;
-using Avalonia.Data;
+﻿using Avalonia.Data;
+using Avalonia.Data.Converters;
+using DynamicData;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using DynamicData;
 
 namespace LLEAV.Converter
 {
+    /// <summary>
+    /// Takes an enum and checks, if it its index is smaller or equal to another
+    /// enum given by a string.
+    /// </summary>
+    /// <typeparam name="TEnum"></typeparam>
     public class EnumOrSmallerEqualsStringConverter<TEnum> : IValueConverter
     where TEnum : struct, Enum
     {

@@ -1,5 +1,4 @@
-﻿using Avalonia.Controls;
-using Avalonia.Threading;
+﻿using Avalonia.Threading;
 using LLEAV.Models;
 using LLEAV.Models.Algorithms;
 using LLEAV.ViewModels.Windows;
@@ -7,13 +6,13 @@ using LLEAV.Views.Windows;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
 
 namespace LLEAV.ViewModels
 {
+    /// <summary>
+    /// Enumeration for the different animation modi.
+    /// </summary>
     public enum AnimationModus
     {
         FULL,
@@ -21,6 +20,9 @@ namespace LLEAV.ViewModels
         NONE
     }
 
+    /// <summary>
+    /// Class which manages the application.
+    /// </summary>
     public class GlobalManager
     {
         public const string TEXT_COLOR = "#25020a";
@@ -31,21 +33,44 @@ namespace LLEAV.ViewModels
 
         public const string GRAY = "#444444";
 
+        /// <summary>
+        /// Color to highlight the active bits used in a merge from the parent.
+        /// </summary>
         public const string CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE = "#84fc03";
+
+        /// <summary>
+        /// Color to highlight the active bits used in a merge from the donor.
+        /// </summary>
         public const string CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE = "#03f8fc";
 
+        /// <summary>
+        /// Color to highlight the inactive bits used in a merge from the parent.
+        /// </summary>
         public const string CLUSTER_HIGHLIGHT_COLOR_1_INACTIVE = "#1a4f20";
+
+        /// <summary>
+        /// Color to highlight the inactive bits used in a merge from the donor.
+        /// </summary>
         public const string CLUSTER_HIGHLIGHT_COLOR_2_INACTIVE = "#1600a3";
 
-
+        /// <summary>
+        /// Colors used for the messages.
+        /// </summary>
         public static readonly string[] MESSAGE_COLORS = [
             SECONDARY_COLOR,
             CLUSTER_HIGHLIGHT_COLOR_1_ACTIVE,
             CLUSTER_HIGHLIGHT_COLOR_2_ACTIVE,
         ];
 
+        /// <summary>
+        /// The time of an animation.
+        /// </summary>
         public const int ANIMATION_TIME = 500;
+
         private static GlobalManager? _instance;
+        /// <summary>
+        /// Gets the instance of the global manager.
+        /// </summary>
         public static GlobalManager Instance
         {
             get
@@ -59,7 +84,10 @@ namespace LLEAV.ViewModels
         }
 
         private AnimationModus _animationModus;
-        public AnimationModus AnimationModus 
+        /// <summary>
+        /// Gets or sets the animation modus.
+        /// </summary>
+        public AnimationModus AnimationModus
         {
             get => _animationModus;
             set
@@ -74,10 +102,13 @@ namespace LLEAV.ViewModels
                 {
                     _iterationDetailWindowViewModel.ContentViewModel.RaisePropertyChanged(nameof(AnimationModus));
                 }
-            } 
+            }
         }
 
         private bool _isBarCodeDepiction;
+        /// <summary>
+        /// Gets or sets, if the solutions should be shown in bar code depiction.
+        /// </summary>
         public bool IsBarCodeDepiction
         {
             get => _isBarCodeDepiction;
@@ -94,17 +125,30 @@ namespace LLEAV.ViewModels
                 }
             }
         }
-
+        /// <summary>
+        /// Gets or sets the current iteration.
+        /// </summary>
         public int CurrentIteration { get; set; }
+
+        /// <summary>
+        /// Gets, if iteration details are being animated.
+        /// </summary>
         public bool IsAnimatingDetails { get; private set; }
+
+        /// <summary>
+        /// Gets, if the FOS structure is being animated.
+        /// </summary>
         public bool IsAnimatingFOS { get; set; }
 
         private MainWindowViewModel? _mainWindowViewModel;
         private PopulationWindowViewModel? _populationWindowViewModel;
         private IterationDetailWindowViewModel? _iterationDetailWindowViewModel;
 
-        // Used to set as parent in New Algorithm Window.
+        /// <summary>
+        /// The main window of the application.
+        /// </summary>
         public MainWindow MainWindow;
+
         // Close when main window closes
         private PopulationWindow? _populationWindow;
         // Close when main window closes
@@ -115,18 +159,25 @@ namespace LLEAV.ViewModels
 
         private bool _threadRunning;
 
+        /// <summary>
+        /// Creates a new instance of the global manager.
+        /// </summary>
         public GlobalManager()
         {
             MainWindow = new MainWindow();
             _mainWindowViewModel = new MainWindowViewModel();
             MainWindow.DataContext = _mainWindowViewModel;
-            MainWindow.Closing += (s, e) => { 
+            MainWindow.Closing += (s, e) =>
+            {
                 _mainWindowViewModel.Stop();
                 if (_populationWindow != null) _populationWindow.Close();
                 if (_iterationDetailWindow != null) _iterationDetailWindow.Close();
             };
         }
 
+        /// <summary>
+        /// Open the population window.
+        /// </summary>
         public void OpenPopulationWindow()
         {
             if (_populationWindow == null)
@@ -135,14 +186,19 @@ namespace LLEAV.ViewModels
                 _populationWindow.Show();
                 _populationWindowViewModel = new PopulationWindowViewModel();
                 _populationWindow.DataContext = _populationWindowViewModel;
-                _populationWindow.Closing += (s, e) => { 
-                    _populationWindow = null; 
+                _populationWindow.Closing += (s, e) =>
+                {
+                    _populationWindow = null;
                     // Clear selected highlighting
                     _mainWindowViewModel!.SelectPopulation(-1);
-                    };
+                };
             }
         }
 
+        /// <summary>
+        /// Opens a specific population in the population window.
+        /// </summary>
+        /// <param name="population">The population to show.</param>
         public void OpenPopulation(Population population)
         {
             OpenPopulationWindow();
@@ -151,19 +207,32 @@ namespace LLEAV.ViewModels
         }
 
 
-
+        /// <summary>
+        /// Selects a population of the current iteration.
+        /// </summary>
+        /// <param name="data">The iteration data containing the populations to select from.</param>
+        /// <param name="index">The index of the population to select.</param>
         public void SelectPopulation(IterationData data, int index)
         {
             UpdateMainWindow(data);
             _mainWindowViewModel.SelectPopulation(index);
         }
 
+        /// <summary>
+        /// Selects a cluster and updates UI accordingly.
+        /// </summary>
+        /// <param name="index">Index of the population to select.</param>
+        /// <param name="cluster">Cluster to mark.</param>
         public void SelectCluster(int index, Cluster cluster)
         {
             _mainWindowViewModel.SelectPopulation(index);
             _populationWindowViewModel.MarkCluster(cluster);
         }
 
+        /// <summary>
+        /// Updates the population window if it's open, animating the changes over a period of time.
+        /// </summary>
+        /// <param name="population">The population to set in the population window.</param>
         public void UpdatePopulationWindowIfOpen(Population population)
         {
             if (_populationWindow != null)
@@ -175,21 +244,27 @@ namespace LLEAV.ViewModels
                 if (!_threadRunning)
                 {
                     _threadRunning = true;
-                    Thread t = new Thread(new ThreadStart(() => {
+                    Thread t = new Thread(new ThreadStart(() =>
+                    {
                         Thread.Sleep(ANIMATION_TIME);
-                        Dispatcher.UIThread.Invoke(() => {
+                        Dispatcher.UIThread.Invoke(() =>
+                        {
                             IsAnimatingFOS = false;
                         });
                         _threadRunning = false;
                     }));
                     t.Start();
                 }
-            } else
+            }
+            else
             {
                 IsAnimatingFOS = false;
             }
         }
 
+        /// <summary>
+        /// Opens the iteration detail window.
+        /// </summary>
         public void OpenIterationDetailWindow()
         {
             OpenPopulationWindow();
@@ -199,17 +274,21 @@ namespace LLEAV.ViewModels
                 _iterationDetailWindow.Show();
                 _iterationDetailWindowViewModel = new IterationDetailWindowViewModel();
                 _iterationDetailWindow.DataContext = _iterationDetailWindowViewModel;
-                _iterationDetailWindow.Closing += (s, e) => { 
+                _iterationDetailWindow.Closing += (s, e) =>
+                {
                     _iterationDetailWindowViewModel.Stop();
                     _iterationDetailWindow = null;
                     NotifyFinishedIteration();
                 };
             }
         }
-
+        /// <summary>
+        /// Starts the iteration visualization, setting detailed data in the iteration detail window.
+        /// </summary>
+        /// <param name="stateChanges">List of state changes.</param>
         public void StartIterationVisualization(IList<IStateChange> stateChanges)
         {
-    
+
             IsAnimatingDetails = true;
             OpenIterationDetailWindow();
 
@@ -222,12 +301,18 @@ namespace LLEAV.ViewModels
                 _runData);
         }
 
+        /// <summary>
+        /// Notifies that the current iteration has finished, updating the main window.
+        /// </summary>
         public void NotifyFinishedIteration()
         {
             UpdateMainWindow(_runData.Iterations[CurrentIteration]);
             IsAnimatingDetails = false;
         }
 
+        /// <summary>
+        /// Opens a new algorithm configuration window.
+        /// </summary>
         public void OpenNewAlgorithmWindow()
         {
             if (!_newAlgorithmWindowOpen)
@@ -240,37 +325,63 @@ namespace LLEAV.ViewModels
             }
         }
 
+        /// <summary>
+        /// Sets new run data and updates the main window view model.
+        /// </summary>
+        /// <param name="runData">The new run data to set.</param>
         public void SetNewRunData(RunData runData)
         {
             _runData = runData;
             _mainWindowViewModel!.SetNewRunData(_runData);
         }
 
+        /// <summary>
+        /// Updates the main window view model with iteration data to show.
+        /// </summary>
+        /// <param name="iterationData">The iteration data to update.</param>
         public void UpdateMainWindow(IterationData iterationData)
         {
             _mainWindowViewModel!.UpdatePopulations(iterationData);
         }
 
+        /// <summary>
+        /// Steps forward to the next iteration.
+        /// </summary>
         public void StepForward()
         {
             _mainWindowViewModel.StepForward();
         }
 
+        /// <summary>
+        /// Steps backward to the last iteration.
+        /// </summary>
         public void StepBackward()
         {
             _mainWindowViewModel.StepBackward();
         }
 
+        /// <summary>
+        /// Checks if it's possible to step backward in the iteration data.
+        /// </summary>
+        /// <returns>True if stepping backward is possible, otherwise false.</returns>
         public bool CanStepBackward()
         {
             return CurrentIteration > 0;
         }
 
+        /// <summary>
+        /// Checks if it's possible to step forward in the iteration data.
+        /// </summary>
+        /// <returns>True if stepping forward is possible, otherwise false.</returns>
         public bool CanStepForward()
         {
             return !_runData.Iterations[CurrentIteration].LastIteration;
         }
 
+        /// <summary>
+        /// Generates the initial iteration data using the current run data.
+        /// </summary>
+        /// <returns>The initial iteration data.</returns>
         public IterationData InitialIteration()
         {
             Random rng = new Random(_runData.RNGSeed);

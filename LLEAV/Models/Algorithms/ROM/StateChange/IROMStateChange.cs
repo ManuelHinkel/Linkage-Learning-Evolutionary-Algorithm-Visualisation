@@ -1,13 +1,15 @@
-﻿using System;
+﻿using LLEAV.ViewModels.Controls;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using LLEAV.ViewModels;
-using LLEAV.ViewModels.Controls;
 
 namespace LLEAV.Models.Algorithms.ROM.StateChange
 {
-    public class ROMVisualisationData(): IVisualisationData
+
+    /// <summary>
+    /// Visualisation data specifically for ROMEAs.
+    /// </summary>
+    public class ROMVisualisationData() : IVisualisationData
     {
         public Solution? CurrentSolution1 { get; set; }
         public Solution? CurrentSolution2 { get; set; }
@@ -39,6 +41,10 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
             return clone;
         }
     }
+
+    /// <summary>
+    /// State change interface specifically for ROMEAs.
+    /// </summary>
     public interface IROMStateChange : IStateChange
     {
         public Tuple<IList<string>, Message> Apply(IterationData state, ROMVisualisationData visualisationData, bool onlyOperateOnData = false);

@@ -16,6 +16,9 @@ namespace LLEAV.ViewModels.Windows
     public class MainWindowViewModel : ViewModelBase
     {
         private int _iteration;
+        /// <summary>
+        /// Gets or sets the current iteration.
+        /// </summary>
         public int Iteration
         {
             get => _iteration;
@@ -27,10 +30,13 @@ namespace LLEAV.ViewModels.Windows
         }
 
         private int _depictionIndex;
-        public int DepictionIndex 
+        /// <summary>
+        /// Gets or sets the population depiction currently seleccted.
+        /// </summary>
+        public int DepictionIndex
         {
             get => _depictionIndex;
-            set 
+            set
             {
                 this.RaiseAndSetIfChanged(ref _depictionIndex, value);
 
@@ -42,6 +48,9 @@ namespace LLEAV.ViewModels.Windows
         }
 
         private int _bitDepictionIndex;
+        /// <summary>
+        /// Gets or sets the bit depiction currently seleccted.
+        /// </summary>
         public int BitDepictionIndex
         {
             get => _bitDepictionIndex;
@@ -53,7 +62,10 @@ namespace LLEAV.ViewModels.Windows
         }
 
         private int _modusIndex;
-        public int ModusIndex 
+        /// <summary>
+        /// Gets or sets the animation modus currently seleccted.
+        /// </summary>
+        public int ModusIndex
         {
             get => _modusIndex;
             set
@@ -70,14 +82,22 @@ namespace LLEAV.ViewModels.Windows
             }
         }
 
-
+        /// <summary>
+        /// Gets or sets the max iteration of the simulation.
+        /// </summary>
         [Reactive]
         public int MaxIteration { get; set; }
 
+        /// <summary>
+        /// Gets or sets, if the simulation is automatically running.
+        /// </summary>
         [Reactive]
         public bool Running { get; set; }
 
 
+        /// <summary>
+        /// Gets, if stepping forward is allowed.
+        /// </summary>
         public bool RightButtonEnabled
         {
             get => !Running && RunData != null && !RunData.Iterations[Iteration].LastIteration
@@ -85,6 +105,9 @@ namespace LLEAV.ViewModels.Windows
                         || !GlobalManager.Instance.IsAnimatingFOS);
         }
 
+        /// <summary>
+        /// Gets, if stepping backward is allowed.
+        /// </summary>
         public bool LeftButtonEnabled
         {
             get => !Running && Iteration > 0
@@ -92,6 +115,9 @@ namespace LLEAV.ViewModels.Windows
                         || !GlobalManager.Instance.IsAnimatingFOS);
         }
 
+        /// <summary>
+        /// Gets, if saving is enabled.
+        /// </summary>
         public bool IsSaveEnabled
         {
             get
@@ -100,6 +126,9 @@ namespace LLEAV.ViewModels.Windows
             }
         }
 
+        /// <summary>
+        /// Gets, if the button to save the population depiction should be enabled.
+        /// </summary>
         public bool IsScreenSaveEnabled
         {
             get
@@ -108,9 +137,16 @@ namespace LLEAV.ViewModels.Windows
             }
         }
 
+
+        /// <summary>
+        /// Gets the tick spacing for the timeline.
+        /// </summary>
         [Reactive]
         public int TickSpacing { get; private set; } = 1;
 
+        /// <summary>
+        /// Gets the rundata information of the current simulation.
+        /// </summary>
         [Reactive]
         public RunData RunData { get; private set; }
 
@@ -122,7 +158,9 @@ namespace LLEAV.ViewModels.Windows
             null, // BoxPlot needs rundata
         ];
 
-
+        /// <summary>
+        /// Gets or sets the population depiction view model currently selected.
+        /// </summary>
         public PopulationDepictionViewModelBase Model { get; set; }
 
         private bool _stopThread;
@@ -131,25 +169,41 @@ namespace LLEAV.ViewModels.Windows
 
         private IterationData _shownIterationData;
 
+        /// <summary>
+        /// Gets the message shown at the top of the window.
+        /// </summary>
         [Reactive]
         public string Message { get; private set; }
 
+        /// <summary>
+        /// Gets, if the local search function should be shown.
+        /// </summary>
         [Reactive]
         public bool ShowLocalSearchFunction { get; private set; }
 
+        /// <summary>
+        /// Gets, if the population size should be shown.
+        /// </summary>
         [Reactive]
         public bool ShowPopulationSize { get; private set; }
 
+        /// <summary>
+        /// Gets, if the growth function should be shown.
+        /// </summary>
         [Reactive]
         public bool ShowGrowthFunction { get; private set; }
 
+        /// <summary>
+        /// Creates a new instance of the main window view model.
+        /// </summary>
         public MainWindowViewModel()
         {
-            Thread playThread = new Thread(new ThreadStart(async () => {
+            Thread playThread = new Thread(new ThreadStart(async () =>
+            {
                 while (!_stopThread)
                 {
-                    if (Running && !GlobalManager.Instance.IsAnimatingDetails 
-                        && (GlobalManager.Instance.AnimationModus == AnimationModus.NONE 
+                    if (Running && !GlobalManager.Instance.IsAnimatingDetails
+                        && (GlobalManager.Instance.AnimationModus == AnimationModus.NONE
                         || !GlobalManager.Instance.IsAnimatingFOS))
                     {
                         long start = Stopwatch.GetTimestamp();
@@ -166,16 +220,27 @@ namespace LLEAV.ViewModels.Windows
             playThread.Start();
         }
 
+        /// <summary>
+        /// Forcefully stops the automatic simulation run.
+        /// </summary>
         public void Stop()
         {
             _stopThread = true;
         }
 
+        /// <summary>
+        /// Selects the population container at the specified index.
+        /// </summary>
+        /// <param name="index">The index of the population to select</param>
         public void SelectPopulation(int index)
         {
             _models[DepictionIndex].SelectPopulation(index);
         }
 
+        /// <summary>
+        /// Updates the population depictions with new iteration data.
+        /// </summary>
+        /// <param name="iterationData"></param>
         public void UpdatePopulations(IterationData iterationData)
         {
             _shownIterationData = iterationData;
@@ -192,6 +257,9 @@ namespace LLEAV.ViewModels.Windows
             this.RaisePropertyChanged(nameof(Model));
         }
 
+        /// <summary>
+        /// Changes the current iteration and all the visualisation data.
+        /// </summary>
         public void ChangeCurrentIteration()
         {
             Message = "";
@@ -204,7 +272,8 @@ namespace LLEAV.ViewModels.Windows
                 if (Iteration > 0)
                 {
                     result = RunData.Algorithm.CalculateIterationStateChanges(RunData.Iterations[Iteration - 1], RunData);
-                } else
+                }
+                else
                 {
                     result = RunData.Algorithm.CalculateIterationStateChanges(GlobalManager.Instance.InitialIteration(), RunData); ;
                 }
@@ -219,12 +288,18 @@ namespace LLEAV.ViewModels.Windows
             RaiseButtonsChanged();
         }
 
+        /// <summary>
+        /// Toggles automatically running the simulation.
+        /// </summary>
         public void Play()
         {
             Running = !Running;
             RaiseButtonsChanged();
         }
 
+        /// <summary>
+        /// Steps one iteration forward.
+        /// </summary>
         public void StepForward()
         {
             GlobalManager.Instance.NotifyFinishedIteration();
@@ -236,8 +311,8 @@ namespace LLEAV.ViewModels.Windows
             }
             if (Iteration == MaxIteration)
             {
-                 var result = RunData.Algorithm.CalculateIteration(RunData.Iterations[Iteration], RunData);
-                 RunData.Iterations.Add(result.Item1);
+                var result = RunData.Algorithm.CalculateIteration(RunData.Iterations[Iteration], RunData);
+                RunData.Iterations.Add(result.Item1);
 
                 if (ModusIndex == 0)
                 {
@@ -253,6 +328,18 @@ namespace LLEAV.ViewModels.Windows
                 CalculateTickSpacing();
             }
             Iteration++;
+        }
+
+        /// <summary>
+        /// Steps one iteration back.
+        /// </summary>
+        public void StepBackward()
+        {
+            if (_iteration > 0)
+            {
+                GlobalManager.Instance.NotifyFinishedIteration();
+                Iteration--;
+            }
         }
 
         private void CalculateTickSpacing()
@@ -275,26 +362,27 @@ namespace LLEAV.ViewModels.Windows
             }
         }
 
-        public void StepBackward()
-        {
-            if (_iteration > 0)
-            {
-                GlobalManager.Instance.NotifyFinishedIteration();
-                Iteration--;
-            } 
-        }
-
+        /// <summary>
+        /// Opens the simulation creation window.
+        /// </summary>
         public void New()
         {
             GlobalManager.Instance.OpenNewAlgorithmWindow();
         }
 
 
+        /// <summary>
+        /// Saves the current active simulation run to the disk, if it was already saved before.
+        /// </summary>
         public void Save()
         {
             Saver.SaveData(RunData, RunData.FilePath!);
         }
 
+        /// <summary>
+        /// Saves the current active simulation run to the disk in the specified location.
+        /// </summary>
+        /// <param name="path">The location of where to save the file.</param>
         public void SaveAs(string path)
         {
             Saver.SaveData(RunData, path);
@@ -303,11 +391,19 @@ namespace LLEAV.ViewModels.Windows
             this.RaisePropertyChanged(nameof(IsSaveEnabled));
         }
 
+        /// <summary>
+        /// Loads a simulation run from the disk.
+        /// </summary>
+        /// <param name="path">The path of the file to load.</param>
         public void Load(string path)
         {
             GlobalManager.Instance.SetNewRunData(Loader.LoadData(path));
         }
 
+        /// <summary>
+        /// Sets the rundata of the currently running simulation.
+        /// </summary>
+        /// <param name="runData"></param>
         public void SetNewRunData(RunData runData)
         {
             RunData = runData;
@@ -317,7 +413,8 @@ namespace LLEAV.ViewModels.Windows
             if (runData.Iterations.Count > 0)
             {
                 MaxIteration = runData.Iterations.Count - 1;
-            } else
+            }
+            else
             {
                 var result = RunData.Algorithm.CalculateIteration(
                 GlobalManager.Instance.InitialIteration(),

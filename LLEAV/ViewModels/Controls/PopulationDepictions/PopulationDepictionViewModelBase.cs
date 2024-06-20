@@ -1,41 +1,62 @@
-﻿using DynamicData;
-using DynamicData.Kernel;
-using LiveChartsCore.Kernel;
+﻿using DynamicData.Kernel;
 using LLEAV.Models;
-using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LLEAV.ViewModels.Controls.PopulationDepictions
 {
-    public abstract class PopulationContainerViewModelBase: ViewModelBase
+    /// <summary>
+    /// Base view model for representing a population container.
+    /// </summary>
+    public abstract class PopulationContainerViewModelBase : ViewModelBase
     {
+        /// <summary>
+        /// Gets or sets the population associated with this container.
+        /// </summary>
         public Population Population { get; set; }
 
+        /// <summary>
+        /// Gets or sets the selection state of the container.
+        /// </summary>
         [Reactive]
         public bool Selected { get; set; }
 
-
+        // <summary>
+        /// Constructs an instance of PopulationContainerViewModelBase with the specified population.
+        /// </summary>
+        /// <param name="population">The population associated with this container.</param>
         public PopulationContainerViewModelBase(Population population)
         {
             Population = population;
         }
     }
 
+    /// <summary>
+    /// Base view model for managing a collection of population containers.
+    /// </summary>
     public abstract class PopulationDepictionViewModelBase : ViewModelBase
     {
+        /// <summary>
+        /// Gets the collection of population containers.
+        /// </summary>
         public ObservableCollection<PopulationContainerViewModelBase> Containers { get; set; } = new ObservableCollection<PopulationContainerViewModelBase> { };
+
+        /// <summary>
+        /// Gets or sets the index of the selected population container.
+        /// </summary>
         public int SelectedPopulation { get; set; } = -1;
 
+        /// <summary>
+        /// Updates the view model with data from a new iteration.
+        /// </summary>
+        /// <param name="iteration">The iteration data to update the view model.</param>
         public abstract void Update(IterationData iteration);
 
-        // Called when clicking on a population block
+        /// <summary>
+        /// Selects a population container based on user interaction. Called, when clicking o a population container.
+        /// </summary>
+        /// <param name="o">The population container to select.</param>
         public void SelectPopulation(PopulationContainerViewModelBase o)
         {
             if (!o.Selected)
@@ -47,7 +68,10 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
             SelectedPopulation = Containers.Select((c, i) => (c, i)).FirstOrOptional(t => t.c.Selected == true).ValueOr(() => (null, -1)).i;
         }
 
-        // Called when switching iterations
+        /// <summary>
+        /// Selects a population container by index. Called when switching iterations
+        /// </summary>
+        /// <param name="index">The index of the population container to select.</param>
         public void SelectPopulation(int index)
         {
             SelectedPopulation = index;

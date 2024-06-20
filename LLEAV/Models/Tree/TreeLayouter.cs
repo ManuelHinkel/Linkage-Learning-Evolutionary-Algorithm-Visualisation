@@ -1,17 +1,15 @@
-﻿using DynamicData;
-using LLEAV.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LLEAV.Models.Tree
 {
+    /// <summary>
+    /// A class responsible for laying out a tree structure for visualization.
+    /// </summary>
     public class TreeLayouter
     {
-        private const int X_SPACING = 30; 
+        private const int X_SPACING = 30;
         private const int Y_SPACING = 50;
 
         private Node _root = new Node(null);
@@ -24,6 +22,12 @@ namespace LLEAV.Models.Tree
         private List<Node> _nodes;
 
 
+        /// <summary>
+        /// Calculates a tree layout based on the given FOS.
+        /// </summary>
+        /// <param name="currentFOS">The current FOS to generate the tree from.</param>
+        /// <param name="revert">Indicates whether to revert the tree vertically.</param>
+        /// <returns>A tree representing the layout.</returns>
         public Tree CalculateTree(FOS currentFOS, bool revert = true)
         {
             _leafs = new List<Node>();
@@ -39,22 +43,23 @@ namespace LLEAV.Models.Tree
             //Remove the cluster containing all bits
             if (_clusters.Last().Count() == _clusters.Last().NumberOfBits)
             {
-                _clusters.RemoveAt(_clusters.Count-1);
+                _clusters.RemoveAt(_clusters.Count - 1);
             }
 
             // Create a new node for each cluster
             _nodes = _clusters.Select(
-                c => {
+                c =>
+                {
                     var n = new Node(c);
                     n.SetText(c.BitPositions());
                     return n;
-                }).ToList(); 
+                }).ToList();
 
             for (int i = 0; i < _clusters.Count; i++)
             {
                 // Find parent
                 bool parentFound = false;
-                for (int j = i+1; j < _clusters.Count; j++)
+                for (int j = i + 1; j < _clusters.Count; j++)
                 {
                     if (_clusters[j].Contains(_clusters[i]))
                     {
@@ -82,6 +87,13 @@ namespace LLEAV.Models.Tree
             return t;
         }
 
+        /// <summary>
+        /// Updates the tree layout based on the given FOS and existing tree.
+        /// </summary>
+        /// <param name="currentFOS">The current FOS to generate the tree from.</param>
+        /// <param name="tree">The existing tree layout.</param>
+        /// <param name="revert">Indicates whether to revert the tree vertically.</param>
+        /// <returns>A <tree representing the updated layout.</returns>
         public Tree UpdateTree(FOS currentFOS, Tree tree, bool revert = true)
         {
             Tree currentTree = CalculateTree(currentFOS);
@@ -115,6 +127,9 @@ namespace LLEAV.Models.Tree
             return currentTree;
         }
 
+        /// <summary>
+        /// Creates edges between nodes.
+        /// </summary>
         private void CreateEdges()
         {
             List<Node> dfs = [_root];
@@ -128,7 +143,7 @@ namespace LLEAV.Models.Tree
                 }
                 foreach (Node child in current.Children)
                 {
-                    dfs.Insert(0,child);
+                    dfs.Insert(0, child);
 
                     Edge newEdge = new Edge(current, child);
 
@@ -137,6 +152,10 @@ namespace LLEAV.Models.Tree
             }
         }
 
+        /// <summary>
+        /// Lays out the tree by positioning nodes and calculating edge points.
+        /// </summary>
+        /// <param name="revert">Indicates whether to revert the tree vertically.</param>
         private void LayoutTree(bool revert)
         {
             int posX = 0;
@@ -158,6 +177,9 @@ namespace LLEAV.Models.Tree
             }
         }
 
+        /// <summary>
+        /// Reverts the tree vertically by adjusting node positions.
+        /// </summary>
         private void RevertTree()
         {
             int maxY = _root.Y + _root.Height;
@@ -173,7 +195,10 @@ namespace LLEAV.Models.Tree
             }
         }
 
-
+        /// <summary>
+        /// Recursively layouts the nodes, positioning them based on their children.
+        /// </summary>
+        /// <param name="node">The node to layout.</param>
         private void LayoutNode(Node node)
         {
             if (node.Children.Count == 0) return;
@@ -183,8 +208,10 @@ namespace LLEAV.Models.Tree
                 LayoutNode(child);
             }
 
-            int widthAllChildren = node.Children[0].X + node.Children.Last().X + node.Children.Last().Width;
-            node.X = widthAllChildren / 2 - node.Width / 2;
+
+            var leafs = node.GetLeafs();
+            int widthAllLeafs = leafs[0].X + leafs.Last().X + leafs.Last().Width;
+            node.X = widthAllLeafs / 2 - node.Width / 2;
 
             int maxYAllChildren = node.Children.Max(x => x.Y);
 

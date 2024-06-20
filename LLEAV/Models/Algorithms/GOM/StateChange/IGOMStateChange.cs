@@ -1,16 +1,14 @@
-﻿using System;
+﻿using LLEAV.ViewModels.Controls;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LLEAV.Models.Algorithms;
-using LLEAV.ViewModels;
-using LLEAV.ViewModels.Controls;
 
 namespace LLEAV.Models.Algorithms.GOM.StateChange
 {
-    public class GOMVisualisationData(): IVisualisationData
+    /// <summary>
+    /// Visualisation data specifically for GOMEAs.
+    /// </summary>
+    public class GOMVisualisationData() : IVisualisationData
     {
         public Solution? CurrentSolution { get; set; }
         public Solution? CurrentDonor { get; set; }
@@ -21,7 +19,7 @@ namespace LLEAV.Models.Algorithms.GOM.StateChange
 
         public IList<SolutionWrapper> Solutions { get; set; }
         public ObservableCollection<SolutionWrapper> NextIteration { get; set; } = new ObservableCollection<SolutionWrapper>();
-    
+
         public IVisualisationData Clone()
         {
             GOMVisualisationData clone = new GOMVisualisationData();
@@ -33,12 +31,16 @@ namespace LLEAV.Models.Algorithms.GOM.StateChange
             clone.IsMerging = IsMerging;
             clone.ActiveCluster = ActiveCluster;
             clone.Merged = Merged;
-            clone.CurrentDonor = CurrentDonor; 
+            clone.CurrentDonor = CurrentDonor;
             clone.CurrentSolution = CurrentSolution;
 
             return clone;
         }
     }
+
+    /// <summary>
+    /// State change interface specifically for GOMEAs.
+    /// </summary>
     public interface IGOMStateChange : IStateChange
     {
         public Tuple<IList<string>, Message> Apply(IterationData state, GOMVisualisationData visualisationData, bool onlyOperateOnData = false);

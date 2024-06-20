@@ -1,39 +1,54 @@
 ﻿using Avalonia.Threading;
 using LLEAV.Models;
-using LLEAV.Models.Algorithms;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace LLEAV.ViewModels.Controls.IterationDepictions
 {
+    /// <summary>
+    /// Base view model for managing iteration depiction in an algorithm visualization.
+    /// </summary>
     public abstract class IterationDepictionViewModelBase : ViewModelBase
     {
+        /// <summary>
+        /// Constant defining the spacing between checkpoints.
+        /// </summary>
         public const int CHECKPOINT_SPACING = 50;
-       
+
+        /// <summary>
+        /// Gets a value indicating whether the right navigation button is enabled.
+        /// </summary>
         public bool RightButtonEnabled
         {
-            get => !isAnimating && !Running  && CurrentStateChange < MaxStateChange;
+            get => !isAnimating && !Running && CurrentStateChange < MaxStateChange;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the left navigation button is enabled.
+        /// </summary>
         public bool LeftButtonEnabled
         {
-            get => !isAnimating && !Running  && CurrentStateChange > 0;
+            get => !isAnimating && !Running && CurrentStateChange > 0;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the forward navigation button is enabled.
+        /// </summary>
         public bool ForwardButtonEnabled
         {
-            get => !isAnimating && !Running 
+            get => !isAnimating && !Running
                 && CurrentStateChange == MaxStateChange && GlobalManager.Instance.CanStepForward();
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the backward navigation button is enabled.
+        /// </summary>
         public bool BackwardButtonEnabled
         {
-            get => !isAnimating && !Running 
+            get => !isAnimating && !Running
                 && CurrentStateChange == 0 && GlobalManager.Instance.CanStepBackward();
         }
 
@@ -48,35 +63,55 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
         }
 
 
+        /// <summary>
+        /// Gets the animation mode from the global manager instance.
+        /// </summary>
         public AnimationModus AnimationModus
         {
             get => GlobalManager.Instance.AnimationModus;
         }
 
-            [Reactive]
+        /// <summary>
+        /// Gets or sets a value indicating whether merging animation is running.
+        /// </summary>
+        [Reactive]
         public bool IsMergingRunning { get; set; }
 
-
+        /// <summary>
+        /// Gets or sets a value indicating whether the animation is automatically playing.
+        /// </summary>
         [Reactive]
         public bool Running { get; set; }
 
 
         protected int _currentStateChange;
-        public int CurrentStateChange 
+        /// <summary>
+        /// Gets or sets the current state change index.
+        /// </summary>
+        public int CurrentStateChange
         {
             get { return _currentStateChange; }
             set
             {
                 GoToStateChange(value);
                 this.RaisePropertyChanged(nameof(CurrentStateChange));
-            } 
-        
+            }
+
         }
 
+        /// <summary>
+        /// Gets or sets the maximum state change index.
+        /// </summary>
         public int MaxStateChange { get; set; }
 
+        /// <summary>
+        /// Gets or sets the message box instance for displaying messages.
+        /// </summary>
         public MessageBox MessageBox { get; set; } = new MessageBox();
 
+        /// <summary>
+        /// Gets or sets the tick spacing for visualization.
+        /// </summary>
         [Reactive]
         public int TickSpacing { get; private set; } = 1;
 
@@ -87,7 +122,8 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
         protected IterationDepictionViewModelBase()
         {
-            Thread playThread = new Thread(new ThreadStart(() => {
+            Thread playThread = new Thread(new ThreadStart(() =>
+            {
                 while (!_stopThread)
                 {
                     if (Running && !isAnimating)
@@ -100,17 +136,26 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             playThread.Start();
         }
 
+        /// <summary>
+        /// Stops the play thread forcefully.
+        /// </summary>
         public void Stop()
         {
             _stopThread = true;
         }
 
+        /// <summary>
+        /// Toggles the running state of the iteration.
+        /// </summary>
         public void Play()
-        {            
+        {
             Running = !Running;
             RaiseButtonsChanged();
         }
 
+        /// <summary>
+        /// Steps the state change forward.
+        /// </summary>
         public void StepForward()
         {
             if (CurrentStateChange < MaxStateChange)
@@ -125,6 +170,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             RaiseButtonsChanged();
         }
 
+        /// <summary>
+        /// Steps the  state change backward.
+        /// </summary>
         public void StepBackward()
         {
             if (CurrentStateChange > 0)
@@ -146,12 +194,18 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
         protected abstract void GoToStateChange(int index);
 
+        /// <summary>
+        /// Advances the global step forward in the iteration.
+        /// </summary>
         public void GlobalStepForward()
         {
             GlobalManager.Instance.StepForward();
             RaiseButtonsChanged();
         }
 
+        /// <summary>
+        /// Steps backward globally in the iteration.
+        /// </summary>
         public void GlobalStepBackward()
         {
             GlobalManager.Instance.StepBackward();
@@ -196,7 +250,8 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     return;
                 }
                 // Call on UI for correct event handling
-                Dispatcher.UIThread.InvokeAsync(() => {
+                Dispatcher.UIThread.InvokeAsync(() =>
+                {
                     output.Add(w);
                 });
                 Thread.Sleep(50);
@@ -205,6 +260,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             running = false;
         }
 
+        /// <summary>
+        /// Abstract method to change solution depiction, implemented by derived classes.
+        /// </summary>
         public abstract void ChangeSolutionDepiction();
     }
 }

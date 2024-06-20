@@ -1,21 +1,33 @@
 ﻿using LLEAV.Util;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LLEAV.Models
 {
+    /// <summary>
+    /// Represents a cluster of bits.
+    /// </summary>
     public class Cluster : IEnumerable<Cluster>
     {
         private SortedSet<int> bits = new SortedSet<int>();
+
+        /// <summary>
+        /// Gets the size of the cluster.
+        /// </summary>
         public int NumberOfBits { get; private set; }
 
+        /// <summary>
+        /// Gets the bit mask representing the cluster.
+        /// </summary>
         public BitList Mask { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of a cluster with the specified bits and total number of bits.
+        /// </summary>
+        /// <param name="bits">The list of bits in the cluster.</param>
+        /// <param name="numberOfBits">The total number of bits.</param>
         public Cluster(List<int> bits, int numberOfBits)
         {
             NumberOfBits = numberOfBits;
@@ -27,11 +39,20 @@ namespace LLEAV.Models
             }
         }
 
+        /// <summary>
+        /// Gets the count of bits in the cluster.
+        /// </summary>
+        /// <returns>The count of bits in the cluster.</returns>
         public int Count()
         {
             return bits.Count;
         }
 
+        /// <summary>
+        /// Returns the union of the current cluster and another cluster.
+        /// </summary>
+        /// <param name="other">The other cluster to union with.</param>
+        /// <returns>A new cluster representing the union of the two clusters.</returns>
         public Cluster Union(Cluster other)
         {
             Debug.Assert(NumberOfBits == other.NumberOfBits);
@@ -42,6 +63,11 @@ namespace LLEAV.Models
             return new Cluster(bits, NumberOfBits);
         }
 
+        /// <summary>
+        /// Determines whether the current cluster contains another cluster.
+        /// </summary>
+        /// <param name="other">The other cluster to check for containment.</param>
+        /// <returns><c>true</c> if the current cluster contains the other cluster; otherwise, <c>false</c>.</returns>
         public bool Contains(Cluster other)
         {
             Debug.Assert(NumberOfBits == other.NumberOfBits);
@@ -49,6 +75,10 @@ namespace LLEAV.Models
             return (Mask & other.Mask).Equals(other.Mask);
         }
 
+        /// <summary>
+        /// Generates all possible bit strings covered by the cluster.
+        /// </summary>
+        /// <returns>An enumerable of bit lists representing all possible bit strings.</returns>
         public IEnumerable<BitList> PossibleStrings()
         {
             List<BitList> temporaryStrings = [new BitList(NumberOfBits)];
@@ -70,6 +100,11 @@ namespace LLEAV.Models
             return temporaryStrings;
         }
 
+        /// <summary>
+        /// Determines whether the specified object is equal to the current cluster.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current cluster.</param>
+        /// <returns><c>true</c> if the specified object is equal to the current cluster; otherwise, <c>false</c>.</returns>
         public override bool Equals(object? obj)
         {
             if (obj == null || !(obj is Cluster))
@@ -82,16 +117,28 @@ namespace LLEAV.Models
             }
         }
 
+        /// <summary>
+        /// Returns a string that represents the current cluster.
+        /// </summary>
+        /// <returns>A string that represents the current cluster.</returns>
         public override string ToString()
         {
             return "Cluster: " + Mask.ToString();
         }
 
+        /// <summary>
+        /// Gets a string representation of the bit positions in the cluster.
+        /// </summary>
+        /// <returns>A string representation of the bit positions in the cluster.</returns>
         public string BitPositions()
         {
             return string.Join(", ", bits.Select(x => x.ToString()));
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through a cluster for each bit.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate through the bits of the cluster.</returns>
         public IEnumerator<Cluster> GetEnumerator()
         {
             foreach (int bit in bits)
@@ -105,6 +152,12 @@ namespace LLEAV.Models
             return GetEnumerator();
         }
 
+
+        /// <summary>
+        /// Inverts the bits in the cluster.
+        /// </summary>
+        /// <param name="a">The cluster to invert.</param>
+        /// <returns>A new cluster representing the inverted bits.</returns>
         public static Cluster operator !(Cluster a)
         {
             Debug.Assert(a != null);
@@ -121,6 +174,10 @@ namespace LLEAV.Models
             return inverted;
         }
 
+        /// <summary>
+        /// Gets the position of the first bit in the cluster.
+        /// </summary>
+        /// <returns>The position of the first bit in the cluster.</returns>
         public int PositionOfFirstBit()
         {
             if (bits.Count == 0) return 0;

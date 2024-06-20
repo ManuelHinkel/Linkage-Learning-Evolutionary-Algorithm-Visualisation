@@ -3,17 +3,17 @@ using LLEAV.Models;
 
 using LLEAV.Models.Algorithms.ROM.StateChange;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace LLEAV.ViewModels.Controls.IterationDepictions
 {
+    /// <summary>
+    /// ViewModel for managing the depiction of iterations in a ROMEA visualization.
+    /// </summary>
     public class ROMIterationViewModel : IterationDepictionViewModelBase
     {
         private static readonly IList<string> VISUALISATION_PROPERTIES = [
@@ -38,12 +38,24 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
         private bool _stopAddSolution;
         private bool _addSolutionRunning;
+
+        /// <summary>
+        /// Gets the list of solutions in teh current iteration.
+        /// </summary>
         public ObservableCollection<SolutionWrapper> Solutions { get; } = new ObservableCollection<SolutionWrapper>();
+
 
         private bool _stopAddNextIteration;
         private bool _addNextIterationRunning;
+
+        /// <summary>
+        /// Gets the list of solutions in the next iteration.
+        /// </summary>
         public ObservableCollection<SolutionWrapper> NextIteration { get; } = [];
 
+        /// <summary>
+        /// Gets the wrapper for solution 1.
+        /// </summary>
         public SolutionWrapper CurrentSolution1
         {
             get
@@ -69,6 +81,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
+        /// <summary>
+        /// Gets the wrapper for solution 2.
+        /// </summary>
         public SolutionWrapper CurrentSolution2
         {
             get
@@ -94,6 +109,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
+        /// <summary>
+        /// Gets the wrapper for donor 1.
+        /// </summary>
         public SolutionWrapper CurrentDonor1
         {
             get
@@ -119,6 +137,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
+        /// <summary>
+        /// Gets the wrapper for donor 2.
+        /// </summary>
         public SolutionWrapper CurrentDonor2
         {
             get
@@ -144,6 +165,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
+        /// <summary>
+        /// Gets the wrapper for the animated solution 1.
+        /// </summary>
         public SolutionWrapper CurrentSolution1Animated
         {
             get
@@ -170,6 +194,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
+        /// <summary>
+        /// Gets the wrapper for the animated solution 2.
+        /// </summary>
         public SolutionWrapper CurrentSolution2Animated
         {
             get
@@ -196,6 +223,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
+        /// <summary>
+        /// Gets the wrapper for the animated donor 1.
+        /// </summary>
         public SolutionWrapper CurrentDonor1Animated
         {
             get
@@ -222,6 +252,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
+        /// <summary>
+        /// Gets the wrapper for the animated donor 2.
+        /// </summary>
         public SolutionWrapper CurrentDonor2Animated
         {
             get
@@ -248,16 +281,25 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the merging animation is currently played.
+        /// </summary>
         public bool IsMerging
         {
             get { return _visualisationData.IsMerging; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the fitness increasing animation is currently played.
+        /// </summary>
         public bool IsFitnessIncreasing
         {
             get { return _visualisationData.IsFitnessIncreasing; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the  fitness decreasing animation is currently played.
+        /// </summary>
         public bool IsFitnessDecreasing
         {
             get { return _visualisationData.IsFitnessDecreasing; }
@@ -272,7 +314,12 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             get => IsMergingRunning || _isApplyingFitnessIncreaseRunning || _isApplyingFitnessDecreaseRunning;
         }
 
-        public ROMIterationViewModel(List<IROMStateChange> stateChanges, IterationData workingData): base()
+        /// <summary>
+        /// Creates an instance of the ROM iteration view model
+        /// </summary>
+        /// <param name="stateChanges">The state changes to be visualised</param>
+        /// <param name="workingData">The data to visualise on</param>
+        public ROMIterationViewModel(List<IROMStateChange> stateChanges, IterationData workingData) : base()
         {
             _stateChanges = stateChanges;
             WorkingData = workingData.Clone();
@@ -281,7 +328,8 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             _checkpoints = new Tuple<IterationData, ROMVisualisationData, IList<Message>>[MaxStateChange / CHECKPOINT_SPACING + 1];
 
 
-            Thread calculationThread = new Thread(new ThreadStart(() => {
+            Thread calculationThread = new Thread(new ThreadStart(() =>
+            {
                 CalculateCheckpoints(workingData.Clone());
             }));
             calculationThread.Start();
@@ -328,9 +376,11 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 if (property.Equals(nameof(IsMerging)) && _visualisationData.IsMerging)
                 {
                     IsMergingRunning = true;
-                    Thread t = new Thread(new ThreadStart(() => {
+                    Thread t = new Thread(new ThreadStart(() =>
+                    {
                         Thread.Sleep(GlobalManager.ANIMATION_TIME);
-                        Dispatcher.UIThread.Invoke(() => {
+                        Dispatcher.UIThread.Invoke(() =>
+                        {
                             _visualisationData.IsMerging = false;
                             this.RaisePropertyChanged(nameof(IsMerging));
 
@@ -343,9 +393,11 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 else if (property.Equals(nameof(IsFitnessIncreasing)) && _visualisationData.IsFitnessIncreasing)
                 {
                     _isApplyingFitnessIncreaseRunning = true;
-                    Thread t = new Thread(new ThreadStart(() => {
+                    Thread t = new Thread(new ThreadStart(() =>
+                    {
                         Thread.Sleep(GlobalManager.ANIMATION_TIME);
-                        Dispatcher.UIThread.Invoke(() => {
+                        Dispatcher.UIThread.Invoke(() =>
+                        {
                             _visualisationData.IsFitnessIncreasing = false;
                             this.RaisePropertyChanged(nameof(IsFitnessIncreasing));
 
@@ -358,9 +410,11 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 else if (property.Equals(nameof(IsFitnessDecreasing)) && _visualisationData.IsFitnessDecreasing)
                 {
                     _isApplyingFitnessDecreaseRunning = true;
-                    Thread t = new Thread(new ThreadStart(() => {
+                    Thread t = new Thread(new ThreadStart(() =>
+                    {
                         Thread.Sleep(GlobalManager.ANIMATION_TIME);
-                        Dispatcher.UIThread.Invoke(() => {
+                        Dispatcher.UIThread.Invoke(() =>
+                        {
                             _visualisationData.IsFitnessDecreasing = false;
                             this.RaisePropertyChanged(nameof(IsFitnessDecreasing));
 
@@ -380,7 +434,8 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
                     Solutions.Clear();
 
-                    Thread t = new Thread(new ThreadStart(() => {
+                    Thread t = new Thread(new ThreadStart(() =>
+                    {
                         LoadWrappersAsync(Solutions,
                             // Clone for use in another thread
                             new List<SolutionWrapper>(_visualisationData.Solutions),
@@ -400,7 +455,8 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
                     NextIteration.Clear();
 
-                    Thread t = new Thread(new ThreadStart(() => {
+                    Thread t = new Thread(new ThreadStart(() =>
+                    {
                         LoadWrappersAsync(NextIteration,
                             // Clone for use in another thread
                             new List<SolutionWrapper>(_visualisationData.NextIteration),
@@ -408,9 +464,12 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     }));
                     t.Start();
 
-                } else if (property.Contains("Current")) {
+                }
+                else if (property.Contains("Current"))
+                {
                     this.RaisePropertyChanged(property + "Animated");
-                } else if (property.Equals("NextIterationAdded"))
+                }
+                else if (property.Equals("NextIterationAdded"))
                 {
                     NextIteration.Add(_visualisationData.NextIteration.Last());
                 }
@@ -436,7 +495,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
             WorkingData = checkPoint.Item1.Clone();
             _visualisationData = (ROMVisualisationData)checkPoint.Item2.Clone();
-            
+
             RaiseChanged(VISUALISATION_PROPERTIES);
         }
 
@@ -447,7 +506,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             int checkpointIndex = _currentStateChange / CHECKPOINT_SPACING;
             int targetCheckpointIndex = index / CHECKPOINT_SPACING;
 
-            if ((index != _currentStateChange+1) && (checkpointIndex != targetCheckpointIndex || index < _currentStateChange))
+            if ((index != _currentStateChange + 1) && (checkpointIndex != targetCheckpointIndex || index < _currentStateChange))
             {
                 // Wait until checkpoint calculated
                 while (_checkpoints[targetCheckpointIndex] == null)
@@ -469,9 +528,12 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             RaiseChanged(propertiesChanged.ToList());
         }
 
+        /// <summary>
+        /// Changes the solution depiction.
+        /// </summary>
         public override void ChangeSolutionDepiction()
         {
-            foreach(var checkpoint in  _checkpoints)
+            foreach (var checkpoint in _checkpoints)
             {
                 checkpoint.Item2.NextIteration.ToList().ForEach(d => d.IsBarCode = GlobalManager.Instance.IsBarCodeDepiction);
                 checkpoint.Item2.Solutions.ToList().ForEach(d =>

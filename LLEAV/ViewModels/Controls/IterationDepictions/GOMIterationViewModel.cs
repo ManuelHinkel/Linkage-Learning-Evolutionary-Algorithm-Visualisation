@@ -1,19 +1,18 @@
 ﻿using Avalonia.Threading;
 using LLEAV.Models;
-using LLEAV.Models.Algorithms;
 using LLEAV.Models.Algorithms.GOM.StateChange;
-using LLEAV.Models.Algorithms.MIP.StateChange;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
 namespace LLEAV.ViewModels.Controls.IterationDepictions
 {
+    /// <summary>
+    /// ViewModel for managing the depiction of iterations in a GOMEA visualization.
+    /// </summary>
     public class GOMIterationViewModel : IterationDepictionViewModelBase
     {
         private static readonly IList<string> VISUALISATION_PROPERTIES = [
@@ -26,7 +25,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
         protected override IList<string> animationProperties { get; } = [
            "IsMerging",
-           "IsApplyingCrossover",
+            "IsApplyingCrossover",
         ];
 
 
@@ -38,12 +37,24 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
         private bool _stopAddSolution;
         private bool _addSolutionRunning;
+
+        /// <summary>
+        /// Gets the list of solutions in teh current iteration.
+        /// </summary>
         public ObservableCollection<SolutionWrapper> Solutions { get; } = [];
+
 
         private bool _stopAddNextIteration;
         private bool _addNextIterationRunning;
+
+        /// <summary>
+        /// Gets the list of solutions in the next iteration.
+        /// </summary>
         public ObservableCollection<SolutionWrapper> NextIteration { get; private set; } = [];
 
+        /// <summary>
+        /// Gets the wrapper for the solution.
+        /// </summary>
         public SolutionWrapper? CurrentSolution
         {
             get
@@ -69,6 +80,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
+        /// <summary>
+        /// Gets the wrapper for the donor.
+        /// </summary>
         public SolutionWrapper? CurrentDonor
         {
             get
@@ -93,6 +107,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
+        /// <summary>
+        /// Gets the wrapper for the merged solution.
+        /// </summary>
         public SolutionWrapper? Merged
         {
             get
@@ -121,6 +138,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
+        /// <summary>
+        /// Gets the wrapper for the animated solution.
+        /// </summary>
         public SolutionWrapper? CurrentSolutionAnimated
         {
             get
@@ -147,6 +167,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             }
         }
 
+        /// <summary>
+        /// Gets the wrapper for the animated donor.
+        /// </summary>
         public SolutionWrapper? CurrentDonorAnimated
         {
             get
@@ -171,12 +194,17 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 return null;
             }
         }
-
+        /// <summary>
+        /// Gets a value indicating whether the merging animation is currently played.
+        /// </summary>
         public bool IsMerging
         {
             get { return _visualisationData.IsMerging; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the applying crossover animation is currently played.
+        /// </summary>
         public bool IsApplyingCrossover
         {
             get { return _visualisationData.IsApplyingCrossover; }
@@ -189,7 +217,12 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             get => IsMergingRunning || _isApplyingCrossoverRunning;
         }
 
-        public GOMIterationViewModel(List<IGOMStateChange> stateChanges, IterationData workingData): base()
+        /// <summary>
+        /// Creates an instance of the GOM iteration view model
+        /// </summary>
+        /// <param name="stateChanges">The state changes to be visualised</param>
+        /// <param name="workingData">The data to visualise on</param>
+        public GOMIterationViewModel(List<IGOMStateChange> stateChanges, IterationData workingData) : base()
         {
             _stateChanges = stateChanges;
             WorkingData = workingData.Clone();
@@ -198,7 +231,8 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             _checkpoints = new Tuple<IterationData, GOMVisualisationData, IList<Message>>[MaxStateChange / CHECKPOINT_SPACING + 1];
 
 
-            Thread calculationThread = new Thread(new ThreadStart(() => {
+            Thread calculationThread = new Thread(new ThreadStart(() =>
+            {
                 CalculateCheckpoints(workingData.Clone());
             }));
             calculationThread.Start();
@@ -244,10 +278,12 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 // Start Merging Animation
                 if (property.Equals(nameof(IsMerging)) && _visualisationData.IsMerging)
                 {
-                    IsMergingRunning = true;                  
-                    Thread t = new Thread(new ThreadStart(() => {
+                    IsMergingRunning = true;
+                    Thread t = new Thread(new ThreadStart(() =>
+                    {
                         Thread.Sleep(GlobalManager.ANIMATION_TIME);
-                        Dispatcher.UIThread.Invoke(() => {
+                        Dispatcher.UIThread.Invoke(() =>
+                        {
                             _visualisationData.IsMerging = false;
                             this.RaisePropertyChanged(nameof(IsMerging));
 
@@ -260,9 +296,11 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 else if (property.Equals(nameof(IsApplyingCrossover)) && _visualisationData.IsApplyingCrossover)
                 {
                     _isApplyingCrossoverRunning = true;
-                    Thread t = new Thread(new ThreadStart(() => {
+                    Thread t = new Thread(new ThreadStart(() =>
+                    {
                         Thread.Sleep(GlobalManager.ANIMATION_TIME);
-                        Dispatcher.UIThread.Invoke(() => {
+                        Dispatcher.UIThread.Invoke(() =>
+                        {
                             _visualisationData.IsApplyingCrossover = false;
                             this.RaisePropertyChanged(nameof(IsApplyingCrossover));
 
@@ -282,10 +320,11 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
                     Solutions.Clear();
 
-                    Thread t = new Thread(new ThreadStart(() => {
+                    Thread t = new Thread(new ThreadStart(() =>
+                    {
                         LoadWrappersAsync(Solutions,
                             // Clone for use in another thread
-                            new List<SolutionWrapper>(_visualisationData.Solutions), 
+                            new List<SolutionWrapper>(_visualisationData.Solutions),
                             ref _addSolutionRunning, ref _stopAddSolution);
                     }));
                     _addSolutionRunning = true;
@@ -302,10 +341,11 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
                     NextIteration.Clear();
 
-                    Thread t = new Thread(new ThreadStart(() => {
-                        LoadWrappersAsync(NextIteration, 
+                    Thread t = new Thread(new ThreadStart(() =>
+                    {
+                        LoadWrappersAsync(NextIteration,
                             // Clone for use in another thread
-                            new List<SolutionWrapper>(_visualisationData.NextIteration), 
+                            new List<SolutionWrapper>(_visualisationData.NextIteration),
                             ref _addNextIterationRunning, ref _stopAddNextIteration);
                     }));
                     t.Start();
@@ -314,7 +354,8 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                 else if (property.Equals(nameof(CurrentDonor)) || property.Equals(nameof(CurrentSolution)))
                 {
                     this.RaisePropertyChanged(property + "Animated");
-                } else if (property.Equals("NextIterationAdded"))
+                }
+                else if (property.Equals("NextIterationAdded"))
                 {
                     NextIteration.Add(_visualisationData.NextIteration.Last());
                 }
@@ -327,7 +368,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
         private void VisualizeCheckpoint(Tuple<IterationData, GOMVisualisationData, IList<Message>> checkPoint)
         {
             MessageBox.Clear();
-            foreach(Message m in checkPoint.Item3) 
+            foreach (Message m in checkPoint.Item3)
             {
                 MessageBox.Insert(0, m);
             }
@@ -373,6 +414,9 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             RaiseChanged(propertiesChanged.ToList());
         }
 
+        /// <summary>
+        /// Changes the solution depiction.
+        /// </summary>
         public override void ChangeSolutionDepiction()
         {
             foreach (var checkpoint in _checkpoints)

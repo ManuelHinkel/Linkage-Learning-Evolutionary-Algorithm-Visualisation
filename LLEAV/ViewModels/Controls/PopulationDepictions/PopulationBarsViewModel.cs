@@ -13,14 +13,32 @@ using System.Diagnostics;
 
 namespace LLEAV.ViewModels.Controls.PopulationDepictions
 {
+    /// <summary>
+    /// Represents the bar depiction of a population
+    /// </summary>
     public class PopulationBar: PopulationContainerViewModelBase
     {
         private const double EPSILON = 0.0001;
 
+        /// <summary>
+        /// Gets or sets the X-axis configuration for the graph.
+        /// </summary>
         public Axis[] XAxis { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Y-axis configuration for the graph.
+        /// </summary>
         public Axis[] YAxis { get; set; }
+
+        /// <summary>
+        /// Gets or sets the lines representing data to display on the graph.
+        /// </summary>
         public ISeries[] Series { get; set; }
 
+        /// <summary>
+        /// Constructs a new instance of PopulationBar.
+        /// </summary>
+        /// <param name="population">The population assigned to the container.</param>
         public PopulationBar(Population population) : base(population)
         {
             var bars = CalculateBars(population);
@@ -97,9 +115,21 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
             return buckets;
         }
     }
+
+    /// <summary>
+    /// ViewModel for managing multiple population bars based on provided run data.
+    /// </summary>
     public class PopulationBarsViewModel : PopulationDepictionViewModelBase
     {
+        /// <summary>
+        /// the number of buckets the population is split into.
+        /// </summary>
         public const int BAR_COUNT = 10;
+
+        /// <summary>
+        /// Updates the ViewModel with data from a new iteration.
+        /// </summary>
+        /// <param name="iteration">Iteration data to visualize.</param>
         public override void Update(IterationData iteration)
         {
             Containers.Clear();

@@ -25,11 +25,17 @@ namespace LLEAV.ViewModels.Windows
 
         private static int _id;
 
+        /// <summary>
+        /// Gets the animation modus of the application.
+        /// </summary>
         public AnimationModus AnimationModus
         {
-            get => GlobalManager.Instance.AnimationModus; 
+            get => GlobalManager.Instance.AnimationModus;
         }
 
+        /// <summary>
+        /// Gets the tree depiction of the FOS.
+        /// </summary>
         [Reactive]
         public Tree? Tree { get; private set; } = new Tree([], [], null);
 
@@ -37,6 +43,9 @@ namespace LLEAV.ViewModels.Windows
 
         private Population? _currentlyShownPopulation;
 
+        /// <summary>
+        /// The list of solutions in the depicted population.
+        /// </summary>
         public ObservableCollection<SolutionWrapper> Solutions { get; private set; }
             = new ObservableCollection<SolutionWrapper> { };
 
@@ -45,6 +54,10 @@ namespace LLEAV.ViewModels.Windows
         private bool _stopLoading;
         private bool _threadRunning;
 
+        /// <summary>
+        /// Sets the population shown.
+        /// </summary>
+        /// <param name="population">The population to be shown.</param>
         public void SetPopulation(Population population)
         {
             if (_currentlyShownPopulation == population) return;
@@ -54,7 +67,8 @@ namespace LLEAV.ViewModels.Windows
             //Wait for loading Thread to stop
             while (_threadRunning) Thread.Sleep(10);
 
-            Thread t = new Thread(new ThreadStart(() => {
+            Thread t = new Thread(new ThreadStart(() =>
+            {
                 LoadSolutions(population);
             }));
             t.Start();
@@ -62,14 +76,14 @@ namespace LLEAV.ViewModels.Windows
 
             TreeLayouter layouter = new TreeLayouter();
 
-            if (_currentlyShownPopulation != null && _currentlyShownPopulation.Equals(population.Previous)) 
+            if (_currentlyShownPopulation != null && _currentlyShownPopulation.Equals(population.Previous))
             {
                 Tree = layouter.UpdateTree(population.FOS, Tree!);
 
                 // Reset _reserved colors and reserve, when already marked in tree
                 _reservedColors = new bool[_colors.Length];
 
-                foreach(Node n in Tree!.Nodes)
+                foreach (Node n in Tree!.Nodes)
                 {
                     for (int i = 0; i < _colors.Length; i++)
                     {
@@ -81,7 +95,8 @@ namespace LLEAV.ViewModels.Windows
                     }
                 }
 
-            } else
+            }
+            else
             {
                 // Reset _reserved colors when a new tree is created.
                 _reservedColors = new bool[_colors.Length];
@@ -94,7 +109,8 @@ namespace LLEAV.ViewModels.Windows
         {
             _threadRunning = true;
             _wrappers = population.Solutions.Select(s => new SolutionWrapper(s, GlobalManager.DEFAULT_WHITE, GlobalManager.GRAY)).ToList();
-            Dispatcher.UIThread.InvokeAsync(() => {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
                 Solutions.Clear();
             });
 
@@ -106,7 +122,8 @@ namespace LLEAV.ViewModels.Windows
                     _threadRunning = false;
                     return;
                 }
-                Dispatcher.UIThread.InvokeAsync(() => {
+                Dispatcher.UIThread.InvokeAsync(() =>
+                {
                     Solutions.Add(w);
                 });
                 Thread.Sleep(50);
@@ -115,6 +132,10 @@ namespace LLEAV.ViewModels.Windows
             _stopLoading = false;
         }
 
+        /// <summary>
+        /// Toggles the marked status of a cluster in the tree.
+        /// </summary>
+        /// <param name="node">The node of which the marked status should be toggled.</param>
         public void ToggleCluster(Node node)
         {
             if (node.Cluster == null) return;
@@ -159,7 +180,7 @@ namespace LLEAV.ViewModels.Windows
         {
             if (Tree == null) return;
 
-            foreach(SolutionWrapper wrapper in _wrappers)
+            foreach (SolutionWrapper wrapper in _wrappers)
             {
                 wrapper.ClearColoring();
             }
@@ -189,7 +210,7 @@ namespace LLEAV.ViewModels.Windows
                 }
             }
         }
- 
+
         private int GetReservedColor()
         {
             for (int i = 0; i < _reservedColors.Length; i++)
@@ -212,13 +233,17 @@ namespace LLEAV.ViewModels.Windows
             return HSVConverter.FromHSV(hue, 0.8, 1);
         }
 
+        /// <summary>
+        /// Marks the bits of a given cluster in all solutions.
+        /// </summary>
+        /// <param name="cluster">The cluster to be marked.</param>
         public void MarkCluster(Cluster cluster)
         {
             Node toMark = null;
-            foreach(Node n in Tree!.Nodes)
+            foreach (Node n in Tree!.Nodes)
             {
                 if (n.Cluster == null) continue;
-                
+
                 SetMarkedStatus(n, false);
 
                 if (cluster.Equals(n.Cluster))
@@ -226,18 +251,21 @@ namespace LLEAV.ViewModels.Windows
                     toMark = n;
                 }
             }
-            if (toMark != null) 
-            { 
+            if (toMark != null)
+            {
                 SetMarkedStatus(toMark, true);
             }
             ColorSolutions();
         }
 
+        /// <summary>
+        /// Changes the solution depiction.
+        /// </summary>
         public void ChangeSolutionDepiction()
         {
             if (_currentlyShownPopulation == null) return;
 
-            foreach(Node node in Tree!.Nodes)
+            foreach (Node node in Tree!.Nodes)
             {
                 SetMarkedStatus(node, false);
             }

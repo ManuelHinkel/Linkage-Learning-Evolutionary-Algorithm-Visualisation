@@ -1,24 +1,26 @@
 ﻿using DynamicData;
 using LLEAV.Models.Algorithms.MIP;
 using LLEAV.Util;
-using LLEAV.ViewModels;
-using LLEAV.ViewModels.Windows;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 using NAWVM = LLEAV.ViewModels.Windows.NewAlgorithmWindowViewModel;
 
 namespace LLEAV.Models.Persistence
 {
+    /// <summary>
+    /// Utility class for saving simulation data.
+    /// </summary>
     public class Saver
     {
-        public static void SaveData(RunData data, string path) 
+        /// <summary>
+        /// Saves rundata to a specified location.
+        /// </summary>
+        /// <param name="data">The rundata to save.</param>
+        /// <param name="path">The location to write the file to.</param>
+        public static void SaveData(RunData data, string path)
         {
             bool appending = data.Algorithm is P3 || data.Algorithm is MIP;
 
@@ -35,7 +37,8 @@ namespace LLEAV.Models.Persistence
                 if (i == 0 || !appending)
                 {
                     iterationByteRepresentations.Add(IterationToByteArray(data.Iterations[i], data.NumberOfBits));
-                } else
+                }
+                else
                 {
                     iterationByteRepresentations.Add(IterationToByteArray(data.Iterations[i], data.Iterations[i - 1], data.NumberOfBits));
                 }
@@ -76,13 +79,13 @@ namespace LLEAV.Models.Persistence
             ByteUtil.WriteIntToBuffer(NAWVM.Algorithms.IndexOf(data.Algorithm.GetType()), bytes, index);
             index += 4;
 
-            ByteUtil.WriteIntToBuffer(data.LocalSearchFunction != null 
-                ? NAWVM.LocalSearchFunctions.IndexOf(data.LocalSearchFunction.GetType()) 
+            ByteUtil.WriteIntToBuffer(data.LocalSearchFunction != null
+                ? NAWVM.LocalSearchFunctions.IndexOf(data.LocalSearchFunction.GetType())
                 : -1, bytes, index);
             index += 4;
 
-            ByteUtil.WriteIntToBuffer(data.GrowthFunction != null 
-                ? NAWVM.GrowthFunctions.IndexOf(data.GrowthFunction.GetType()) 
+            ByteUtil.WriteIntToBuffer(data.GrowthFunction != null
+                ? NAWVM.GrowthFunctions.IndexOf(data.GrowthFunction.GetType())
                 : -1, bytes, index);
             index += 4;
 
@@ -125,7 +128,7 @@ namespace LLEAV.Models.Persistence
             return SolutionsToByteArray(bytesForSolution, solutionsToConvert, populationIndices, iteration.RNGSeed);
         }
 
- 
+
         private static byte[] IterationToByteArray(IterationData iteration, IterationData previous, int numberOfBitsInSolution)
         {
             int bytesForSolution = (int)Math.Ceiling(numberOfBitsInSolution / 8f);
@@ -133,19 +136,20 @@ namespace LLEAV.Models.Persistence
             List<Solution> solutionsToConvert = new List<Solution>();
             List<int> populationIndices = new List<int>();
 
-            for(int i = 0; i < iteration.Populations.Count; i++)
+            for (int i = 0; i < iteration.Populations.Count; i++)
             {
                 if (i >= previous.Populations.Count)
                 {
-                    foreach(Solution s in iteration.Populations[i])
+                    foreach (Solution s in iteration.Populations[i])
                     {
                         solutionsToConvert.Add(s);
                         populationIndices.Add(i);
                     }
 
-                } else
+                }
+                else
                 {
-                    for(int j = 0; j < iteration.Populations[i].Solutions.Count; j++)
+                    for (int j = 0; j < iteration.Populations[i].Solutions.Count; j++)
                     {
                         if (j >= previous.Populations[i].Solutions.Count)
                         {

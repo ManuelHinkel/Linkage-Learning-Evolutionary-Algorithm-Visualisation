@@ -1,25 +1,36 @@
 ﻿using LiveChartsCore;
-using LiveChartsCore.SkiaSharpView.Painting;
+using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LLEAV.Models;
-using SkiaSharp;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LiveChartsCore.Defaults;
-using ReactiveUI;
-using System.Diagnostics;
 
 namespace LLEAV.ViewModels.Controls.PopulationDepictions
 {
+    /// <summary>
+    /// Represents the box plot depiction of a population
+    /// </summary>
     public class PopulationBoxPlot : PopulationContainerViewModelBase
     {
+        /// <summary>
+        /// Gets or sets the X-axis configuration for the graph.
+        /// </summary>
         public Axis[] XAxis { get; set; }
+
+        /// <summary>
+        /// Gets or sets the lines representing data to display on the graph.
+        /// </summary>
         public ISeries[] Series { get; set; }
 
-        public PopulationBoxPlot(IList<Population> populations, int iteration, int windowSize) : base(populations.Count > 0 ? populations.Last(): null)
+        /// <summary>
+        /// Constructs a new instance of PopulationBoxPlot.
+        /// </summary>
+        /// <param name="populations">List of populations to visualize.</param>
+        /// <param name="iteration">Current iteration index.</param>
+        /// <param name="windowSize">Size of the sliding window of iterations to display.</param>
+        public PopulationBoxPlot(IList<Population> populations, int iteration, int windowSize) : base(populations.Count > 0 ? populations.Last() : null)
         {
             Series = new ISeries[]
             {
@@ -54,13 +65,19 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
             // Solutions are ordered in descending order, therefore third quartil is in the first half
             double thirdQuartil = orderedDesc[orderedDesc.Count / 4].Fitness;
 
-            return new BoxValue(population.MaximumFitness, thirdQuartil , firstQuartil, population.MinimumFitness, population.MedianFitness);
+            return new BoxValue(population.MaximumFitness, thirdQuartil, firstQuartil, population.MinimumFitness, population.MedianFitness);
         }
     }
 
+    /// <summary>
+    /// ViewModel for managing multiple population box plots based on provided run data.
+    /// </summary>
     public class PopulationBoxPlotViewModel : PopulationDepictionViewModelBase
     {
         private int _windowSize = 10;
+        /// <summary>
+        /// Gets or sets the window size of iterations to display on each graph.
+        /// </summary>
         public int WindowSize
         {
             get => _windowSize;
@@ -77,10 +94,20 @@ namespace LLEAV.ViewModels.Controls.PopulationDepictions
         private IterationData? _shownIteration;
 
         private RunData _runData;
+
+        /// <summary>
+        /// Constructs an instance of PopulationBoxPlotViewModel with the given run data.
+        /// </summary>
+        /// <param name="runData">Run data containing populations to visualize.</param>
         public PopulationBoxPlotViewModel(RunData runData)
         {
             _runData = runData;
         }
+
+        /// <summary>
+        /// Updates the ViewModel with data from a new iteration.
+        /// </summary>
+        /// <param name="iteration">Iteration data to visualize.</param>
         public override void Update(IterationData iteration)
         {
             _shownIteration = iteration;

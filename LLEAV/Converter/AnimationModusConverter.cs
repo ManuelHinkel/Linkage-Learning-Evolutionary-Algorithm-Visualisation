@@ -1,13 +1,12 @@
 ﻿using LLEAV.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LLEAV.Converter
 {
-    public class AnimationModusConverter: EnumOrSmallerEqualsStringConverter<AnimationModus>
+    /// <summary>
+    /// Takes an animation modus enum and checks, if it its index is smaller or equal to another
+    /// enum given by a string.
+    /// </summary>
+    public class AnimationModusConverter : EnumOrSmallerEqualsStringConverter<AnimationModus>
     {
     }
 }

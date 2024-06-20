@@ -1,12 +1,19 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LLEAV.Util
 {
+    /// <summary>
+    /// Utility class which handles converting from hsv to rgb.
+    /// </summary>
     public class HSVConverter
     {
+        /// <summary>
+        /// Converts hsv values to an rgb string.
+        /// </summary>
+        /// <param name="hue">The hue of the color.</param>
+        /// <param name="saturation">The saturation of the color.</param>
+        /// <param name="value">Tha value of the color.</param>
+        /// <returns>The color as an rgb string.</returns>
         public static string FromHSV(double hue, double saturation, double value)
         {
             int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;

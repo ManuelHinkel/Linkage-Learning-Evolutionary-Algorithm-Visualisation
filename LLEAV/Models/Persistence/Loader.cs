@@ -5,26 +5,30 @@ using LLEAV.Models.GrowthFunction;
 using LLEAV.Models.LocalSearchFunction;
 using LLEAV.Models.TerminationCriteria;
 using LLEAV.Util;
-using LLEAV.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using NAWVM = LLEAV.ViewModels.Windows.NewAlgorithmWindowViewModel;
 
 namespace LLEAV.Models.Persistence
 {
+    /// <summary>
+    /// Utility class for loading simulation data.
+    /// </summary>
     public class Loader
     {
-        public static RunData LoadData(string path) 
+        /// <summary>
+        /// Reads rundata from a specified location.
+        /// </summary>
+        /// <param name="path">The location of the file containing run data.</param>
+        /// <returns>The rundata parsed from the file.</returns>
+        public static RunData LoadData(string path)
         {
             RunData data = Convert(File.ReadAllBytes(path));
             data.FilePath = path;
-            return data; 
+            return data;
         }
 
         private static RunData Convert(byte[] bytes)

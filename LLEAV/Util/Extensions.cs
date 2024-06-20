@@ -1,12 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace LLEAV.Util
 {
-
+    /// <summary>
+    /// Utility class which handles extensions needed.
+    /// </summary>
     static class Extensions
     {
+        /// <summary>
+        /// Shuffles a list randomly with a given random number generator.
+        /// </summary>
+        /// <typeparam name="T">The type of objects in the list.</typeparam>
+        /// <param name="list">The list to be shuffled.</param>
+        /// <param name="random">The random number generator used to shuffle the list.</param>
         public static void Shuffle<T>(this IList<T> list, Random random)
         {
             int n = list.Count;
