@@ -111,11 +111,6 @@ namespace LLEAVTest.Unit
             LinkageTreeFOS linkageTree = new LinkageTreeFOS();
             FOS f1 = linkageTree.CalculateFOS(p, 6);
 
-            foreach(Cluster c in f1)
-            {
-                _out.WriteLine(c.ToString());
-            }
-
             Assert.True(f1.Contains(new Cluster([0], 6)));
             Assert.True(f1.Contains(new Cluster([1], 6)));
             Assert.True(f1.Contains(new Cluster([2], 6)));

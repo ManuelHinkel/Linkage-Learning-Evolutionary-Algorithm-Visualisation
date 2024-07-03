@@ -151,7 +151,7 @@ namespace LLEAV.Util
                 double p = P(population, cluster, possibleString);
                 if (p != 0)
                 {
-                    h += p * Math.Log10(p);
+                    h += p * Math.Log(p);
                 }
             }
 
