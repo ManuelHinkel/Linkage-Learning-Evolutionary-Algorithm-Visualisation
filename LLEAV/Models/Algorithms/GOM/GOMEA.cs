@@ -77,11 +77,15 @@ namespace LLEAV.Models.Algorithms.GOM
 
                 _tracker.Merge(temp);
 
-                temp.Fitness = fitnessFunction.Fitness(temp);
-                if (temp.Fitness > o.Fitness)
+                if (!(temp.Bits & c.Mask).Equals(o.Bits & c.Mask))
                 {
-                    o = temp;
-                    _tracker.ApplyCrossover(temp);
+                    temp.Fitness = fitnessFunction.Fitness(temp);
+                    _tracker.IncreaseFitnessEvaluations([temp]);
+                    if (temp.Fitness > o.Fitness)
+                    {
+                        o = temp;
+                        _tracker.ApplyCrossover(temp);
+                    }
                 }
             }
 

@@ -146,10 +146,36 @@ namespace LLEAVTest.Unit
             MarginalProductFOS marginalProduct = new MarginalProductFOS();
             FOS f1 = marginalProduct.CalculateFOS(p, 6);
 
-            foreach (Cluster c in f1)
+            Assert.True(f1.Contains(new Cluster([0,1], 6)));
+            Assert.True(f1.Contains(new Cluster([2,3], 6)));
+            Assert.True(f1.Contains(new Cluster([4], 6)));
+            Assert.True(f1.Contains(new Cluster([5], 6)));
+        }
+
+        [Fact]
+        public void TestMPVariant()
+        {
+            BitList b1 = new BitList(6);
+            BitList b2 = new BitList(6);
+
+            b2.Set(0);
+            b2.Set(1);
+            b2.Set(2);
+            b2.Set(3);
+
+            Solution s1 = new Solution() { Bits = b1 };
+            Solution s2 = new Solution() { Bits = b2 };
+
+            Population p = new Population(0)
             {
-                _out.WriteLine(c.ToString());
-            }
+                s1, s2,
+            };
+
+            MPVariantFOS mpvariant = new MPVariantFOS();
+            FOS f1 = mpvariant.CalculateFOS(p, 6);
+
+            Assert.True(f1.Contains(new Cluster([0, 1,2,3], 6)));
+            Assert.True(f1.Contains(new Cluster([4,5], 6)));
         }
     }
 }

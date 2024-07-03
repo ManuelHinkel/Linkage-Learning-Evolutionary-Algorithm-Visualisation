@@ -87,6 +87,7 @@ namespace LLEAV.Models.Algorithms.ROM
                 if (!(o0.Bits & c.Mask).Equals(o1.Bits & c.Mask))
                 {
                     o0.Fitness = fitnessFunction.Fitness(o0);
+                    _tracker.IncreaseFitnessEvaluations([o0]);
 
                     if (o0.Fitness > p0.Fitness)
                     {

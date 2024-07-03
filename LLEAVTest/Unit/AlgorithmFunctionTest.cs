@@ -3,6 +3,7 @@ using LLEAV.Models.FOSFunction;
 using LLEAV.Util;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -121,7 +122,7 @@ namespace LLEAVTest.Unit
 
             output.Add(c1);
 
-            double mdlBefore = MDL2(p, output, 8);
+            double mdlBefore = MDL(p, output, 8);
 
             _out.WriteLine(mdlBefore.ToString());
 
@@ -129,7 +130,7 @@ namespace LLEAVTest.Unit
             output.RemoveAt(0);
             output.Add(c1.Union(c2));
 
-            double mdlMerge3 = MDL2(p, output, 8);
+            double mdlMerge3 = MDL(p, output, 8);
 
             _out.WriteLine(mdlMerge3.ToString());
 
@@ -138,7 +139,7 @@ namespace LLEAVTest.Unit
             output.Add(c1);
             output.Add(c2.Union(c3));
 
-            double mdlMerge2 = MDL2(p, output, 8);
+            double mdlMerge2 = MDL(p, output, 8);
             _out.WriteLine(mdlMerge2.ToString());
 
             Assert.Equal(mdlBefore - mdlMerge3, AlgorithmFunctions.MDLDecrease(p, c1, c2, 8), 0.001);
@@ -146,19 +147,7 @@ namespace LLEAVTest.Unit
 
         }
 
-        private double MDL1(Population p, IList<Cluster> clusters, int numberOFBits)
-        {
-            double firstSum = 0;
-            double secondSum = 0;
-
-            foreach(Cluster c in clusters)
-            {
-                firstSum += AlgorithmFunctions.H(p, c);
-                secondSum += (1 << c.Count());
-            }
-            return numberOFBits * firstSum + secondSum - 1;
-        }
-        private double MDL2(Population p, IList<Cluster> clusters, int numberOFBits)
+        private double MDL(Population p, IList<Cluster> clusters, int numberOFBits)
         {
             double firstSum = 0;
             double secondSum = 0;

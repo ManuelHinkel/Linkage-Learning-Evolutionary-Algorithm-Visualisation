@@ -17,7 +17,7 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
 
         public Tuple<IList<string>, Message> Apply(IterationData state, MIPVisualisationData visualisationData, bool onlyOperateOnData = false)
         {
-
+             
             visualisationData.Solutions = _generated.Select(
                     s => new Tuple<SolutionWrapper, SolutionWrapper>(new SolutionWrapper(s.Item1), new SolutionWrapper(s.Item2))
                 ).ToList();

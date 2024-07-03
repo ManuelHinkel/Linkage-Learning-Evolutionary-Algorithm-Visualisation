@@ -23,6 +23,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             "CurrentDonor2",
             "Solutions",
             "NextIteration",
+            "Evaluations",
         ];
 
         protected override IList<string> animationProperties { get; } = [
@@ -303,6 +304,14 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
         public bool IsFitnessDecreasing
         {
             get { return _visualisationData.IsFitnessDecreasing; }
+        }
+
+        /// <summary>
+        /// Gets the number of fitness evaluations.
+        /// </summary>
+        public int Evaluations
+        {
+            get { return _visualisationData.FitnessEvaluations; }
         }
 
         private bool _isApplyingFitnessIncreaseRunning { get; set; }

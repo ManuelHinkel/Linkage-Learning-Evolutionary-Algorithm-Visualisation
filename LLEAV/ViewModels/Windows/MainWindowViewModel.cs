@@ -15,6 +15,8 @@ namespace LLEAV.ViewModels.Windows
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        private static readonly int[] TICK_STEPS = [1000, 500, 250, 100, 50];
+
         private int _iteration;
         /// <summary>
         /// Gets or sets the current iteration.
@@ -198,7 +200,7 @@ namespace LLEAV.ViewModels.Windows
         /// </summary>
         public MainWindowViewModel()
         {
-            Thread playThread = new Thread(new ThreadStart(async () =>
+            Thread playThread = new Thread(new ThreadStart(() =>
             {
                 while (!_stopThread)
                 {
@@ -207,11 +209,11 @@ namespace LLEAV.ViewModels.Windows
                         || !GlobalManager.Instance.IsAnimatingFOS))
                     {
                         long start = Stopwatch.GetTimestamp();
-                        await Dispatcher.UIThread.InvokeAsync(StepForward);
+                        Dispatcher.UIThread.Invoke(StepForward);
                         long delay = Stopwatch.GetTimestamp() - start;
 
                         // Ensure that mouseclick is registered, when calculation takes long
-                        Thread.Sleep((int)(delay / TimeSpan.TicksPerMillisecond));
+                        Thread.Sleep(Math.Min((int)(delay / TimeSpan.TicksPerMillisecond), 2000));
                     }
                     RaiseButtonsChanged();
                     Thread.Sleep(100);
@@ -344,21 +346,9 @@ namespace LLEAV.ViewModels.Windows
 
         private void CalculateTickSpacing()
         {
-            if (MaxIteration > 500)
+            foreach (var t in TICK_STEPS)
             {
-                TickSpacing = 50;
-            }
-            else if (MaxIteration > 250)
-            {
-                TickSpacing = 20;
-            }
-            else if (MaxIteration > 100)
-            {
-                TickSpacing = 10;
-            }
-            else if (MaxIteration > 50)
-            {
-                TickSpacing = 5;
+                if (MaxIteration > t) { TickSpacing = t / 10; break; }
             }
         }
 

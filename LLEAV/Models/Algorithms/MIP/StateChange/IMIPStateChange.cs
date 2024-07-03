@@ -23,6 +23,7 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
         public bool IsMerging { get; set; }
         public bool IsApplyingCrossover { get; set; }
 
+        public int FitnessEvaluations { get; set; }
         public IVisualisationData Clone()
         {
             MIPVisualisationData clone = new MIPVisualisationData();
@@ -38,6 +39,7 @@ namespace LLEAV.Models.Algorithms.MIP.StateChange
             clone.Merged = Merged;
             clone.CurrentDonor = CurrentDonor;
             clone.CurrentSolution = CurrentSolution;
+            clone.FitnessEvaluations = FitnessEvaluations;
 
             return clone;
         }

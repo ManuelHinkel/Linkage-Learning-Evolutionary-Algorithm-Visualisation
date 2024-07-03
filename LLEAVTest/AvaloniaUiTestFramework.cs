@@ -1,22 +1,25 @@
-﻿using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Threading;
-using Avalonia;
-using LLEAV.Views.Windows;
-using LLEAV;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit.Abstractions;
-using Xunit.Sdk;
+﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
-using System.Diagnostics;
-using LLEAVTest;
+using Avalonia.Threading;
+using LLEAV;
+using LLEAV.Models;
+using LLEAV.Models.Algorithms;
+using LLEAV.Models.Algorithms.GOM;
+using LLEAV.Models.Algorithms.GOM.StateChange;
+using LLEAV.Models.Algorithms.MIP;
+using LLEAV.Models.Algorithms.MIP.StateChange;
+using LLEAV.Models.Algorithms.ROM;
+using LLEAV.Models.Algorithms.ROM.StateChange;
+using LLEAV.Models.FitnessFunction;
+using LLEAV.Models.FOSFunction;
+using LLEAV.Models.GrowthFunction;
+using LLEAV.Models.LocalSearchFunction;
+using LLEAV.Models.TerminationCriteria;
 using LLEAVTest.Windows;
-using LLEAV.ViewModels;
-using Newtonsoft.Json.Linq;
+using ReactiveUI;
+using System.Collections;
+using Xunit.Abstractions;
 
 
 namespace LLEAVTest;
@@ -51,7 +54,8 @@ public class TestClass
     protected IList<Action> tests;
     protected readonly ITestOutputHelper output;
 
-    public TestClass(ITestOutputHelper testOutputHelper) {
+    public TestClass(ITestOutputHelper testOutputHelper)
+    {
         output = testOutputHelper;
     }
 
@@ -77,9 +81,9 @@ public class TestUI
 
         testClasses = [
                 new MainWindowTest(_out),
-                new PopulationWindowTest(_out),
-                new IterationDetailsWindowTest(_out),
-            ];
+            new PopulationWindowTest(_out),
+            new IterationDetailsWindowTest(_out),
+        ];
     }
     [Fact]
     public void Test()
@@ -99,7 +103,8 @@ public class TestUI
 
     private void TestExecution()
     {
-        Thread t = new Thread(new ThreadStart(() => {
+        Thread t = new Thread(new ThreadStart(() =>
+        {
             Thread.Sleep(1000);
             foreach (TestClass t in testClasses)
             {
@@ -121,7 +126,8 @@ public class Expect
         try
         {
             Assert.Fail(message);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             TestUI.Exceptions.Add(e);
         }

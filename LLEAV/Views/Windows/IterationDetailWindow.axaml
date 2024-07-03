@@ -9,7 +9,7 @@
 		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="LLEAV.Views.Windows.IterationDetailWindow"
 		x:DataType="vm:IterationDetailWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/link.png"
         Title="IterationDetailWindow"
 		Classes="bigWindow"
 		MinWidth="1200"

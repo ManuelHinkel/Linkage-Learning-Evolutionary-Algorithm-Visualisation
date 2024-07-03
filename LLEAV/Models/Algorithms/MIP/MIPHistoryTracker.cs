@@ -71,5 +71,10 @@ namespace LLEAV.Models.Algorithms.MIP
         {
             StateChangeHistory.Add(new TerminationChange(terminate));
         }
+
+        public void IncreaseFitnessEvaluations(Solution[] solutions)
+        {
+            StateChangeHistory.Add(new EvaluationChange(solutions));
+        }
     }
 }

@@ -22,7 +22,7 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
 
         public IList<SolutionWrapper> Solutions { get; set; }
         public ObservableCollection<SolutionWrapper> NextIteration { get; set; } = new ObservableCollection<SolutionWrapper>();
-
+        public int FitnessEvaluations { get; set; }
         public IVisualisationData Clone()
         {
             ROMVisualisationData clone = new ROMVisualisationData();
@@ -37,6 +37,7 @@ namespace LLEAV.Models.Algorithms.ROM.StateChange
             clone.CurrentSolution2 = CurrentSolution2;
             clone.CurrentDonor1 = CurrentDonor1;
             clone.CurrentDonor2 = CurrentDonor2;
+            clone.FitnessEvaluations = FitnessEvaluations;
 
             return clone;
         }

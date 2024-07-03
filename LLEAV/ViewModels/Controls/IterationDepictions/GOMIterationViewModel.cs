@@ -21,6 +21,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             "Merged",
             "Solutions",
             "NextIteration",
+            "Evaluations",
         ];
 
         protected override IList<string> animationProperties { get; } = [
@@ -208,6 +209,15 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
         public bool IsApplyingCrossover
         {
             get { return _visualisationData.IsApplyingCrossover; }
+        }
+
+
+        /// <summary>
+        /// Gets the number of fitness evaluations.
+        /// </summary>
+        public int Evaluations
+        {
+            get { return _visualisationData.FitnessEvaluations; }
         }
 
         private bool _isApplyingCrossoverRunning { get; set; }

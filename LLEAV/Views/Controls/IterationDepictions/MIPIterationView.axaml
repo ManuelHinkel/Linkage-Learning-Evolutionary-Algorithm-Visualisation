@@ -21,6 +21,14 @@
 				   Text="Generated Solutions:"
 				   HorizontalAlignment="Center"/>
 
+		<StackPanel Grid.Column="1"
+					Grid.Row="0"
+					HorizontalAlignment="Center"
+					Orientation="Horizontal">
+			<TextBlock Text="Fitness Evaluations:"/>
+			<TextBlock Text="{Binding Evaluations}"/>
+		</StackPanel>
+		
 		<TextBlock Grid.Column="2"
 				   Grid.Row="0"
 				   Margin="5"

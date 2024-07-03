@@ -23,6 +23,7 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             "Merged",
             "Solutions",
             "Donors",
+            "Evaluations",
         ];
 
         protected override IList<string> animationProperties { get; } = [
@@ -211,6 +212,14 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
             get { return _visualisationData.IsApplyingCrossover; }
         }
 
+        /// <summary>
+        /// Gets the number of fitness evaluations.
+        /// </summary>
+        public int Evaluations
+        {
+            get { return _visualisationData.FitnessEvaluations; }
+        }
+
         private bool _isApplyingCrossoverRunning { get; set; }
 
         protected override bool isAnimating
@@ -316,7 +325,6 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     _stopAddSolution = _addSolutionRunning;
                     while (_addSolutionRunning)
                     {
-                        Debug.WriteLine("wait2");
                         Thread.Sleep(10);
                     }
 
@@ -338,7 +346,6 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
                     _stopAddDonor = _addDonorRunning;
                     while (_addDonorRunning)
                     {
-                        Debug.WriteLine("wait1");
                         Thread.Sleep(10);
                     }
 

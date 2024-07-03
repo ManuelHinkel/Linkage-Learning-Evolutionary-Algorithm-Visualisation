@@ -26,13 +26,13 @@ namespace LLEAV.Models.Algorithms.MIP
             IterationData iterationData = currentIteration.Clone();
             iterationData.Iteration = currentIteration.Iteration + 1;
 
-            Dictionary<long, Solution> alreadyInPyramid = new Dictionary<long, Solution>();
+            Dictionary<string, Solution> alreadyInPyramid = new Dictionary<string, Solution>();
 
             foreach (Population p in iterationData.Populations)
             {
                 foreach (Solution s in p.Solutions)
                 {
-                    alreadyInPyramid.Add(s.GetHashCode(), s);
+                    alreadyInPyramid.Add(s.Bits.ToString(), s);
                 }
             }
             _tracker.SetViewedPopulation(iterationData.Populations[0].Clone());
@@ -57,12 +57,13 @@ namespace LLEAV.Models.Algorithms.MIP
                 // Not guaranteed that localsearch function sets the fitness
                 solutionALS.Fitness = runData.FitnessFunction.Fitness(solutionALS);
 
-                if (!alreadyInPyramid.ContainsKey(solutionALS.GetHashCode()))
+                if (!alreadyInPyramid.ContainsKey(solutionALS.Bits.ToString()))
                 {
                     iterationData.Populations[0].Add(solutionALS);
-                    alreadyInPyramid.Add(solutionALS.GetHashCode(), solutionALS);
+                    alreadyInPyramid.Add(solutionALS.Bits.ToString(), solutionALS);
                 }
             }
+            _tracker.IncreaseFitnessEvaluations(solutionsALS);
 
             // Tracker
             var populationBeforeFOSUpdate = iterationData.Populations[0].Clone();
@@ -84,18 +85,17 @@ namespace LLEAV.Models.Algorithms.MIP
 
                 bool inserted = false;
 
-                foreach (Solution solutionALS in solutionsALS)
+                for (int k = 0; k < solutionsALS.Length; k++)
                 {
                     _tracker.SetViewedPopulation(iterationData.Populations[j]);
-                   
-                    _tracker.ChangeActiveSolution(solutionALS);
 
-                    Solution y = Crossover(iterationData.Populations[j], iterationData.Populations[j].FOS, runData.FitnessFunction, solutionALS, random);
-                    y.Fitness = runData.FitnessFunction.Fitness(y);
+                    _tracker.ChangeActiveSolution(solutionsALS[k]);
 
-                    if (y.Fitness > solutionALS.Fitness)
+                    Solution y = Crossover(iterationData.Populations[j], iterationData.Populations[j].FOS, runData.FitnessFunction, solutionsALS[k], random);
+
+                    if (y.Fitness > solutionsALS[k].Fitness)
                     {
-                        if (!alreadyInPyramid.ContainsKey(y.GetHashCode()))
+                        if (!alreadyInPyramid.ContainsKey(y.Bits.ToString()))
                         {
                             inserted = true;
                             if (j == iterationData.Populations.Count - 1)
@@ -104,13 +104,14 @@ namespace LLEAV.Models.Algorithms.MIP
                             }
                             iterationData.Populations[j + 1].Add(y);
 
-                            alreadyInPyramid.Add(y.GetHashCode(), y);
+                            alreadyInPyramid.Add(y.Bits.ToString(), y);
 
                             // Tracker
                             populationBeforeFOSUpdate = iterationData.Populations[j + 1].Clone();
                             _tracker.AddedSolutionToNextPopulation(populationBeforeFOSUpdate);
                         }
                     }
+                    solutionsALS[k] = y;
                 }
 
                 if (inserted)
@@ -160,6 +161,7 @@ namespace LLEAV.Models.Algorithms.MIP
                     _tracker.Merge(temp);
 
                     temp.Fitness = fitnessFunction.Fitness(temp);
+                    _tracker.IncreaseFitnessEvaluations([temp]);
                     if (temp.Fitness > x.Fitness)
                     {
                         x = temp;

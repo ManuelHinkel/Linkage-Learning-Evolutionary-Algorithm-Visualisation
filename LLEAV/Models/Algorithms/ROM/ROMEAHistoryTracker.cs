@@ -63,5 +63,10 @@ namespace LLEAV.Models.Algorithms.ROM
         {
             StateChangeHistory.Add(new ActiveSolutionsChange(o0, o1, p0, p1));
         }
+
+        public void IncreaseFitnessEvaluations(Solution[] solutions)
+        {
+            StateChangeHistory.Add(new EvaluationChange(solutions));
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace LLEAV.Models.Algorithms.GOM.StateChange
 
         public IList<SolutionWrapper> Solutions { get; set; }
         public ObservableCollection<SolutionWrapper> NextIteration { get; set; } = new ObservableCollection<SolutionWrapper>();
-
+        public int FitnessEvaluations { get; set; }
         public IVisualisationData Clone()
         {
             GOMVisualisationData clone = new GOMVisualisationData();
@@ -33,6 +33,7 @@ namespace LLEAV.Models.Algorithms.GOM.StateChange
             clone.Merged = Merged;
             clone.CurrentDonor = CurrentDonor;
             clone.CurrentSolution = CurrentSolution;
+            clone.FitnessEvaluations = FitnessEvaluations;
 
             return clone;
         }

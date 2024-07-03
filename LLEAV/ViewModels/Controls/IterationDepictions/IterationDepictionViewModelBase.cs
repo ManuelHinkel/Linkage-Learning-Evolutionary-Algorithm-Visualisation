@@ -214,7 +214,15 @@ namespace LLEAV.ViewModels.Controls.IterationDepictions
 
         protected void CalculateTickSpacing()
         {
-            if (MaxStateChange > 500)
+            if (MaxStateChange > 2000)
+            {
+                TickSpacing = 200;
+            }
+            else if (MaxStateChange > 1000)
+            {
+                TickSpacing = 100;
+            }
+            else if (MaxStateChange > 500)
             {
                 TickSpacing = 50;
             }

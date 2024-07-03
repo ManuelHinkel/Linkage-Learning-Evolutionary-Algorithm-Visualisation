@@ -73,6 +73,7 @@ namespace LLEAV.ViewModels.Windows
         public static Type[] FOSFunctions { get; private set; } = [
             typeof(UnivariateFOS), 
             typeof(MarginalProductFOS),
+            typeof(MPVariantFOS),
             typeof(LinkageTreeFOS),
             ];
 
