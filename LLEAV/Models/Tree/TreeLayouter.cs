@@ -10,7 +10,7 @@ namespace LLEAV.Models.Tree
     /// </summary>
     public class TreeLayouter
     {
-        private const int X_SPACING = 30;
+        private const int X_SPACING = 50;
         private const int Y_SPACING = 50;
 
         private Node _root = new Node(null);
