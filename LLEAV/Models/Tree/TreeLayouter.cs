@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace LLEAV.Models.Tree
@@ -139,7 +140,7 @@ namespace LLEAV.Models.Tree
                 dfs.RemoveAt(0);
                 if (current.Children.Count == 0)
                 {
-                    _leafs.Add(current);
+                    _leafs.Insert(0, current);
                 }
                 foreach (Node child in current.Children)
                 {

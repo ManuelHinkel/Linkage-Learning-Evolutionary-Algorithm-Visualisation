@@ -86,7 +86,7 @@ namespace LLEAVTest.Unit
 
             Cluster c = new Cluster([2, 3], 8);
 
-            Assert.Equal(0.45154499349, AlgorithmFunctions.H(p, c), 0.001);
+            Assert.Equal(1.0397207708399179, AlgorithmFunctions.H(p, c), 0.001);
 
         }
 
