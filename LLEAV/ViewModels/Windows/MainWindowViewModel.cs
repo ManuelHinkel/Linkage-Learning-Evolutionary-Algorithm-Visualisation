@@ -407,13 +407,14 @@ namespace LLEAV.ViewModels.Windows
             else
             {
                 var result = RunData.Algorithm.CalculateIteration(
-                GlobalManager.Instance.InitialIteration(),
-                RunData);
+                    GlobalManager.Instance.InitialIteration(),
+                    RunData);
 
                 RunData.Iterations.Add(result.Item1);
 
                 if (ModusIndex == 0)
                 {
+                    GlobalManager.Instance.CurrentIteration = 0;
                     GlobalManager.Instance.StartIterationVisualization(result.Item2);
                 }
                 else
