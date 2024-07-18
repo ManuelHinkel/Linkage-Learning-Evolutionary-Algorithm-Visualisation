@@ -21,7 +21,7 @@ namespace LLEAV.Models.TerminationCriteria
 
         public override byte[] ConvertArgumentToBytes()
         {
-            byte[] bytes = new byte[4];
+            byte[] bytes = new byte[8];
             ByteUtil.WriteDoubleToBuffer(_fitness, bytes, 0);
             return bytes;
         }
